@@ -15,3 +15,8 @@ provider "azurerm" {
   client_id         = "<service_principal_appid>"
   client_secret     = "<service_principal_password>"
 }
+
+resource "azurerm_resource_group" "cloudRG" {
+  name     = "${var.name}"
+  location = "${var.location}"
+}
