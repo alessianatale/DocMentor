@@ -1,0 +1,33 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "azureBotId": {
+      "value": "DocMentorBot"
+    },
+    "azureBotSku": {
+      "value": "S1"
+    },
+    "azureBotRegion": {
+      "value": "global"
+    },
+    "botEndpoint": {
+      "value": "https://cloudas.azurewebsites.net/api/messages"
+    },
+    "appType": {
+      "value": "UserAssignedMSI"
+    },
+    "appId": {
+      "value": "20248007-d6a5-4278-b712-a6a30130037e"
+    },
+    "UMSIName": {
+      "value": "cloudidentity"
+    },
+    "UMSIResourceGroupName": {
+      "value": "cloudrg"
+    },
+    "tenantId": {
+      "value": "60ac6239-f213-45ca-94c2-efcdb3ce4256"
+    }
+  }
+}

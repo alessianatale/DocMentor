@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appServiceName": {
+      "value": "cloudas"
+    },
+    "existingAppServicePlanName": {
+      "value": ""
+    },
+    "existingAppServicePlanLocation": {
+      "value": ""
+    },
+    "newAppServicePlanName": {
+      "value": "cloudappserviceplan"
+    },
+    "newAppServicePlanLocation": {
+      "value": "westeurope"
+    },
+    "newAppServicePlanSku": {
+      "value": {
+        "name": "S1",
+        "tier": "Standard",
+        "size": "S1",
+        "family": "S",
+        "capacity": 1
+      }
+    },
+    "appType": {
+      "value": "UserAssignedMSI"
+    },
+    "appId": {
+      "value": "20248007-d6a5-4278-b712-a6a30130037e"
+    },
+    "appSecret": {
+      "value": ""
+    },
+    "UMSIName": {
+      "value": "cloudidentity"
+    },
+    "UMSIResourceGroupName": {
+      "value": "cloudrg"
+    },
+    "tenantId": {
+      "value": "60ac6239-f213-45ca-94c2-efcdb3ce4256"
+    }
+  }
+}
