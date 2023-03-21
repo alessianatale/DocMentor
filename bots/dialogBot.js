@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-const { ActivityHandler } = require('botbuilder');
+const {ActionTypes, ActivityHandler, CardFactory } = require('botbuilder');
 
 class DialogBot extends ActivityHandler {
     /**
@@ -24,11 +24,48 @@ class DialogBot extends ActivityHandler {
         this.onMessage(async (context, next) => {
             console.log('Running dialog with Message Activity.');
 
+           
             // Run the Dialog with the new message Activity.
             await this.dialog.run(context, this.dialogState);
 
             await next();
         });
+
+        this.onMembersAdded(async (context, next) => {
+            console.log('Running dialog with Message Activity.');
+
+            await this.sendIntroCard(context);
+            
+
+            await next();
+        });
+    }
+
+    async sendIntroCard(context) {
+        const card = CardFactory.heroCard(
+            'Benvenuto in DocMentorBot',
+            'Grazie a questo bot medici e pazienti potranno migliorare le loro interazioni, ad esempio un paziente puo richiedere la ricetta medica direttamente da DocMentorBot',
+            ['https://aka.ms/bf-welcome-card-image'],
+            [
+                { 
+                    type: ActionTypes.,
+                    title: 'Login',
+                    value: 'https://instagram.fnap2-1.fna.fbcdn.net/v/t51.2885…4z9RxFB5W9qRoO7wmHmiKw&oe=641DB5D8&_nc_sid=1527a3'
+                },
+                {
+                    type: ActionTypes.OpenUrl,
+                    title: 'Genera ID',
+                    value: 'https://instagram.fnap2-1.fna.fbcdn.net/v/t51.2885…4z9RxFB5W9qRoO7wmHmiKw&oe=641DB5D8&_nc_sid=1527a3'
+                },
+                {
+                    type: ActionTypes.OpenUrl,
+                    title: 'Consulta HealtBot',
+                    value: 'https://instagram.fnap2-1.fna.fbcdn.net/v/t51.2885…4z9RxFB5W9qRoO7wmHmiKw&oe=641DB5D8&_nc_sid=1527a3'
+                }
+            ]
+        );
+    
+        await context.sendActivity({ attachments: [card] });
     }
 
     /**
