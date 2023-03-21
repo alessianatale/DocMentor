@@ -133,9 +133,6 @@ resource "null_resource" "npm_env" {
 /*
 resource "null_resource" "finaldeploy" {
   provisioner "local-exec" {
-    command = "cd C:/Users/Alessia/Desktop/progCloud/BotBuilder-Samples/samples/javascript_nodejs/05.multi-turn-prompt"
-  }
-  provisioner "local-exec" {
     command = "powershell Compress-Archive -Path . -DestinationPath deploy.zip"
   }
   provisioner "local-exec" {
