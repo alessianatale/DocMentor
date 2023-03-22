@@ -83,7 +83,7 @@ class DialogBot extends ActivityHandler {
             [
                 {
                     type: ActionTypes.OpenUrl,
-                    title: 'Login',
+                    title: 'Loginn',
                     value: 'https://docs.microsoft.com/en-us/azure/bot-service/?view=azure-bot-service-4.0'
                 },
                 {
