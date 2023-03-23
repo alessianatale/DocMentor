@@ -15,11 +15,13 @@ const restify = require('restify');
 const {
     CloudAdapter,
     MemoryStorage,
+    ConversationState,
     UserState,
     ConfigurationBotFrameworkAuthentication
 } = require('botbuilder');
 
 const { WelcomeBot } = require('./bots/welcomeBot');
+const { UserProfileDialog } = require('./dialogs/userProfileDialog');
 
 const botFrameworkAuthentication = new ConfigurationBotFrameworkAuthentication(process.env);
 
@@ -46,6 +48,8 @@ adapter.onTurnError = async (context, error) => {
     // Send a message to the user
     await context.sendActivity('The bot encountered an error or bug.');
     await context.sendActivity('To continue to run this bot, please fix the bot source code.');
+    // Clear out state
+    await conversationState.delete(context);
 };
 
 // Define a state store for your bot. See https://aka.ms/about-bot-state to learn more about using MemoryStorage.
@@ -55,10 +59,13 @@ adapter.onTurnError = async (context, error) => {
 // CAUTION: The Memory Storage used here is for local bot debugging only. When the bot
 // is restarted, anything stored in memory will be gone.
 const memoryStorage = new MemoryStorage();
+const conversationState = new ConversationState(memoryStorage);
 const userState = new UserState(memoryStorage);
 
 // Create the main dialog.
-const bot = new WelcomeBot(userState);
+const dialog = new UserProfileDialog(userState);
+const bot = new WelcomeBot(conversationState, userState, dialog);
+
 
 // Create HTTP server
 const server = restify.createServer();

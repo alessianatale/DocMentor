@@ -136,7 +136,7 @@ resource "null_resource" "finaldeploy" {
     command = "powershell Compress-Archive -Path . -DestinationPath deploy.zip"
   }
   provisioner "local-exec" {
-    command = "az webapp deployment source config-zip --resource-group cloudrg --name cloudas --src deploy.zip"
+    command = "az webapp deployment source config-zip --resource-group cloudrg --name cloudas --src CloudProject.zip"
   }
 
   depends_on = [null_resource.npm_env]
