@@ -67,7 +67,7 @@ resource "azurerm_resource_group_template_deployment" "cloudasdeployment" {
     }
   })
   
-  template_content = file("C:\\Users\\Alessia\\Desktop\\progCloud\\BotBuilder-Samples\\samples\\javascript_nodejs\\05.multi-turn-prompt\\deploymentTemplates\\deployUseExistResourceGroup\\template-BotApp-with-rg.json")
+  template_content = file("C:\\Users\\Alessia\\Desktop\\DocMentorBot\\CloudProject\\deploymentTemplates\\deployUseExistResourceGroup\\template-BotApp-with-rg.json")
   depends_on = [azurerm_user_assigned_identity.cloudidentity]
 }
 
@@ -106,13 +106,13 @@ resource "azurerm_resource_group_template_deployment" "cloudbotdeployment" {
     }
   })
   
-  template_content = file("C:\\Users\\Alessia\\Desktop\\progCloud\\BotBuilder-Samples\\samples\\javascript_nodejs\\05.multi-turn-prompt\\deploymentTemplates\\deployUseExistResourceGroup\\template-AzureBot-with-rg.json")
+  template_content = file("C:\\Users\\Alessia\\Desktop\\DocMentorBot\\CloudProject\\deploymentTemplates\\deployUseExistResourceGroup\\template-AzureBot-with-rg.json")
   depends_on = [azurerm_resource_group_template_deployment.cloudasdeployment]
 }
 
 resource "null_resource" "npm_env" {
   provisioner "local-exec" {
-    command = "cd C:/Users/Alessia/Desktop/progCloud/BotBuilder-Samples/samples/javascript_nodejs/05.multi-turn-prompt"
+    command = "cd C:/Users/Alessia/Desktop/DocMentorBot/CloudProject"
   }
   provisioner "local-exec" {
     command = "az bot update --resource-group cloudrg --name DocMentorBot --endpoint https://cloudas.azurewebsites.net/api/messages"

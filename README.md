@@ -1,8 +1,8 @@
-# Multi-turn prompt
+# Welcome Users
 
-Bot Framework v4 multi-turn prompt bot sample
+Bot Framework v4 welcome users bot sample
 
-This bot has been created using [Bot Framework](https://dev.botframework.com), it shows how to use the prompts classes included in `botbuilder-dialogs`.  This bot will ask for the user's name and age, then store the responses. It demonstrates a multi-turn dialog flow using a text prompt, a number prompt, and state accessors to store and retrieve values.
+This bot has been created using [Bot Framework](https://dev.botframework.com), is shows how to welcome users when they join the conversation.
 
 ## Prerequisites
 
@@ -18,13 +18,13 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
 - Clone the repository
 
     ```bash
-    git clone https://github.com/microsoft/botbuilder-samples.git
+    git clone https://github.com/Microsoft/botbuilder-samples.git
     ```
 
-- In a terminal, navigate to `samples/javascript_nodejs/05.multi-turn-prompt`
+- In a terminal, navigate to `samples/javascript_nodejs/03.welcome-users`
 
     ```bash
-    cd samples/javascript_nodejs/05.multi-turn-prompt
+    cd samples/javascript_nodejs/03.welcome-users
     ```
 
 - Install modules
@@ -53,13 +53,7 @@ This bot has been created using [Bot Framework](https://dev.botframework.com), i
 
 ## Interacting with the bot
 
-A conversation between a bot and a user often involves asking (prompting) the user for information, parsing the user's response,
-and then acting on that information. This sample demonstrates how to prompt users for information using the different prompt types
-included in the [botbuilder-dialogs](https://docs.microsoft.com/en-us/azure/bot-service/bot-builder-concept-dialog?view=azure-bot-service-4.0) library
-and supported by the SDK.
-
-The `botbuilder-dialogs` library includes a variety of pre-built prompt classes, including text, number, and datetime types. This
-sample demonstrates using a text prompt to collect the user's name, then using a number prompt to collect an age.
+The primary goal when creating any bot is to engage your user in a meaningful conversation. One of the best ways to achieve this goal is to ensure that from the moment a user first connects, they understand your bot’s main purpose and capabilities, the reason your bot was created. See [Send welcome message to users](https://aka.ms/botframework-welcome-instructions) for additional information on how a bot can welcome users to a conversation.
 
 ## Deploy the bot to Azure
 
@@ -69,8 +63,6 @@ To learn more about deploying a bot to Azure, see [Deploy your bot to Azure](htt
 
 - [Bot Framework Documentation](https://docs.botframework.com)
 - [Bot Basics](https://docs.microsoft.com/azure/bot-service/bot-builder-basics?view=azure-bot-service-4.0)
-- [Dialogs](https://docs.microsoft.com/en-us/azure/bot-service/bot-builder-concept-dialog?view=azure-bot-service-4.0)
-- [Gathering Input Using Prompts](https://docs.microsoft.com/en-us/azure/bot-service/bot-builder-prompts?view=azure-bot-service-4.0&tabs=csharp)
 - [Activity processing](https://docs.microsoft.com/en-us/azure/bot-service/bot-builder-concept-activity-processing?view=azure-bot-service-4.0)
 - [Azure Bot Service Introduction](https://docs.microsoft.com/azure/bot-service/bot-service-overview-introduction?view=azure-bot-service-4.0)
 - [Azure Bot Service Documentation](https://docs.microsoft.com/azure/bot-service/?view=azure-bot-service-4.0)

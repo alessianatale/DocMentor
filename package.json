@@ -1,7 +1,7 @@
 {
-    "name": "multiturn-prompts-bot",
+    "name": "welcome-users",
     "version": "1.0.0",
-    "description": "Bot Builder v4 multiturn prompts sample",
+    "description": "Bot Builder v4 welcome user sample",
     "author": "Microsoft",
     "license": "MIT",
     "main": "index.js",
@@ -16,11 +16,8 @@
         "url": "https://github.com/Microsoft/BotBuilder-Samples.git"
     },
     "dependencies": {
-        "botbuilder": "^4.19.2",
-        "botbuilder-dialogs": "^4.19.2",
+        "botbuilder": "~4.17.0",
         "dotenv": "^8.2.0",
-        "lodash": "^4.17.21",
-        "path": "^0.12.7",
         "restify": "~8.6.0"
     },
     "devDependencies": {

@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "azureBotId": {
-      "value": "DocMentorBot"
+      "value": ""
     },
     "azureBotSku": {
       "value": "S1"
@@ -12,22 +12,22 @@
       "value": "global"
     },
     "botEndpoint": {
-      "value": "https://cloudas.azurewebsites.net/api/messages"
+      "value": ""
     },
     "appType": {
-      "value": "UserAssignedMSI"
+      "value": "MultiTenant"
     },
     "appId": {
-      "value": "20248007-d6a5-4278-b712-a6a30130037e"
+      "value": ""
     },
     "UMSIName": {
-      "value": "cloudidentity"
+      "value": ""
     },
     "UMSIResourceGroupName": {
-      "value": "cloudrg"
+      "value": ""
     },
     "tenantId": {
-      "value": "60ac6239-f213-45ca-94c2-efcdb3ce4256"
+      "value": ""
     }
   }
 }
