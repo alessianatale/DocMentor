@@ -4,3 +4,7 @@ terraform.tfstate
 terraform.tfstate.backup
 .terraform.lock.hcl
 .terraform.tfstate.lock.info
+main.tf
+main.tf
+web.config
+main.tf

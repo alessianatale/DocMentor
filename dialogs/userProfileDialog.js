@@ -37,14 +37,19 @@ class UserProfileDialog extends ComponentDialog {
         this.addDialog(new NumberPrompt(NUMBER_PROMPT, this.agePromptValidator));
         this.addDialog(new AttachmentPrompt(ATTACHMENT_PROMPT, this.picturePromptValidator));
 
+        // this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
+        //     this.transportStep.bind(this),
+        //     this.nameStep.bind(this),
+        //     this.nameConfirmStep.bind(this),
+        //     this.ageStep.bind(this),
+        //     this.pictureStep.bind(this),
+        //     this.confirmStep.bind(this),
+        //     this.summaryStep.bind(this)
+        // ]));
+
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
-            this.transportStep.bind(this),
-            this.nameStep.bind(this),
-            this.nameConfirmStep.bind(this),
-            this.ageStep.bind(this),
-            this.pictureStep.bind(this),
-            this.confirmStep.bind(this),
-            this.summaryStep.bind(this)
+            this.choiceStep.bind(this),
+            this.redirectDialog.bind(this)
         ]));
 
         this.initialDialogId = WATERFALL_DIALOG;
@@ -67,18 +72,34 @@ class UserProfileDialog extends ComponentDialog {
         }
     }
 
-    async transportStep(step) {
+   
+
+    async choiceStep(step) {
         // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
         // Running a prompt here means the next WaterfallStep will be run when the user's response is received.
         return await step.prompt(CHOICE_PROMPT, {
-            prompt: 'Please enter your mode of transport.',
-            choices: ChoiceFactory.toChoices(['Car', 'Bus', 'Bicycle'])
+            prompt: 'Seleziona cosa vuoi fare',
+            choices: ChoiceFactory.toChoices(['Login', 'Genera ID', 'Apri HealtBot'])
         });
     }
 
-    async nameStep(step) {
-        step.values.transport = step.result.value;
-        return await step.prompt(NAME_PROMPT, 'Please enter your name.');
+    async redirectDialog(step) {
+        const value = step.result.value;
+        if(value=== 'Login'){
+            await step.context.sendActivity('sei in login')
+           // return await step.beginDialog(NOMEDIALOGO)
+        }else if(value=== 'Genera ID'){
+            await step.context.sendActivity('sei in genera id')
+          //  return await step.beginDialog(NOMEDIALOGO)
+        }else if(value=== 'Apri HealtBot'){
+            await step.context.sendActivity('sei in healtbot')
+           // return await step.beginDialog(NOMEDIALOGO)
+        }else{
+            await step.context.sendActivity('effettua una scelta 🛑 Riprova!')
+            return await step.replaceDialog(this.id);
+        }
+        
+        return await step.endDialog();
     }
 
     async nameConfirmStep(step) {
