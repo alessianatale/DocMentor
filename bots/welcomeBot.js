@@ -33,7 +33,7 @@ class WelcomeBot extends ActivityHandler {
                 // The channel should send the user name in the 'From' object
                 const userName = context.activity.from.name;
                 await context.sendActivity(`Welcome ${ userName }.`);
-                await context.sendActivity(context.activity.from.id);
+               
 
                 // Set the flag indicating the bot handled the user's first message.
                 await this.welcomedUserProperty.set(context, true);

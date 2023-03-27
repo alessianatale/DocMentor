@@ -25,9 +25,9 @@ const NUMBER_PROMPT = 'NUMBER_PROMPT';
 const USER_PROFILE = 'USER_PROFILE';
 const WATERFALL_DIALOG = 'WATERFALL_DIALOG';
 
-class UserProfileDialog extends ComponentDialog {
+class main extends ComponentDialog {
     constructor(userState) {
-        super('userProfileDialog');
+        super('main');
 
         this.userProfile = userState.createProperty(USER_PROFILE);
 
@@ -89,8 +89,8 @@ class UserProfileDialog extends ComponentDialog {
             await step.context.sendActivity('sei in login')
            // return await step.beginDialog(NOMEDIALOGO)
         }else if(value=== 'Genera ID'){
-            await step.context.sendActivity('sei in genera id')
-          //  return await step.beginDialog(NOMEDIALOGO)
+            await step.context.sendActivity(step.context.activity.from.id);
+            return await step.replaceDialog(this.id);
         }else if(value=== 'Apri HealtBot'){
             await step.context.sendActivity('sei in healtbot')
            // return await step.beginDialog(NOMEDIALOGO)
@@ -216,4 +216,4 @@ class UserProfileDialog extends ComponentDialog {
     }
 }
 
-module.exports.UserProfileDialog = UserProfileDialog;
+module.exports.main = main;
