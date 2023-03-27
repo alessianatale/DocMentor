@@ -21,7 +21,7 @@ const {
 } = require('botbuilder');
 
 const { WelcomeBot } = require('./bots/welcomeBot');
-const { UserProfileDialog } = require('./dialogs/userProfileDialog');
+const { main } = require('./dialogs/main');
 
 const botFrameworkAuthentication = new ConfigurationBotFrameworkAuthentication(process.env);
 
@@ -63,7 +63,7 @@ const conversationState = new ConversationState(memoryStorage);
 const userState = new UserState(memoryStorage);
 
 // Create the main dialog.
-const dialog = new UserProfileDialog(userState);
+const dialog = new main(userState);
 const bot = new WelcomeBot(conversationState, userState, dialog);
 
 
