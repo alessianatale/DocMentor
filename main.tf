@@ -4,6 +4,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
+      version = "3.48.0"
     }
   }
 }
@@ -110,8 +111,13 @@ resource "azurerm_resource_group_template_deployment" "cloudbotdeployment" {
   depends_on = [azurerm_resource_group_template_deployment.cloudasdeployment]
 }
 
+resource "random_integer" "ri" {
+  min = 10000
+  max = 99999
+}
+
 resource "azurerm_cosmosdb_account" "cosmodbaccount" {
-  name                = "cosmodbaccount"
+  name                = "cosmodbaccount-${random_integer.ri.result}"
   location            = azurerm_resource_group.cloudrg.location
   resource_group_name = azurerm_resource_group.cloudrg.name
   offer_type          = "Standard"
@@ -178,10 +184,10 @@ resource "azurerm_cosmosdb_mongo_collection" "mongocollection" {
 
   depends_on = [azurerm_cosmosdb_mongo_database.mongodatabase]
 
-  # index {
-  #   keys   = ["_id"]
-  #   unique = true
-  # }
+  index {
+    keys   = ["_id"]
+    unique = true
+  }
 }
 
 resource "null_resource" "npm_env" {
