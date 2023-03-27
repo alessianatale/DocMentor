@@ -110,6 +110,80 @@ resource "azurerm_resource_group_template_deployment" "cloudbotdeployment" {
   depends_on = [azurerm_resource_group_template_deployment.cloudasdeployment]
 }
 
+resource "azurerm_cosmosdb_account" "cosmodbaccount" {
+  name                = "cosmodbaccount"
+  location            = azurerm_resource_group.cloudrg.location
+  resource_group_name = azurerm_resource_group.cloudrg.name
+  offer_type          = "Standard"
+  kind                = "MongoDB"
+
+  enable_automatic_failover = true
+
+  capabilities {
+    name = "EnableAggregationPipeline"
+  }
+
+  capabilities {
+    name = "mongoEnableDocLevelTTL"
+  }
+
+  capabilities {
+    name = "MongoDBv3.4"
+  }
+
+  capabilities {
+    name = "EnableMongo"
+  }
+
+  consistency_policy {
+    consistency_level       = "BoundedStaleness"
+    max_interval_in_seconds = 300
+    max_staleness_prefix    = 100000
+  }
+
+  geo_location {
+    location          = "eastus"
+    failover_priority = 1
+  }
+
+  geo_location {
+    location          = "westus"
+    failover_priority = 0
+  }
+  depends_on = [azurerm_resource_group_template_deployment.cloudbotdeployment]
+}
+
+# data "azurerm_cosmosdb_account" "cosmodbaccount" {
+#   name                = "cosmodbaccount"
+#   resource_group_name = azurerm_resource_group.cloudrg.name
+#   depends_on = [azurerm_resource_group_template_deployment.cloudbotdeployment]
+# }
+
+resource "azurerm_cosmosdb_mongo_database" "mongodatabase" {
+  name                = "mongodatabase"
+  resource_group_name = azurerm_resource_group.cloudrg.name
+  account_name        = azurerm_cosmosdb_account.cosmodbaccount.name
+  depends_on = [azurerm_cosmosdb_account.cosmodbaccount]
+}
+
+resource "azurerm_cosmosdb_mongo_collection" "mongocollection" {
+  name                = "mongocollection"
+  resource_group_name = azurerm_resource_group.cloudrg.name
+  account_name        = azurerm_cosmosdb_account.cosmodbaccount.name
+  database_name       = azurerm_cosmosdb_mongo_database.mongodatabase.name
+
+  default_ttl_seconds = "777"
+  shard_key           = "uniqueKey"
+  throughput          = 400
+
+  depends_on = [azurerm_cosmosdb_mongo_database.mongodatabase]
+
+  # index {
+  #   keys   = ["_id"]
+  #   unique = true
+  # }
+}
+
 resource "null_resource" "npm_env" {
   provisioner "local-exec" {
     command = "cd C:/Users/Alessia/Desktop/DocMentorBot/CloudProject"
