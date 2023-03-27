@@ -190,6 +190,7 @@ resource "azurerm_cosmosdb_mongo_collection" "mongocollection" {
   }
 }
 
+
 resource "null_resource" "npm_env" {
   provisioner "local-exec" {
     command = "cd C:/Users/Alessia/Desktop/DocMentorBot/CloudProject"
