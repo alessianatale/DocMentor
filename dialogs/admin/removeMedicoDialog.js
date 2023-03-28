@@ -11,10 +11,11 @@ const {
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
 const NAME_PROMPT = 'NAME_PROMPT';
 const WATERFALL_DIALOG = 'WATERFALL_DIALOG';
+const REMOVE_MEDICO_DIALOG = 'REMOVE_MEDICO_DIALOG';
 
 class removeMedicoDialog extends ComponentDialog {
     constructor(userState) {
-        super('addMedicoDialog');
+        super(REMOVE_MEDICO_DIALOG);
         this.userState = userState;
 
         this.addDialog(new TextPrompt(NAME_PROMPT));
@@ -22,12 +23,12 @@ class removeMedicoDialog extends ComponentDialog {
 
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
             this.welcomeStep.bind(this),
-            this.idStep.bind(this),
-            this.ruoloStep.bind(this),
+            this.idStep.bind(this)
+          /*  this.ruoloStep.bind(this),
             this.nomeStep.bind(this),
             this.dataNascitaStep.bind(this),
             this.codiceFiscaleStep.bind(this),
-            this.confirmStep.bind(this)
+            this.confirmStep.bind(this) */
         ]));
 
         this.initialDialogId = WATERFALL_DIALOG;

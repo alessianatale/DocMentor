@@ -27,6 +27,7 @@ const NAME_PROMPT = 'NAME_PROMPT';
 const NUMBER_PROMPT = 'NUMBER_PROMPT';
 const USER_PROFILE = 'USER_PROFILE';
 const WATERFALL_DIALOG = 'WATERFALL_DIALOG';
+
 const { users } = config;
 
 class main extends ComponentDialog {
@@ -37,7 +38,7 @@ class main extends ComponentDialog {
 
         this.addDialog(new TextPrompt(NAME_PROMPT));
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT));
-        this.addDialog(new adminDialog());
+        this.addDialog(new adminDialog(ADMIN_DIALOG));
         // this.addDialog(new ConfirmPrompt(CONFIRM_PROMPT));
         // this.addDialog(new NumberPrompt(NUMBER_PROMPT, this.agePromptValidator));
         // this.addDialog(new AttachmentPrompt(ATTACHMENT_PROMPT, this.picturePromptValidator));
@@ -77,7 +78,7 @@ class main extends ComponentDialog {
         }
     }
 
-   
+
 
     async choiceStep(step) {
         // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
@@ -131,7 +132,7 @@ class main extends ComponentDialog {
                     break;
                 case 'paziente':
                     await step.context.sendActivity(`Sei in paziente`);
-                    break; 
+                    break;
             }
         } else
             await step.context.sendActivity(`Non sei registrato, comunica il tuo ID al medico/admin.`);

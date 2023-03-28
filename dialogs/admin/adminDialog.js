@@ -13,16 +13,17 @@ const { REMOVE_MEDICO_DIALOG, removeMedicoDialog } = require('./removeMedicoDial
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
 const NAME_PROMPT = 'NAME_PROMPT';
 const WATERFALL_DIALOG = 'WATERFALL_DIALOG';
+const ADMIN_DIALOG = 'ADMIN_DIALOG';
 
 class adminDialog extends ComponentDialog {
     constructor(userState) {
-        super('adminDialog');
+        super(ADMIN_DIALOG);
         this.userState = userState;
 
         this.addDialog(new TextPrompt(NAME_PROMPT));
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT));
-        this.addDialog(new addMedicoDialog());
-        this.addDialog(new removeMedicoDialog());
+        this.addDialog(new addMedicoDialog(ADD_MEDICO_DIALOG));
+        this.addDialog(new removeMedicoDialog(REMOVE_MEDICO_DIALOG));
 
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
             this.welcomeStep.bind(this),
@@ -46,6 +47,7 @@ class adminDialog extends ComponentDialog {
         const dialogContext = await dialogSet.createContext(turnContext);
         const results = await dialogContext.continueDialog();
         if (results.status === DialogTurnStatus.empty) {
+
             await dialogContext.beginDialog(this.id);
         }
     }
@@ -59,9 +61,9 @@ class adminDialog extends ComponentDialog {
 
     async idStep(step) {
         var resultchoice = step.result.value;
-        if (resultchoice==='Inserire nuovo medico') {
+        if (resultchoice === 'Inserire nuovo medico') {
             return await step.beginDialog(ADD_MEDICO_DIALOG);
-        }else if(resultchoice==='Eliminare medico esistente') {
+        } else if (resultchoice === 'Eliminare medico esistente') {
             return await step.beginDialog(REMOVE_MEDICO_DIALOG);
         }
     }
