@@ -16,6 +16,8 @@ const {
 } = require('botbuilder-dialogs');
 const { Channels } = require('botbuilder-core');
 const { UserProfile } = require('../userProfile');
+//Mongo Configuration
+const config = require('../config');
 
 const ATTACHMENT_PROMPT = 'ATTACHMENT_PROMPT';
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
@@ -24,6 +26,7 @@ const NAME_PROMPT = 'NAME_PROMPT';
 const NUMBER_PROMPT = 'NUMBER_PROMPT';
 const USER_PROFILE = 'USER_PROFILE';
 const WATERFALL_DIALOG = 'WATERFALL_DIALOG';
+const { users } = config;
 
 class main extends ComponentDialog {
     constructor(userState) {
@@ -79,7 +82,7 @@ class main extends ComponentDialog {
         // Running a prompt here means the next WaterfallStep will be run when the user's response is received.
         return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Seleziona cosa vuoi fare',
-            choices: ChoiceFactory.toChoices(['Login', 'Genera ID', 'Apri HealtBot'])
+            choices: ChoiceFactory.toChoices(['Login', 'Genera ID', 'Apri HealtBot', 'Vedi nomi utenti',])
         });
     }
 
@@ -94,6 +97,8 @@ class main extends ComponentDialog {
         }else if(value=== 'Apri HealtBot'){
             await step.context.sendActivity('sei in healtbot')
            // return await step.beginDialog(NOMEDIALOGO)
+        }else if(value=== 'Vedi nomi utenti'){
+            await this.showusername(step);
         }else{
             await step.context.sendActivity('effettua una scelta 🛑 Riprova!')
             return await step.replaceDialog(this.id);
@@ -102,14 +107,10 @@ class main extends ComponentDialog {
         return await step.endDialog();
     }
 
-    async nameConfirmStep(step) {
-        step.values.name = step.result;
-
-        // We can send messages to the user at any point in the WaterfallStep.
-        await step.context.sendActivity(`Thanks ${ step.result }.`);
-
-        // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
-        return await step.prompt(CONFIRM_PROMPT, 'Do you want to give your age?', ['yes', 'no']);
+    async showusername(step) {
+        const query = await ((users.find({})).toArray());
+        const nomiutenti = query.map(function(i) { return i.nome });
+        await step.context.sendActivity('nomi: \n' + nomiutenti);
     }
 
     async ageStep(step) {
