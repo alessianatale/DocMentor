@@ -159,27 +159,27 @@ resource "azurerm_cosmosdb_account" "cosmodbaccount" {
   depends_on = [azurerm_resource_group_template_deployment.cloudbotdeployment]
 }
 
-# data "azurerm_cosmosdb_account" "cosmodbaccount" {
-#   name                = "cosmodbaccount"
-#   resource_group_name = azurerm_resource_group.cloudrg.name
-#   depends_on = [azurerm_resource_group_template_deployment.cloudbotdeployment]
-# }
+data "azurerm_cosmosdb_account" "cosmodbaccount" {
+  name                = "cosmodbaccount-92996"
+  resource_group_name = azurerm_resource_group.cloudrg.name
+  //depends_on = [azurerm_resource_group_template_deployment.cloudbotdeployment]
+}
 
 resource "azurerm_cosmosdb_mongo_database" "mongodatabase" {
   name                = "mongodatabase"
   resource_group_name = azurerm_resource_group.cloudrg.name
-  account_name        = azurerm_cosmosdb_account.cosmodbaccount.name
-  depends_on = [azurerm_cosmosdb_account.cosmodbaccount]
+  account_name        = data.azurerm_cosmosdb_account.cosmodbaccount.name
+  depends_on = [data.azurerm_cosmosdb_account.cosmodbaccount]
 }
 
-resource "azurerm_cosmosdb_mongo_collection" "mongocollection" {
-  name                = "mongocollection"
+resource "azurerm_cosmosdb_mongo_collection" "userscollection" {
+  name                = "users"
   resource_group_name = azurerm_resource_group.cloudrg.name
-  account_name        = azurerm_cosmosdb_account.cosmodbaccount.name
+  account_name        = data.azurerm_cosmosdb_account.cosmodbaccount.name
   database_name       = azurerm_cosmosdb_mongo_database.mongodatabase.name
 
   default_ttl_seconds = "777"
-  shard_key           = "uniqueKey"
+  //shard_key           = "uniqueKey"
   throughput          = 400
 
   depends_on = [azurerm_cosmosdb_mongo_database.mongodatabase]
@@ -209,7 +209,7 @@ resource "null_resource" "npm_env" {
     command = "az bot prepare-deploy --lang Javascript"
   }
 
-  depends_on = [azurerm_resource_group_template_deployment.cloudbotdeployment]
+  depends_on = [azurerm_cosmosdb_mongo_collection.userscollection]
 }
 /*
 resource "null_resource" "finaldeploy" {
