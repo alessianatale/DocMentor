@@ -90,6 +90,7 @@ class main extends ComponentDialog {
         const value = step.result.value;
         if(value=== 'Login'){
             await step.context.sendActivity('sei in login')
+            await this.chooseDialog(step);
            // return await step.beginDialog(NOMEDIALOGO)
         }else if(value=== 'Genera ID'){
             await step.context.sendActivity(step.context.activity.from.id);
@@ -112,6 +113,37 @@ class main extends ComponentDialog {
         const nomiutenti = query.map(function(i) { return i.nome });
         await step.context.sendActivity('nomi: \n' + nomiutenti);
     }
+
+    async chooseDialog(step) {
+        this.provaemulatoreAdmin(step);
+        var idutentecorrente = step.context.activity.from.id;
+        var query = { idutente: idutentecorrente };
+        const utente = await users.findOne(query);
+        //controllo che l'utente sia presente nel db
+        if(utente != null) {
+            switch (utente.ruolo) {
+                case 'admin':
+                    await step.context.sendActivity(`Sei in admin`);
+                    break;
+                case 'medico':
+                    await step.context.sendActivity(`Sei in medico`);
+                    break;
+                case 'paziente':
+                    await step.context.sendActivity(`Sei in paziente`);
+                    break; 
+            }
+        } else
+            await step.context.sendActivity(`Non sei registrato, comunica il tuo ID al medico/admin.`);
+    }
+
+    async provaemulatoreAdmin(step) {
+        var idutentecorrente = step.context.activity.from.id;
+        var newuser = { idutente: idutentecorrente, ruolo: "admin", nome: "Emulatore", dataNascita: "03/07/00", codiceFiscale: "MMMMMMMM", pdf: "url"};
+        users.insertOne(newuser);
+        //await step.context.sendActivity('nomi: \n' + nomiutenti);
+    }
+
+
 
     async ageStep(step) {
         if (step.result) {
