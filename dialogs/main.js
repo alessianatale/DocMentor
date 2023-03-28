@@ -104,7 +104,8 @@ class main extends ComponentDialog {
             await step.context.sendActivity('effettua una scelta 🛑 Riprova!')
             return await step.replaceDialog(this.id);
         }
-        
+        // elimina tutto - da rimuovere dopo
+        await users.deleteMany({});
         return await step.endDialog();
     }
 
@@ -142,7 +143,6 @@ class main extends ComponentDialog {
         users.insertOne(newuser);
         //await step.context.sendActivity('nomi: \n' + nomiutenti);
     }
-
 
 
     async ageStep(step) {
