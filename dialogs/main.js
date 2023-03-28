@@ -12,12 +12,13 @@ const {
     DialogTurnStatus,
     NumberPrompt,
     TextPrompt,
-    WaterfallDialog
+    WaterfallDialog,
 } = require('botbuilder-dialogs');
 const { Channels } = require('botbuilder-core');
 const { UserProfile } = require('../userProfile');
 //Mongo Configuration
 const config = require('../config');
+const { ADMIN_DIALOG, adminDialog } = require('./admin/adminDialog');
 
 const ATTACHMENT_PROMPT = 'ATTACHMENT_PROMPT';
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
@@ -36,9 +37,10 @@ class main extends ComponentDialog {
 
         this.addDialog(new TextPrompt(NAME_PROMPT));
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT));
-        this.addDialog(new ConfirmPrompt(CONFIRM_PROMPT));
-        this.addDialog(new NumberPrompt(NUMBER_PROMPT, this.agePromptValidator));
-        this.addDialog(new AttachmentPrompt(ATTACHMENT_PROMPT, this.picturePromptValidator));
+        this.addDialog(new adminDialog());
+        // this.addDialog(new ConfirmPrompt(CONFIRM_PROMPT));
+        // this.addDialog(new NumberPrompt(NUMBER_PROMPT, this.agePromptValidator));
+        // this.addDialog(new AttachmentPrompt(ATTACHMENT_PROMPT, this.picturePromptValidator));
 
         // this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
         //     this.transportStep.bind(this),
@@ -89,20 +91,17 @@ class main extends ComponentDialog {
     async redirectDialog(step) {
         const value = step.result.value;
         if(value=== 'Login'){
-            await step.context.sendActivity('sei in login')
+            await step.context.sendActivity('sei in login');
             await this.chooseDialog(step);
            // return await step.beginDialog(NOMEDIALOGO)
         }else if(value=== 'Genera ID'){
             await step.context.sendActivity(step.context.activity.from.id);
             return await step.replaceDialog(this.id);
         }else if(value=== 'Apri HealtBot'){
-            await step.context.sendActivity('sei in healtbot')
+            await step.context.sendActivity('sei in healtbot');
            // return await step.beginDialog(NOMEDIALOGO)
         }else if(value=== 'Vedi nomi utenti'){
             await this.showusername(step);
-        }else{
-            await step.context.sendActivity('effettua una scelta 🛑 Riprova!')
-            return await step.replaceDialog(this.id);
         }
         // elimina tutto - da rimuovere dopo
         await users.deleteMany({});
@@ -125,6 +124,7 @@ class main extends ComponentDialog {
             switch (utente.ruolo) {
                 case 'admin':
                     await step.context.sendActivity(`Sei in admin`);
+                    await step.beginDialog(ADMIN_DIALOG);
                     break;
                 case 'medico':
                     await step.context.sendActivity(`Sei in medico`);
