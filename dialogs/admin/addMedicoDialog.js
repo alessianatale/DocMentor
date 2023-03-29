@@ -9,6 +9,9 @@ const {
     NumberPrompt,
     ConfirmPrompt
 } = require('botbuilder-dialogs');
+//Mongo Configuration
+const config = require('../../config');
+const { users } = config;
 
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
 const NAME_PROMPT = 'NAME_PROMPT';
@@ -90,7 +93,8 @@ class addMedicoDialog extends ComponentDialog {
         if (step.result) {
             // Get the current profile object from user state.
 
-
+            var newuser = { idutente: step.values.id , ruolo: "medico", nome: step.values.nome, dataNascita: "", codiceFiscale: step.values.cf, pdf: ""};
+            users.insertOne(newuser);
 
             let msg = `è stato aggiunto ${ step.values.nome } e il suo id è ${ step.values.id } e il suo codice fiscale ${ step.values.cf } `;
 
