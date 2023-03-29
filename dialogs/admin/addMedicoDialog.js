@@ -12,6 +12,8 @@ const CHOICE_PROMPT = 'CHOICE_PROMPT';
 const NAME_PROMPT = 'NAME_PROMPT';
 const WATERFALL_DIALOG = 'WATERFALL_DIALOG';
 const ADD_MEDICO_DIALOG = 'ADD_MEDICO_DIALOG';
+const NUMBER_PROMPT = 'NUMBER_PROMPT';
+const CONFIRM_PROMPT = 'CONFIRM_PROMPT';
 
 class addMedicoDialog extends ComponentDialog {
     constructor(userState) {
@@ -21,9 +23,12 @@ class addMedicoDialog extends ComponentDialog {
         this.addDialog(new TextPrompt(NAME_PROMPT));
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT));
 
+        // eslint-disable-next-line no-sparse-arrays
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
-            this.welcomeStep.bind(this),
-            this.idStep.bind(this)
+            ,
+            this.idStep.bind(this),
+            this.nomeStep.bind(this),
+            this.cfStep.bind(this)
             /* this.ruoloStep.bind(this),
             this.nomeStep.bind(this),
             this.dataNascitaStep.bind(this),
@@ -51,21 +56,51 @@ class addMedicoDialog extends ComponentDialog {
         }
     }
 
-    async welcomeStep(step) {
-        return await step.prompt(CHOICE_PROMPT, {
-            prompt: 'Ciao admin, cosa desideri fare?',
-            choices: ChoiceFactory.toChoices(['Inserire nuovo medico', 'Eliminare medico esistente'])
-        });
+    async idStep(step) {
+        return await step.prompt(NUMBER_PROMPT, 'Inserisci l\'id comunicato dal medico');
     }
 
-    async idStep(step) {
-        var resultchoice = step.result.value;
-        if (resultchoice==='Inserire nuovo medico') {
+    async nomeStep(step) {
+        step.values.id = step.result;
+        return await step.prompt(NAME_PROMPT, 'Inserisci il nome del medico (nome e cognome)');
+    }
 
-        }else if(resultchoice==='Eliminare medico esistente') {
+    async cfStep(step) {
+        step.values.nome = step.result;
+        return await step.prompt(NAME_PROMPT, 'Inserisci il codice fiscale del medico');
+    }
+
+    async confirmStep(step) {
+        step.values.cf = step.result;
+
+        // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
+        return await step.prompt(CONFIRM_PROMPT, { prompt: 'Is this okay?' });
+    }
+
+    async summaryStep(step) {
+
+        if (step.result) {
+            // Get the current profile object from user state.
+
+
+
+            let msg = `è stato aggiunto ${ step.values.nome } e il suo id è ${ step.values.id } e il suo codice fiscale ${ step.values.cf } `;
+
+
+            msg += '.';
+            await step.context.sendActivity(msg);
+
+        } else {
+            await step.context.sendActivity('Prego, inserisci di nuovo i campi');
+            return await dialogContext.beginDialog(this.id);
 
         }
+
+        // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is the end.
+        return await step.endDialog();
     }
+
+
 }
 
 module.exports.addMedicoDialog = addMedicoDialog;

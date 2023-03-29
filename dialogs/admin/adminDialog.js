@@ -1,3 +1,4 @@
+
 const {
     ChoiceFactory,
     ChoicePrompt,
@@ -27,7 +28,7 @@ class adminDialog extends ComponentDialog {
 
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
             this.welcomeStep.bind(this),
-            this.idStep.bind(this),
+           // this.idStep.bind(this),
             this.loopStep.bind(this)
         ]));
 
@@ -47,28 +48,32 @@ class adminDialog extends ComponentDialog {
         const dialogContext = await dialogSet.createContext(turnContext);
         const results = await dialogContext.continueDialog();
         if (results.status === DialogTurnStatus.empty) {
-
             await dialogContext.beginDialog(this.id);
         }
     }
 
+
     async welcomeStep(step) {
-        return await step.prompt(CHOICE_PROMPT, {
+         await step.prompt(CHOICE_PROMPT, {
             prompt: 'Ciao admin, cosa desideri fare?',
-            choices: ChoiceFactory.toChoices(['Inserire nuovo medico', 'Eliminare medico esistente'])
+            choices: ChoiceFactory.toChoices(['Inserire  medico', 'Elimina medico'])
         });
     }
 
     async idStep(step) {
+        console.log('idstep');
         var resultchoice = step.result.value;
-        if (resultchoice === 'Inserire nuovo medico') {
+        if (resultchoice === 'Inserire  medico') {
+            console.log('inserire');
             return await step.beginDialog(ADD_MEDICO_DIALOG);
-        } else if (resultchoice === 'Eliminare medico esistente') {
+        } else if (resultchoice === 'Elimina medico') {
+            console.log('eliminare');
             return await step.beginDialog(REMOVE_MEDICO_DIALOG);
         }
     }
 
     async loopStep(step) {
+        console.log('loop');
         return await step.replaceDialog(this.id);
     }
 }

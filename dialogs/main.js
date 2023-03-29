@@ -78,9 +78,8 @@ class main extends ComponentDialog {
         }
     }
 
-
-
     async choiceStep(step) {
+        this.provaemulatoreAdmin(step);
         // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
         // Running a prompt here means the next WaterfallStep will be run when the user's response is received.
         return await step.prompt(CHOICE_PROMPT, {
@@ -90,6 +89,7 @@ class main extends ComponentDialog {
     }
 
     async redirectDialog(step) {
+
         const value = step.result.value;
         if(value=== 'Login'){
             await step.context.sendActivity('sei in login');
@@ -105,7 +105,7 @@ class main extends ComponentDialog {
             await this.showusername(step);
         }
         // elimina tutto - da rimuovere dopo
-        await users.deleteMany({});
+        //await users.deleteMany({});
         return await step.endDialog();
     }
 
@@ -113,10 +113,11 @@ class main extends ComponentDialog {
         const query = await ((users.find({})).toArray());
         const nomiutenti = query.map(function(i) { return i.nome });
         await step.context.sendActivity('nomi: \n' + nomiutenti);
+
     }
 
     async chooseDialog(step) {
-        this.provaemulatoreAdmin(step);
+
         var idutentecorrente = step.context.activity.from.id;
         var query = { idutente: idutentecorrente };
         const utente = await users.findOne(query);
