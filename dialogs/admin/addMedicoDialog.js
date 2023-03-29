@@ -7,7 +7,8 @@ const {
     TextPrompt,
     WaterfallDialog,
     NumberPrompt,
-    ConfirmPrompt
+    ConfirmPrompt,
+    DateTimePrompt
 } = require('botbuilder-dialogs');
 //Mongo Configuration
 const config = require('../../config');
@@ -19,13 +20,14 @@ const WATERFALL_DIALOG = 'WATERFALL_DIALOG';
 const ADD_MEDICO_DIALOG = 'ADD_MEDICO_DIALOG';
 const NUMBER_PROMPT = 'NUMBER_PROMPT';
 const CONFIRM_PROMPT = 'CONFIRM_PROMPT';
+const DATETIME_PROMPT = 'DATETIME_PROMPT';
 
 class addMedicoDialog extends ComponentDialog {
     constructor(userState) {
         super(ADD_MEDICO_DIALOG);
         this.userState = userState;
 
-
+        this.addDialog(new DateTimePrompt(DATETIME_PROMPT));
         this.addDialog(new ConfirmPrompt(CONFIRM_PROMPT));
         this.addDialog(new TextPrompt(NAME_PROMPT));
         this.addDialog(new NumberPrompt(NUMBER_PROMPT));

@@ -56,24 +56,18 @@ class removeMedicoDialog extends ComponentDialog {
     }
 
     async showMediciStep(step) {
-        var query = { ruolo: "medico" };
-        //const medici = await (users.find(query)).toArray();
-        //const medici = result.map(function(i) { return (i.id) });
-        
-        // questo funziona
-        await ((users.find(query)).toArray(function(err, result) {
-            if (err) throw err;
-            console.log(result);
-        }));
-
+        const query = await ((users.find({ruolo: "medico"})).toArray());
+        const medici = query.map(function(i) { return i.nome });
         var message = "Ecco la lista dei medici:\n";
-        // questo non funziona afammokk
-        console.log("lenght: "+medici.lenght);
-        // for (let j = 0; j < medici.lenght; j++) {
-        //     message += "• "+medici[j]+"\n";
-        //     //message += "• prova\n";
-        //   }
-        return await step.context.sendActivity(message);
+        await step.context.sendActivity(message);
+
+
+
+
+        console.log("length: "+medici.length);
+
+        return  await step.context.sendActivity('nomi: \n' + medici);
+
     }
 
     async idStep(step) {
