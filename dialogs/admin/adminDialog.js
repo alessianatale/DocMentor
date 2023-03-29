@@ -28,7 +28,7 @@ class adminDialog extends ComponentDialog {
 
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
             this.welcomeStep.bind(this),
-           // this.idStep.bind(this),
+            this.idStep.bind(this),
             this.loopStep.bind(this)
         ]));
 
@@ -54,7 +54,7 @@ class adminDialog extends ComponentDialog {
 
 
     async welcomeStep(step) {
-         await step.prompt(CHOICE_PROMPT, {
+         return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Ciao admin, cosa desideri fare?',
             choices: ChoiceFactory.toChoices(['Inserire  medico', 'Elimina medico'])
         });
