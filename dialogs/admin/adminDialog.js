@@ -64,11 +64,9 @@ class adminDialog extends ComponentDialog {
         console.log('idstep');
         var resultchoice = step.result.value;
         if (resultchoice === 'Inserire  medico') {
-            console.log('inserire');
             return await step.beginDialog(ADD_MEDICO_DIALOG);
 
         } else if (resultchoice === 'Elimina medico') {
-            console.log('eliminare');
             return await step.beginDialog(REMOVE_MEDICO_DIALOG);
         }
     }

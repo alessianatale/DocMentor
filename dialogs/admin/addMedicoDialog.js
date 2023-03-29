@@ -31,18 +31,13 @@ class addMedicoDialog extends ComponentDialog {
         this.addDialog(new NumberPrompt(NUMBER_PROMPT));
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT));
 
-        // eslint-disable-next-line no-sparse-arrays
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
             this.idStep.bind(this),
             this.nomeStep.bind(this),
+            this.cittaStep.bind(this),
             this.cfStep.bind(this),
             this.confirmStep.bind(this),
             this.summaryStep.bind(this)
-            /* this.ruoloStep.bind(this),
-            this.nomeStep.bind(this),
-            this.dataNascitaStep.bind(this),
-            this.codiceFiscaleStep.bind(this),
-            this.confirmStep.bind(this) */
         ]));
 
         this.initialDialogId = WATERFALL_DIALOG;
@@ -76,8 +71,13 @@ class addMedicoDialog extends ComponentDialog {
         return await step.prompt(NAME_PROMPT, 'Inserisci il nome del medico (nome e cognome)');
     }
 
-    async cfStep(step) {
+    async cittaStep(step) {
         step.values.nome = step.result;
+        return await step.prompt(NAME_PROMPT, 'Inserisci la città del medico');
+    }
+
+    async cfStep(step) {
+        step.values.citta = step.result;
         return await step.prompt(NAME_PROMPT, 'Inserisci il codice fiscale del medico');
     }
 
@@ -93,10 +93,10 @@ class addMedicoDialog extends ComponentDialog {
         if (step.result) {
             // Get the current profile object from user state.
 
-            var newuser = { idutente: step.values.id , ruolo: "medico", nome: step.values.nome, dataNascita: "", codiceFiscale: step.values.cf, pdf: ""};
+            var newuser = {idutente: String(step.values.id) , ruolo: "medico", nome: step.values.nome, citta: step.values.citta, dataNascita: "", codiceFiscale: step.values.cf, pdf: ""};
             users.insertOne(newuser);
 
-            let msg = `è stato aggiunto ${ step.values.nome } e il suo id è ${ step.values.id } e il suo codice fiscale ${ step.values.cf } `;
+            let msg = `è stato aggiunto ${ step.values.nome } , il suo id è ${ step.values.id } , il suo codice fiscale ${ step.values.cf } e la sua città ${ step.values.citta }`;
 
 
             msg += '.';

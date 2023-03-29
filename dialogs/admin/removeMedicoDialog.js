@@ -8,6 +8,10 @@ const {
     WaterfallDialog
 } = require('botbuilder-dialogs');
 
+//Mongo Configuration
+const config = require('../../config');
+const { users } = config;
+
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
 const NAME_PROMPT = 'NAME_PROMPT';
 const WATERFALL_DIALOG = 'WATERFALL_DIALOG';
@@ -22,7 +26,7 @@ class removeMedicoDialog extends ComponentDialog {
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT));
 
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
-            this.welcomeStep.bind(this),
+            this.showMediciStep.bind(this),
             this.idStep.bind(this)
           /*  this.ruoloStep.bind(this),
             this.nomeStep.bind(this),
@@ -51,11 +55,25 @@ class removeMedicoDialog extends ComponentDialog {
         }
     }
 
-    async welcomeStep(step) {
-        return await step.prompt(CHOICE_PROMPT, {
-            prompt: 'Ciao admin, cosa desideri fare?',
-            choices: ChoiceFactory.toChoices(['Inserire nuovo medico', 'Eliminare medico esistente'])
-        });
+    async showMediciStep(step) {
+        var query = { ruolo: "medico" };
+        //const medici = await (users.find(query)).toArray();
+        //const medici = result.map(function(i) { return (i.id) });
+        
+        // questo funziona
+        await ((users.find(query)).toArray(function(err, result) {
+            if (err) throw err;
+            console.log(result);
+        }));
+
+        var message = "Ecco la lista dei medici:\n";
+        // questo non funziona afammokk
+        console.log("lenght: "+medici.lenght);
+        // for (let j = 0; j < medici.lenght; j++) {
+        //     message += "• "+medici[j]+"\n";
+        //     //message += "• prova\n";
+        //   }
+        return await step.context.sendActivity(message);
     }
 
     async idStep(step) {
