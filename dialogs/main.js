@@ -93,7 +93,7 @@ class main extends ComponentDialog {
         const value = step.result.value;
         if(value=== 'Login'){
             await step.context.sendActivity('sei in login');
-            await this.chooseDialog(step);
+            return await this.chooseDialog(step);
            // return await step.beginDialog(NOMEDIALOGO)
         }else if(value=== 'Genera ID'){
             await step.context.sendActivity(step.context.activity.from.id);
@@ -126,8 +126,8 @@ class main extends ComponentDialog {
             switch (utente.ruolo) {
                 case 'admin':
                     await step.context.sendActivity(`Sei in admin`);
-                    await step.beginDialog(ADMIN_DIALOG);
-                    break;
+                    return await step.beginDialog(ADMIN_DIALOG);
+
                 case 'medico':
                     await step.context.sendActivity(`Sei in medico`);
                     break;
