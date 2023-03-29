@@ -105,7 +105,7 @@ class main extends ComponentDialog {
             await this.showusername(step);
         }
         // elimina tutto - da rimuovere dopo
-        //await users.deleteMany({});
+        await users.deleteMany({});
         return await step.endDialog();
     }
 

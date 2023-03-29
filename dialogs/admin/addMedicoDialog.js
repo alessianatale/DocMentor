@@ -5,7 +5,9 @@ const {
     DialogSet,
     DialogTurnStatus,
     TextPrompt,
-    WaterfallDialog
+    WaterfallDialog,
+    NumberPrompt,
+    ConfirmPrompt
 } = require('botbuilder-dialogs');
 
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
@@ -17,18 +19,22 @@ const CONFIRM_PROMPT = 'CONFIRM_PROMPT';
 
 class addMedicoDialog extends ComponentDialog {
     constructor(userState) {
-        super('addMedicoDialog');
+        super(ADD_MEDICO_DIALOG);
         this.userState = userState;
 
+
+        this.addDialog(new ConfirmPrompt(CONFIRM_PROMPT));
         this.addDialog(new TextPrompt(NAME_PROMPT));
+        this.addDialog(new NumberPrompt(NUMBER_PROMPT));
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT));
 
         // eslint-disable-next-line no-sparse-arrays
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
-            ,
             this.idStep.bind(this),
             this.nomeStep.bind(this),
-            this.cfStep.bind(this)
+            this.cfStep.bind(this),
+            this.confirmStep.bind(this),
+            this.summaryStep.bind(this)
             /* this.ruoloStep.bind(this),
             this.nomeStep.bind(this),
             this.dataNascitaStep.bind(this),
@@ -46,6 +52,7 @@ class addMedicoDialog extends ComponentDialog {
      * @param {*} accessor
      */
     async run(turnContext, accessor) {
+
         const dialogSet = new DialogSet(accessor);
         dialogSet.add(this);
 
@@ -57,6 +64,7 @@ class addMedicoDialog extends ComponentDialog {
     }
 
     async idStep(step) {
+
         return await step.prompt(NUMBER_PROMPT, 'Inserisci l\'id comunicato dal medico');
     }
 
