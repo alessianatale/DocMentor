@@ -17,14 +17,14 @@ const { users } = config;
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
 const NAME_PROMPT = 'NAME_PROMPT';
 const WATERFALL_DIALOG = 'WATERFALL_DIALOG';
-const ADD_MEDICO_DIALOG = 'ADD_MEDICO_DIALOG';
+const ADD_PAZIENTE_DIALOG = 'ADD_PAZIENTE_DIALOG';
 const NUMBER_PROMPT = 'NUMBER_PROMPT';
 const CONFIRM_PROMPT = 'CONFIRM_PROMPT';
 const DATETIME_PROMPT = 'DATETIME_PROMPT';
 
-class addMedicoDialog extends ComponentDialog {
+class addPazienteDialog extends ComponentDialog {
     constructor(userState) {
-        super(ADD_MEDICO_DIALOG);
+        super(ADD_PAZIENTE_DIALOG);
         this.userState = userState;
 
         this.addDialog(new DateTimePrompt(DATETIME_PROMPT));
@@ -36,6 +36,7 @@ class addMedicoDialog extends ComponentDialog {
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
             this.idStep.bind(this),
             this.nomeStep.bind(this),
+            this.dataNascitaStep.bind(this),
             this.cittaStep.bind(this),
             this.indirizzoStep.bind(this),
             this.cfStep.bind(this),
@@ -65,27 +66,32 @@ class addMedicoDialog extends ComponentDialog {
     }
 
     async idStep(step) {
-        return await step.prompt(NUMBER_PROMPT, 'Inserisci l\'id comunicato dal medico');
+        return await step.prompt(NUMBER_PROMPT, 'Inserisci l\'id del paziente');
     }
 
     async nomeStep(step) {
         step.values.id = step.result;
-        return await step.prompt(NAME_PROMPT, 'Inserisci il nome del medico (nome e cognome)');
+        return await step.prompt(NAME_PROMPT, 'Inserisci il nome del paziente (nome e cognome)');
+    }
+
+    async dataNascitaStep(step) {
+        step.values.nome = step.result;
+        return await step.prompt(NAME_PROMPT, 'Inserisci la data di nascita nel formato GG/MM/AAAA');
     }
 
     async cittaStep(step) {
-        step.values.nome = step.result;
-        return await step.prompt(NAME_PROMPT, 'Inserisci la città del medico');
+        step.values.dataNascita = step.result;
+        return await step.prompt(NAME_PROMPT, 'Inserisci la città');
     }
 
     async indirizzoStep(step) {
         step.values.citta = step.result;
-        return await step.prompt(NAME_PROMPT, 'Inserisci \'indirizzo e il numero civico dello studio del medico');
+        return await step.prompt(NAME_PROMPT, 'Inserisci l\'indirizzo e il numero civico');
     }
 
     async cfStep(step) {
         step.values.indirizzo = step.result;
-        return await step.prompt(NAME_PROMPT, 'Inserisci il codice fiscale del medico');
+        return await step.prompt(NAME_PROMPT, 'Inserisci il codice fiscale');
     }
 
     async confirmStep(step) {
@@ -100,10 +106,10 @@ class addMedicoDialog extends ComponentDialog {
         if (step.result) {
             // Get the current profile object from user state.
 
-            var newuser = {idutente: String(step.values.id) , ruolo: "medico", nome: step.values.nome, citta: step.values.citta, indirizzo: step.values.indirizzo, codiceFiscale: step.values.cf};
+            var newuser = {idutente: String(step.values.id) , ruolo: "paziente", nome: step.values.nome, dataNascita: step.values.dataNascita, citta: step.values.citta, indirizzo: step.values.indirizzo, codiceFiscale: step.values.cf, pdf: ""};
             users.insertOne(newuser);
 
-            let msg = `è stato aggiunto il seguente medico: \n\n ${ step.values.nome } \n\n id: ${ step.values.id }` +
+            let msg = `è stato aggiunto il seguente paziente: \n\n ${ step.values.nome } \n\n id: ${ step.values.id } \n\n data nascita: ${ step.values.dataNascita }` +
               `\n\n codice fiscale: ${ step.values.cf } \n\n studio: ${ step.values.citta } , ${ step.values.indirizzo }`;
 
 
@@ -123,5 +129,5 @@ class addMedicoDialog extends ComponentDialog {
 
 }
 
-module.exports.addMedicoDialog = addMedicoDialog;
-module.exports.ADD_MEDICO_DIALOG = ADD_MEDICO_DIALOG;
+module.exports.addPazienteDialog = addPazienteDialog;
+module.exports.ADD_PAZIENTE_DIALOG = ADD_PAZIENTE_DIALOG;
