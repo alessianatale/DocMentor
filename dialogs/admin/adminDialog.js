@@ -28,7 +28,7 @@ class adminDialog extends ComponentDialog {
 
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
             this.choiceStep.bind(this),
-            this.idStep.bind(this),
+            this.redirectDialogStep.bind(this),
             this.loopStep.bind(this)
         ]));
 
@@ -56,23 +56,20 @@ class adminDialog extends ComponentDialog {
     async choiceStep(step) {
          return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Ciao admin, cosa desideri fare?',
-            choices: ChoiceFactory.toChoices(['Inserire  medico', 'Elimina medico'])
+            choices: ChoiceFactory.toChoices(['Inserire medico', 'Elimina medico'])
         });
     }
 
-    async idStep(step) {
-        console.log('idstep');
+    async redirectDialogStep(step) {
         var resultchoice = step.result.value;
-        if (resultchoice === 'Inserire  medico') {
+        if (resultchoice === 'Inserire medico') {
             return await step.beginDialog(ADD_MEDICO_DIALOG);
-
         } else if (resultchoice === 'Elimina medico') {
             return await step.beginDialog(REMOVE_MEDICO_DIALOG);
         }
     }
 
     async loopStep(step) {
-        console.log('loop');
         return await step.replaceDialog(this.id);
     }
 }

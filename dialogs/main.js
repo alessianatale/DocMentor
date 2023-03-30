@@ -19,6 +19,7 @@ const { UserProfile } = require('../userProfile');
 //Mongo Configuration
 const config = require('../config');
 const { ADMIN_DIALOG, adminDialog } = require('./admin/adminDialog');
+const { MEDICO_DIALOG, medicoDialog } = require('./medico/medicoDialog');
 
 const ATTACHMENT_PROMPT = 'ATTACHMENT_PROMPT';
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
@@ -39,19 +40,10 @@ class main extends ComponentDialog {
         this.addDialog(new TextPrompt(NAME_PROMPT));
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT));
         this.addDialog(new adminDialog(ADMIN_DIALOG));
+        this.addDialog(new medicoDialog(MEDICO_DIALOG));
         // this.addDialog(new ConfirmPrompt(CONFIRM_PROMPT));
         // this.addDialog(new NumberPrompt(NUMBER_PROMPT, this.agePromptValidator));
         // this.addDialog(new AttachmentPrompt(ATTACHMENT_PROMPT, this.picturePromptValidator));
-
-        // this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
-        //     this.transportStep.bind(this),
-        //     this.nameStep.bind(this),
-        //     this.nameConfirmStep.bind(this),
-        //     this.ageStep.bind(this),
-        //     this.pictureStep.bind(this),
-        //     this.confirmStep.bind(this),
-        //     this.summaryStep.bind(this)
-        // ]));
 
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
             this.choiceStep.bind(this),
@@ -79,7 +71,7 @@ class main extends ComponentDialog {
     }
 
     async choiceStep(step) {
-        this.provaemulatoreAdmin(step);
+        this.utenteEmulatore(step);
         // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
         // Running a prompt here means the next WaterfallStep will be run when the user's response is received.
         return await step.prompt(CHOICE_PROMPT, {
@@ -92,7 +84,6 @@ class main extends ComponentDialog {
 
         const value = step.result.value;
         if(value=== 'Login'){
-            await step.context.sendActivity('sei in login');
             return await this.chooseDialog(step);
            // return await step.beginDialog(NOMEDIALOGO)
         }else if(value=== 'Genera ID'){
@@ -117,7 +108,6 @@ class main extends ComponentDialog {
     }
 
     async chooseDialog(step) {
-
         var idutentecorrente = step.context.activity.from.id;
         var query = { idutente: idutentecorrente };
         const utente = await users.findOne(query);
@@ -127,10 +117,9 @@ class main extends ComponentDialog {
                 case 'admin':
                     await step.context.sendActivity(`Sei in admin`);
                     return await step.beginDialog(ADMIN_DIALOG);
-
                 case 'medico':
                     await step.context.sendActivity(`Sei in medico`);
-                    break;
+                    return await step.beginDialog(MEDICO_DIALOG);
                 case 'paziente':
                     await step.context.sendActivity(`Sei in paziente`);
                     break;
@@ -139,116 +128,13 @@ class main extends ComponentDialog {
             await step.context.sendActivity(`Non sei registrato, comunica il tuo ID al medico/admin.`);
     }
 
-    async provaemulatoreAdmin(step) {
+    async utenteEmulatore(step) {
         var idutentecorrente = step.context.activity.from.id;
         var newuser = { idutente: idutentecorrente, ruolo: "admin", nome: "Emulatore", citta: "fantasma", dataNascita: "03/07/00", codiceFiscale: "MMMMMMMM", pdf: "url"};
         users.insertOne(newuser);
         //await step.context.sendActivity('nomi: \n' + nomiutenti);
     }
 
-
-    async ageStep(step) {
-        if (step.result) {
-            // User said "yes" so we will be prompting for the age.
-            // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
-            const promptOptions = { prompt: 'Please enter your age.', retryPrompt: 'The value entered must be greater than 0 and less than 150.' };
-
-            return await step.prompt(NUMBER_PROMPT, promptOptions);
-        } else {
-            // User said "no" so we will skip the next step. Give -1 as the age.
-            return await step.next(-1);
-        }
-    }
-
-    async pictureStep(step) {
-        step.values.age = step.result;
-
-        const msg = step.values.age === -1 ? 'No age given.' : `I have your age as ${ step.values.age }.`;
-
-        // We can send messages to the user at any point in the WaterfallStep.
-        await step.context.sendActivity(msg);
-
-        if (step.context.activity.channelId === Channels.msteams) {
-            // This attachment prompt example is not designed to work for Teams attachments, so skip it in this case
-            await step.context.sendActivity('Skipping attachment prompt in Teams channel...');
-            return await step.next(undefined);
-        } else {
-            // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
-            var promptOptions = {
-                prompt: 'Please attach a profile picture (or type any message to skip).',
-                retryPrompt: 'The attachment must be a jpeg/png image file.'
-            };
-
-            return await step.prompt(ATTACHMENT_PROMPT, promptOptions);
-        }
-    }
-
-    async confirmStep(step) {
-        step.values.picture = step.result && step.result[0];
-
-        // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
-        return await step.prompt(CONFIRM_PROMPT, { prompt: 'Is this okay?' });
-    }
-
-    async summaryStep(step) {
-        if (step.result) {
-            // Get the current profile object from user state.
-            const userProfile = await this.userProfile.get(step.context, new UserProfile());
-
-            userProfile.transport = step.values.transport;
-            userProfile.name = step.values.name;
-            userProfile.age = step.values.age;
-            userProfile.picture = step.values.picture;
-
-            let msg = `I have your mode of transport as ${ userProfile.transport } and your name as ${ userProfile.name }`;
-            if (userProfile.age !== -1) {
-                msg += ` and your age as ${ userProfile.age }`;
-            }
-
-            msg += '.';
-            await step.context.sendActivity(msg);
-            if (userProfile.picture) {
-                try {
-                    await step.context.sendActivity(MessageFactory.attachment(userProfile.picture, 'This is your profile picture.'));
-                } catch {
-                    await step.context.sendActivity('A profile picture was saved but could not be displayed here.');
-                }
-            }
-        } else {
-            await step.context.sendActivity('Thanks. Your profile will not be kept.');
-        }
-
-        // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is the end.
-        return await step.endDialog();
-    }
-
-    async agePromptValidator(promptContext) {
-        // This condition is our validation rule. You can also change the value at this point.
-        return promptContext.recognized.succeeded && promptContext.recognized.value > 0 && promptContext.recognized.value < 150;
-    }
-
-    async picturePromptValidator(promptContext) {
-        if (promptContext.recognized.succeeded) {
-            var attachments = promptContext.recognized.value;
-            var validImages = [];
-
-            attachments.forEach(attachment => {
-                if (attachment.contentType === 'image/jpeg' || attachment.contentType === 'image/png') {
-                    validImages.push(attachment);
-                }
-            });
-
-            promptContext.recognized.value = validImages;
-
-            // If none of the attachments are valid images, the retry prompt should be sent.
-            return !!validImages.length;
-        } else {
-            await promptContext.context.sendActivity('No attachments received. Proceeding without a profile picture...');
-
-            // We can return true from a validator function even if Recognized.Succeeded is false.
-            return true;
-        }
-    }
 }
 
 module.exports.main = main;

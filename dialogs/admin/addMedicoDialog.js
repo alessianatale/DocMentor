@@ -37,6 +37,7 @@ class addMedicoDialog extends ComponentDialog {
             this.idStep.bind(this),
             this.nomeStep.bind(this),
             this.cittaStep.bind(this),
+            this.indirizzoStep.bind(this),
             this.cfStep.bind(this),
             this.confirmStep.bind(this),
             this.summaryStep.bind(this)
@@ -64,7 +65,6 @@ class addMedicoDialog extends ComponentDialog {
     }
 
     async idStep(step) {
-
         return await step.prompt(NUMBER_PROMPT, 'Inserisci l\'id comunicato dal medico');
     }
 
@@ -78,8 +78,13 @@ class addMedicoDialog extends ComponentDialog {
         return await step.prompt(NAME_PROMPT, 'Inserisci la città del medico');
     }
 
-    async cfStep(step) {
+    async indirizzoStep(step) {
         step.values.citta = step.result;
+        return await step.prompt(NAME_PROMPT, 'Inserisci l indirizzo dello studio del medico');
+    }
+
+    async cfStep(step) {
+        step.values.indirizzo = step.result;
         return await step.prompt(NAME_PROMPT, 'Inserisci il codice fiscale del medico');
     }
 
@@ -95,10 +100,11 @@ class addMedicoDialog extends ComponentDialog {
         if (step.result) {
             // Get the current profile object from user state.
 
-            var newuser = {idutente: String(step.values.id) , ruolo: "medico", nome: step.values.nome, citta: step.values.citta, dataNascita: "", codiceFiscale: step.values.cf, pdf: ""};
+            var newuser = {idutente: String(step.values.id) , ruolo: "medico", nome: step.values.nome, citta: step.values.citta, indirizzo: step.values.indirizzo, codiceFiscale: step.values.cf};
             users.insertOne(newuser);
 
-            let msg = `è stato aggiunto ${ step.values.nome } , il suo id è ${ step.values.id } , il suo codice fiscale ${ step.values.cf } e la sua città ${ step.values.citta }`;
+            let msg = `è stato aggiunto il seguente medico: \n\n ${ step.values.nome } \n\n id: ${ step.values.id }` +
+              `\n\n codice fiscale: ${ step.values.cf } \n\n studio: ${ step.values.citta } , ${ step.values.indirizzo }`;
 
 
             msg += '.';
@@ -106,7 +112,7 @@ class addMedicoDialog extends ComponentDialog {
 
         } else {
             await step.context.sendActivity('Prego, inserisci di nuovo i campi');
-            return await dialogContext.beginDialog(this.id);
+            return await step.replaceDialog(this.id);
 
         }
 

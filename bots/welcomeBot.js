@@ -25,22 +25,23 @@ class WelcomeBot extends ActivityHandler {
 
         this.onMessage(async (context, next) => {
             console.log('Running dialog with Message Activity.');
-
             //first time ever for a user
             const didBotWelcomedUser = await this.welcomedUserProperty.get(context, false);
 
-            if (didBotWelcomedUser === false) {
+            // togliere questa parte commentata alla fine
+            /*if (didBotWelcomedUser === false) {
                 // The channel should send the user name in the 'From' object
                 const userName = context.activity.from.name;
-                await context.sendActivity(`Welcome ${ userName }.`);
-               
+                await context.sendActivity(`Ciao ${ userName }.`);
 
                 // Set the flag indicating the bot handled the user's first message.
                 await this.welcomedUserProperty.set(context, true);
             } else {
                 await this.dialog.run(context, this.dialogState);
-            }
+            }*/
 
+            // per fare prima - da togliere dopo
+            await this.dialog.run(context, this.dialogState);
             // By calling next() you ensure that the next BotHandler is run.
             await next();
         });
@@ -53,7 +54,7 @@ class WelcomeBot extends ActivityHandler {
                         `using the locale received from the channel. ` +
                         `If you are using the Emulator, you can set this value in Settings. ` +
                         `Current locale is '${ context.activity.locale }'`);*/
-                        await context.sendActivity(`Benvenuto, prima volta che usi questi bot.`);
+                        await context.sendActivity(`Benvenuto in DocMentorBot, prima volta che usi questo bot.`);
                         await context.sendActivity(`Scrivi qualsiasi cosa per avviare il bot`);
                 }
             }
