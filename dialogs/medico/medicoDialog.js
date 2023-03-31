@@ -56,7 +56,7 @@ class medicoDialog extends ComponentDialog {
     async choiceStep(step) {
          return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Ciao medico, cosa desideri fare?',
-            choices: ChoiceFactory.toChoices(['Inserire paziente', 'Eliminare paziente'])
+            choices: ChoiceFactory.toChoices(['Inserire paziente', 'Eliminare paziente', 'Slot orari visite', 'Richieste ricette'])
         });
     }
 
