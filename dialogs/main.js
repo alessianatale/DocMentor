@@ -29,7 +29,7 @@ const NUMBER_PROMPT = 'NUMBER_PROMPT';
 const USER_PROFILE = 'USER_PROFILE';
 const WATERFALL_DIALOG = 'WATERFALL_DIALOG';
 
-const { users } = config;
+const { users, slotorari } = config;
 
 class main extends ComponentDialog {
     constructor(userState) {
@@ -76,7 +76,7 @@ class main extends ComponentDialog {
         // Running a prompt here means the next WaterfallStep will be run when the user's response is received.
         return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Seleziona cosa vuoi fare',
-            choices: ChoiceFactory.toChoices(['Login', 'Genera ID', 'Apri HealtBot', 'Vedi nomi utenti',])
+            choices: ChoiceFactory.toChoices(['Login', 'Genera ID', 'Apri HealtBot', 'Elimina tutto',])
         });
     }
 
@@ -92,11 +92,12 @@ class main extends ComponentDialog {
         }else if(value=== 'Apri HealtBot'){
             await step.context.sendActivity('sei in healtbot');
            // return await step.beginDialog(NOMEDIALOGO)
-        }else if(value=== 'Vedi nomi utenti'){
-            await this.showusername(step);
+        }else if(value=== 'Elimina tutto'){
+            // elimina tutto - da rimuovere dopo
+            await users.deleteMany({});
+            await slotorari.deleteMany({});
         }
-        // elimina tutto - da rimuovere dopo
-        await users.deleteMany({});
+
         return await step.endDialog();
     }
 
