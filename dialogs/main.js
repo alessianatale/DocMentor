@@ -20,6 +20,7 @@ const { UserProfile } = require('../userProfile');
 const config = require('../config');
 const { ADMIN_DIALOG, adminDialog } = require('./admin/adminDialog');
 const { MEDICO_DIALOG, medicoDialog } = require('./medico/medicoDialog');
+const { PAZIENTE_DIALOG, pazienteDialog } = require('./paziente/pazienteDialog');
 
 const ATTACHMENT_PROMPT = 'ATTACHMENT_PROMPT';
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
@@ -41,6 +42,7 @@ class main extends ComponentDialog {
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT));
         this.addDialog(new adminDialog(ADMIN_DIALOG));
         this.addDialog(new medicoDialog(MEDICO_DIALOG));
+        this.addDialog(new pazienteDialog(PAZIENTE_DIALOG));
         // this.addDialog(new ConfirmPrompt(CONFIRM_PROMPT));
         // this.addDialog(new NumberPrompt(NUMBER_PROMPT, this.agePromptValidator));
         // this.addDialog(new AttachmentPrompt(ATTACHMENT_PROMPT, this.picturePromptValidator));
@@ -120,7 +122,7 @@ class main extends ComponentDialog {
                 case 'medico':
                     return await step.beginDialog(MEDICO_DIALOG);
                 case 'paziente':
-                    await step.context.sendActivity(`Sei in paziente`);
+                    return await step.beginDialog(PAZIENTE_DIALOG);
                     break;
             }
         } else
@@ -129,7 +131,7 @@ class main extends ComponentDialog {
 
     async utenteEmulatore(step) {
         var idutentecorrente = step.context.activity.from.id;
-        var newuser = { idutente: idutentecorrente, ruolo: "medico", nome: "Emulatore", citta: "fantasma", dataNascita: "03/07/00", codiceFiscale: "MMMMMMMM", pdf: "url"};
+        var newuser = { idutente: idutentecorrente, ruolo: "paziente", nome: "Emulatore", citta: "fantasma", dataNascita: "03/07/00", codiceFiscale: "MMMMMMMM", pdf: "url"};
         users.insertOne(newuser);
         //await step.context.sendActivity('nomi: \n' + nomiutenti);
     }

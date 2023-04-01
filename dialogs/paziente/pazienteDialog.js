@@ -8,25 +8,24 @@ const {
     TextPrompt,
     WaterfallDialog
 } = require('botbuilder-dialogs');
-const { ADD_PAZIENTE_DIALOG, addPazienteDialog } = require('./addPazienteDialog');
-const { REMOVE_PAZIENTE_DIALOG, removePazienteDialog } = require('./removePazienteDialog');
-const { MEDICO_SLOTORARI_DIALOG, medicoSlotOrariDialog } = require('./medicoSlotOrariDialog');
+const { PRENOTA_VISITA_DIALOG, prenotaVisitaDialog } = require('./prenotaVisitaDialog.js');
+
 
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
 const NAME_PROMPT = 'NAME_PROMPT';
 const WATERFALL_DIALOG = 'WATERFALL_DIALOG';
-const MEDICO_DIALOG = 'MEDICO_DIALOG';
+const PAZIENTE_DIALOG = 'PAZIENTE_DIALOG';
 
-class medicoDialog extends ComponentDialog {
+
+class pazienteDialog extends ComponentDialog {
     constructor(userState) {
-        super(MEDICO_DIALOG);
+        super(PAZIENTE_DIALOG);
         this.userState = userState;
 
         this.addDialog(new TextPrompt(NAME_PROMPT));
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT));
-        this.addDialog(new addPazienteDialog(ADD_PAZIENTE_DIALOG));
-        this.addDialog(new removePazienteDialog(REMOVE_PAZIENTE_DIALOG));
-        this.addDialog(new medicoSlotOrariDialog(MEDICO_SLOTORARI_DIALOG));
+        this.addDialog(new prenotaVisitaDialog(PRENOTA_VISITA_DIALOG));
+
 
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
             this.choiceStep.bind(this),
@@ -54,23 +53,24 @@ class medicoDialog extends ComponentDialog {
         }
     }
 
-
     async choiceStep(step) {
         const userName = step.context.activity.from.name;
-         return await step.prompt(CHOICE_PROMPT, {
-            prompt: `Ciao ${userName}, cosa desideri fare?`,
-            choices: ChoiceFactory.toChoices(['Inserire paziente', 'Eliminare paziente', 'Slot orari visite', 'Richieste ricette'])
+
+        return await step.prompt(CHOICE_PROMPT, {
+
+            prompt: `Ciao ${ userName }, cosa desideri fare?`,
+            choices: ChoiceFactory.toChoices(['Prenotare Visita', 'Richiedi Ricetta', 'Richiedi info'])
         });
     }
 
     async redirectDialogStep(step) {
         var resultchoice = step.result.value;
-        if (resultchoice === 'Inserire paziente') {
-            return await step.beginDialog(ADD_PAZIENTE_DIALOG);
-        } else if (resultchoice === 'Eliminare paziente') {
-            return await step.beginDialog(REMOVE_PAZIENTE_DIALOG);
-        } else if (resultchoice === 'Slot orari visite') {
-            return await step.beginDialog(MEDICO_SLOTORARI_DIALOG);
+        if (resultchoice === 'Prenotare Visita') {
+            return await step.beginDialog(PRENOTA_VISITA_DIALOG);
+        } else if (resultchoice === 'Richiedi Ricetta') {
+           // return await step.beginDialog(REMOVE_PAZIENTE_DIALOG);
+        } else if (resultchoice === 'Richiedi info') {
+           // return await step.beginDialog(MEDICO_SLOTORARI_DIALOG);
         }
     }
 
@@ -79,5 +79,5 @@ class medicoDialog extends ComponentDialog {
     }
 }
 
-module.exports.medicoDialog = medicoDialog;
-module.exports.MEDICO_DIALOG = MEDICO_DIALOG;
+module.exports.pazienteDialog = pazienteDialog;
+module.exports.PAZIENTE_DIALOG = PAZIENTE_DIALOG;

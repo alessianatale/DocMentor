@@ -52,10 +52,10 @@ class adminDialog extends ComponentDialog {
         }
     }
 
-
     async choiceStep(step) {
-         return await step.prompt(CHOICE_PROMPT, {
-            prompt: 'Ciao admin, cosa desideri fare?',
+        const userName = step.context.activity.from.name;
+        return await step.prompt(CHOICE_PROMPT, {
+            prompt: `Ciao ${ userName }, cosa desideri fare?`,
             choices: ChoiceFactory.toChoices(['Inserire medico', 'Elimina medico'])
         });
     }

@@ -122,7 +122,7 @@ class medicoSlotOrariDialog extends ComponentDialog {
         } else {
             step.values.slot = new Slot();
         }
-        const oraridisponibili = ["9", "10", "11", "12"];
+        const oraridisponibili = ["8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19"];
         return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Seleziona un orario di visita: ',
             choices: ChoiceFactory.toChoices(oraridisponibili)
@@ -130,7 +130,11 @@ class medicoSlotOrariDialog extends ComponentDialog {
     }
 
     async firstOrarioStep(step) {
-        step.values.slot.orari.push(step.result.value);
+        if(!step.values.slot.orari.includes(step.result.value))
+            step.values.slot.orari.push(step.result.value);
+        else
+            await step.context.sendActivity(`Attenzione, questo orario è già stato inserito`);
+
         return await step.prompt(CONFIRM_PROMPT, { prompt: 'Vuoi inserire un altro orario di questo giorno?' });
     }
 
