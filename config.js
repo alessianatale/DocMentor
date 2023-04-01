@@ -21,6 +21,8 @@ MongoClient.connect(url, function(err, db) {
   });
 });
 const users = dbo.collection("users");
-const config = { users }
+const slotorari = dbo.collection("slotorari");
+const prenotazioni = dbo.collection("prenotazioni");
+const config = { users, slotorari, prenotazioni }
 
 module.exports = config;

@@ -110,7 +110,7 @@ class addPazienteDialog extends ComponentDialog {
             users.insertOne(newuser);
 
             let msg = `è stato aggiunto il seguente paziente: \n\n ${ step.values.nome } \n\n id: ${ step.values.id } \n\n data nascita: ${ step.values.dataNascita }` +
-              `\n\n codice fiscale: ${ step.values.cf } \n\n studio: ${ step.values.citta } , ${ step.values.indirizzo }`;
+              `\n\n codice fiscale: ${ step.values.cf } \n\n indirizzo: ${ step.values.citta } , ${ step.values.indirizzo }`;
 
 
             msg += '.';

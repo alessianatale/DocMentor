@@ -54,9 +54,10 @@ class removePazienteDialog extends ComponentDialog {
     }
 
     async showPazientiStep(step) {
-        const query = await ((users.find({ruolo: "paziente"})).toArray());
+        var idmedico = step.context.activity.from.id;
+        const query = await ((users.find({ruolo: "paziente", idmedico: idmedico})).toArray());
         const pazienti = query.map(function(i) { return ('id: '+i.idutente +', nome: '+ i.nome +', città: '+ i.citta) });
-        var message = "Ecco la lista dei pazienti:\n\n";
+        var message = "Ecco la lista dei tuoi pazienti:\n\n";
         for(let y=0; y < pazienti.length; y++)
             message += '• ' + pazienti[y] + '\n\n';
 
@@ -66,8 +67,9 @@ class removePazienteDialog extends ComponentDialog {
 
     async eliminaPazienteStep(step) {
         var idpaziente = String(step.result);
+        var idmedico = step.context.activity.from.id;
         if(idpaziente != 0) {
-            var query = {idutente: idpaziente};
+            var query = {idutente: idpaziente, idmedico: idmedico};
             const paziente = await users.findOne(query);
             if (paziente != undefined) {
                 await users.deleteOne(query);

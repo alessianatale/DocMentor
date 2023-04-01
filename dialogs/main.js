@@ -34,8 +34,8 @@ const { users } = config;
 class main extends ComponentDialog {
     constructor(userState) {
         super('main');
-
-        this.userProfile = userState.createProperty(USER_PROFILE);
+        this.userState = userState;
+        //this.userProfile = userState.createProperty(USER_PROFILE);
 
         this.addDialog(new TextPrompt(NAME_PROMPT));
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT));
@@ -115,10 +115,8 @@ class main extends ComponentDialog {
         if(utente != null) {
             switch (utente.ruolo) {
                 case 'admin':
-                    await step.context.sendActivity(`Sei in admin`);
                     return await step.beginDialog(ADMIN_DIALOG);
                 case 'medico':
-                    await step.context.sendActivity(`Sei in medico`);
                     return await step.beginDialog(MEDICO_DIALOG);
                 case 'paziente':
                     await step.context.sendActivity(`Sei in paziente`);
