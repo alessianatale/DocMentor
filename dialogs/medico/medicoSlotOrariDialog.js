@@ -26,7 +26,7 @@ const DATETIME_PROMPT = 'DATETIME_PROMPT';
 const SLOT_PROPERTY = 'SLOT_PROPERTY';
 
 class medicoSlotOrariDialog extends ComponentDialog {
-    constructor(userState) {
+    constructor(id, userState) {
         super(MEDICO_SLOTORARI_DIALOG);
         this.userState = userState;
         this.slotAccessor = userState.createProperty(SLOT_PROPERTY);
@@ -83,6 +83,7 @@ class medicoSlotOrariDialog extends ComponentDialog {
 
     async redirectOrariStep(step) {
         step.values.giorno = step.result;
+
         return await step.beginDialog(WATERFALL_DIALOG2);
     }
 
@@ -102,13 +103,7 @@ class medicoSlotOrariDialog extends ComponentDialog {
 
     // waterfall 2
     async orarioStep(step) {
-        if (step.result != null){
-            console.log("result è null")
-            step.values.slot = step.result;
-        } else {
-            console.log("primo new slot");
-            step.values.slot = new Slot();
-        }
+        step.values.slot = new Slot();
         const oraridisponibili = ["9", "10", "11", "12"];
         return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Seleziona un orario di visita: ',
@@ -125,7 +120,7 @@ class medicoSlotOrariDialog extends ComponentDialog {
         const slot = step.values.slot;
         console.log("ho preso l'ora: "+slot.orari);
         if (step.result) {
-            return await step.replaceDialog(WATERFALL_DIALOG2, slot);
+            return await step.beginDialog(WATERFALL_DIALOG2, slot);
         } else
             return await step.endDialog(slot);
     }

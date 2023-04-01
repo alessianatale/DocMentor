@@ -40,7 +40,7 @@ class main extends ComponentDialog {
         this.addDialog(new TextPrompt(NAME_PROMPT));
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT));
         this.addDialog(new adminDialog(ADMIN_DIALOG));
-        this.addDialog(new medicoDialog(MEDICO_DIALOG));
+        this.addDialog(new medicoDialog(MEDICO_DIALOG, userState));
         // this.addDialog(new ConfirmPrompt(CONFIRM_PROMPT));
         // this.addDialog(new NumberPrompt(NUMBER_PROMPT, this.agePromptValidator));
         // this.addDialog(new AttachmentPrompt(ATTACHMENT_PROMPT, this.picturePromptValidator));
