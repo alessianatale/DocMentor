@@ -23,13 +23,13 @@ const MEDICO_SLOTORARI_DIALOG = 'MEDICO_SLOTORARI_DIALOG';
 const NUMBER_PROMPT = 'NUMBER_PROMPT';
 const CONFIRM_PROMPT = 'CONFIRM_PROMPT';
 const DATETIME_PROMPT = 'DATETIME_PROMPT';
-const SLOT_PROPERTY = 'SLOT_PROPERTY';
+//const SLOT_PROPERTY = 'SLOT_PROPERTY';
 
 class medicoSlotOrariDialog extends ComponentDialog {
-    constructor(id, userState) {
+    constructor(userState) {
         super(MEDICO_SLOTORARI_DIALOG);
         this.userState = userState;
-        this.slotAccessor = userState.createProperty(SLOT_PROPERTY);
+        //this.slotAccessor = userState.createProperty(SLOT_PROPERTY);
 
         this.addDialog(new DateTimePrompt(DATETIME_PROMPT));
         this.addDialog(new ConfirmPrompt(CONFIRM_PROMPT));
@@ -40,7 +40,8 @@ class medicoSlotOrariDialog extends ComponentDialog {
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG1, [
             this.giornoStep.bind(this),
             this.redirectOrariStep.bind(this),
-            this.prendiOrariStep.bind(this)
+            this.prendiOrariStep.bind(this),
+            this.loopGiornoStep.bind(this)
         ]));
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG2, [
             this.orarioStep.bind(this),
@@ -70,40 +71,57 @@ class medicoSlotOrariDialog extends ComponentDialog {
     }
 
     async giornoStep(step) {
-        const slot = await slotorari.find({ idmedico: step.context.activity.from.id}).toArray();
-        //const slot = query.map();
-        if (slot.length < 1) {
+
             return await step.prompt(CHOICE_PROMPT, {
                 prompt: 'Seleziona un giorno di visita: ',
                 choices: ChoiceFactory.toChoices(['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì'])
             });
-        }
-
     }
 
     async redirectOrariStep(step) {
-        step.values.giorno = step.result;
-
+        step.values.giorno = step.result.value;
         return await step.beginDialog(WATERFALL_DIALOG2);
     }
 
     async prendiOrariStep(step) {
         // mi prendo i valore che ho passato all'end dialog dell'altro waterfall
-        //step.values.orari = [];
-        /*const slotobject = await this.slot.get(step.context, new Slot());
-        slotobject.giorno = step.values.giorno;*/
-        await this.slotAccessor.set(step.context, step.result);
-        const returnvalues = step.result;
-        console.log(returnvalues);
-        // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is the end.
-        return await step.endDialog();
+        const orari = step.result;
+        //console.log(orari);
+
+        // salvo nel db il giorno e gli orari insieme a idmedico
+        var idmedico = step.context.activity.from.id;
+        var slot = {idmedico: idmedico, giorno: step.values.giorno, orari: orari};
+
+        const giornoesistente = await slotorari.findOne({ idmedico: step.context.activity.from.id, giorno: step.values.giorno});
+        if (giornoesistente == undefined) {
+            slotorari.insertOne(slot);
+            console.log("Ho inserito");
+        } else {
+            var neworari = {$set: {orari: orari}};
+            slotorari.updateOne(giornoesistente, neworari);
+            console.log("Ho modificato");
+        }
+
+        return await step.prompt(CONFIRM_PROMPT, { prompt: 'Vuoi inserire un altro giorno?' });
+
     }
 
-
+    async loopGiornoStep(step) {
+        if (step.result) {
+            return await step.beginDialog(WATERFALL_DIALOG1);
+        } else
+            return await step.endDialog();
+    }
 
     // waterfall 2
     async orarioStep(step) {
-        step.values.slot = new Slot();
+        const res = step.options["slot"];
+        if (res != undefined) {
+            step.values.slot = res
+            //console.log("da option: " + res.orari);
+        } else {
+            step.values.slot = new Slot();
+        }
         const oraridisponibili = ["9", "10", "11", "12"];
         return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Seleziona un orario di visita: ',
@@ -118,11 +136,11 @@ class medicoSlotOrariDialog extends ComponentDialog {
 
     async waitingOrarioStep(step) {
         const slot = step.values.slot;
-        console.log("ho preso l'ora: "+slot.orari);
+        //console.log("ho preso l'ora: "+slot.orari);
         if (step.result) {
-            return await step.beginDialog(WATERFALL_DIALOG2, slot);
+            return await step.beginDialog(WATERFALL_DIALOG2, {slot: slot});
         } else
-            return await step.endDialog(slot);
+            return await step.endDialog(slot.orari);
     }
 
 

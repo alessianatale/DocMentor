@@ -18,7 +18,7 @@ const WATERFALL_DIALOG = 'WATERFALL_DIALOG';
 const MEDICO_DIALOG = 'MEDICO_DIALOG';
 
 class medicoDialog extends ComponentDialog {
-    constructor(id, userState) {
+    constructor(userState) {
         super(MEDICO_DIALOG);
         this.userState = userState;
 
@@ -26,7 +26,7 @@ class medicoDialog extends ComponentDialog {
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT));
         this.addDialog(new addPazienteDialog(ADD_PAZIENTE_DIALOG));
         this.addDialog(new removePazienteDialog(REMOVE_PAZIENTE_DIALOG));
-        this.addDialog(new medicoSlotOrariDialog(MEDICO_SLOTORARI_DIALOG, userState));
+        this.addDialog(new medicoSlotOrariDialog(MEDICO_SLOTORARI_DIALOG));
 
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
             this.choiceStep.bind(this),
