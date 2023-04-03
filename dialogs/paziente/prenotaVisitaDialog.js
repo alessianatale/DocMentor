@@ -12,7 +12,12 @@ const {
 } = require('botbuilder-dialogs');
 //Mongo Configuration
 const config = require('../../config');
-const { users } = config;
+const { users, slotorari, prenotazioni } = config;
+
+let utente;
+let idmedico;
+let slotg;
+
 
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
 const NAME_PROMPT = 'NAME_PROMPT';
@@ -34,14 +39,10 @@ class prenotaVisitaDialog extends ComponentDialog {
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT));
 
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
-            this.idStep.bind(this),
-            this.nomeStep.bind(this),
-            this.dataNascitaStep.bind(this),
-            this.cittaStep.bind(this),
-            this.indirizzoStep.bind(this),
-            this.cfStep.bind(this),
+            this.giornoStep.bind(this),
+            this.orarioStep.bind(this),
             this.confirmStep.bind(this),
-            this.summaryStep.bind(this)
+
         ]));
 
         this.initialDialogId = WATERFALL_DIALOG;
@@ -65,67 +66,61 @@ class prenotaVisitaDialog extends ComponentDialog {
         }
     }
 
-    async idStep(step) {
-        return await step.prompt(NUMBER_PROMPT, 'Inserisci l\'id del paziente');
+    async giornoStep(step) {
+        utente = await users.findOne({idutente: step.context.activity.from.id });
+        idmedico = utente.idmedico;
+        const slots = await slotorari.find({idmedico: idmedico }).toArray();
+        const giorni = slots.map(function(i) { return i.giorno });
+
+        return await step.prompt(CHOICE_PROMPT, {
+            prompt: 'Ecco i giorni disponibili per il tuo medico: ',
+            choices: ChoiceFactory.toChoices(giorni)
+        });
+
     }
 
-    async nomeStep(step) {
-        step.values.id = step.result;
-        return await step.prompt(NAME_PROMPT, 'Inserisci il nome del paziente (nome e cognome)');
-    }
+    async orarioStep(step) {
+        step.values.giorno = step.result.value;
+        slotg = await slotorari.findOne({idmedico: idmedico, giorno: step.result.value });
 
-    async dataNascitaStep(step) {
-        step.values.nome = step.result;
-        return await step.prompt(NAME_PROMPT, 'Inserisci la data di nascita nel formato GG/MM/AAAA');
-    }
-
-    async cittaStep(step) {
-        step.values.dataNascita = step.result;
-        return await step.prompt(NAME_PROMPT, 'Inserisci la città');
-    }
-
-    async indirizzoStep(step) {
-        step.values.citta = step.result;
-        return await step.prompt(NAME_PROMPT, 'Inserisci l\'indirizzo e il numero civico');
-    }
-
-    async cfStep(step) {
-        step.values.indirizzo = step.result;
-        return await step.prompt(NAME_PROMPT, 'Inserisci il codice fiscale');
+        if(slotg.orari.length < 1){
+            return await step.context.sendActivity(`Attenzione, sono terminati gli slot per questo giorno`);
+        }else {
+            return await step.prompt(CHOICE_PROMPT, {
+                prompt: 'Ecco i giorni disponibili per il tuo medico: ',
+                choices: ChoiceFactory.toChoices(slotg.orari)
+            });
+        }
     }
 
     async confirmStep(step) {
-        step.values.cf = step.result;
+        step.values.orario = step.result.value;
+        const prenotazioniEffettuate = await prenotazioni.find({idutente:step.context.activity.from.id}).toArray();
+        if(prenotazioniEffettuate.length > 1){
+            return await step.context.sendActivity(`Attenzione, hai superato il numero di prenotazioni effettuabili per questa settimana`);
+        }else{
 
-        // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
-        return await step.prompt(CONFIRM_PROMPT, { prompt: 'Confermi?' });
-    }
-
-    async summaryStep(step) {
-
-        if (step.result) {
-            // Get the current profile object from user state.
-
-            var newuser = {idutente: String(step.values.id) , ruolo: "paziente", nome: step.values.nome, dataNascita: step.values.dataNascita, citta: step.values.citta, indirizzo: step.values.indirizzo, codiceFiscale: step.values.cf, pdf: "", idmedico: step.context.activity.from.id};
-            users.insertOne(newuser);
-
-            let msg = `è stato aggiunto il seguente paziente: \n\n ${ step.values.nome } \n\n id: ${ step.values.id } \n\n data nascita: ${ step.values.dataNascita }` +
-              `\n\n codice fiscale: ${ step.values.cf } \n\n indirizzo: ${ step.values.citta } , ${ step.values.indirizzo }`;
+            const index = slotg.orari.indexOf(step.values.orario);
+            var orari = slotg.orari;
+            orari.splice(index,1);
 
 
-            msg += '.';
-            await step.context.sendActivity(msg);
 
-        } else {
-            await step.context.sendActivity('Prego, inserisci di nuovo i campi');
-            return await step.replaceDialog(this.id);
+            var prenotazione = {idutente: step.context.activity.from.id, giorno: step.values.giorno, orario: step.values.orario};
+
+            const slotnew = await slotorari.findOne({idmedico: idmedico, giorno: step.values.giorno });
+            await prenotazioni.insertOne(prenotazione);
+            console.log(slotnew);
+            var neworari = {$set: {orari: orari}};
+            await slotorari.updateOne(slotnew, neworari);
+            console.log("Ho modificato");
+
+            return await step.context.sendActivity(`Prenotazione effettuata per ${step.values.giorno} alle ore ${step.values.orario} `);
 
         }
 
-        // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is the end.
-        return await step.endDialog();
-    }
 
+    }
 
 }
 

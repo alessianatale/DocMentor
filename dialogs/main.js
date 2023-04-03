@@ -131,7 +131,7 @@ class main extends ComponentDialog {
 
     async utenteEmulatore(step) {
         var idutentecorrente = step.context.activity.from.id;
-        var newuser = { idutente: idutentecorrente, ruolo: "paziente", nome: "Emulatore", citta: "fantasma", dataNascita: "03/07/00", codiceFiscale: "MMMMMMMM", pdf: "url"};
+        var newuser = { idutente: idutentecorrente, ruolo: "medico", nome: "Emulatore", citta: "fantasma", dataNascita: "03/07/00", codiceFiscale: "MMMMMMMM", pdf: "url", idmedico: "2b6a7adf-6ea1-4417-8912-47aef6d61870"};
         users.insertOne(newuser);
         //await step.context.sendActivity('nomi: \n' + nomiutenti);
     }

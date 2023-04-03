@@ -17,7 +17,7 @@ MongoClient.connect(url, function(err, db) {
   dbo.collection("users").insertMany([admin1, medico1, paziente1], function(err, res) {
     if (err) throw err;
     console.log("2 documents inserted");
-    db.close();
+    //db.close();
   });
 });
 const users = dbo.collection("users");
