@@ -95,7 +95,7 @@ class prenotaVisitaDialog extends ComponentDialog {
 
     async confirmStep(step) {
         step.values.orario = step.result.value;
-        const prenotazioniEffettuate = await prenotazioni.find({idutente:step.context.activity.from.id}).toArray();
+        const prenotazioniEffettuate = await prenotazioni.find({idpaziente:step.context.activity.from.id}).toArray();
         if(prenotazioniEffettuate.length > 1){
             return await step.context.sendActivity(`Attenzione, hai superato il numero di prenotazioni effettuabili per questa settimana`);
         }else{
@@ -106,7 +106,7 @@ class prenotaVisitaDialog extends ComponentDialog {
 
 
 
-            var prenotazione = {idutente: step.context.activity.from.id, giorno: step.values.giorno, orario: step.values.orario};
+            var prenotazione = {idpaziente: step.context.activity.from.id, giorno: step.values.giorno, orario: step.values.orario, idmedico: idmedico};
 
             const slotnew = await slotorari.findOne({idmedico: idmedico, giorno: step.values.giorno });
             await prenotazioni.insertOne(prenotazione);

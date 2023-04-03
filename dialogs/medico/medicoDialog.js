@@ -1,4 +1,3 @@
-
 const {
     ChoiceFactory,
     ChoicePrompt,
@@ -8,9 +7,16 @@ const {
     TextPrompt,
     WaterfallDialog
 } = require('botbuilder-dialogs');
+var moment = require('moment');
+
 const { ADD_PAZIENTE_DIALOG, addPazienteDialog } = require('./addPazienteDialog');
 const { REMOVE_PAZIENTE_DIALOG, removePazienteDialog } = require('./removePazienteDialog');
 const { MEDICO_SLOTORARI_DIALOG, medicoSlotOrariDialog } = require('./medicoSlotOrariDialog');
+const { VISITE_DIALOG, visiteDialog } = require('./visiteDialog');
+
+//Mongo Configuration
+const config = require('../../config');
+const { users, prenotazioni } = config;
 
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
 const NAME_PROMPT = 'NAME_PROMPT';
@@ -27,6 +33,7 @@ class medicoDialog extends ComponentDialog {
         this.addDialog(new addPazienteDialog(ADD_PAZIENTE_DIALOG));
         this.addDialog(new removePazienteDialog(REMOVE_PAZIENTE_DIALOG));
         this.addDialog(new medicoSlotOrariDialog(MEDICO_SLOTORARI_DIALOG));
+        this.addDialog(new visiteDialog(VISITE_DIALOG));
 
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
             this.choiceStep.bind(this),
@@ -59,7 +66,7 @@ class medicoDialog extends ComponentDialog {
         const userName = step.context.activity.from.name;
          return await step.prompt(CHOICE_PROMPT, {
             prompt: `Ciao ${userName}, cosa desideri fare?`,
-            choices: ChoiceFactory.toChoices(['Inserire paziente', 'Eliminare paziente', 'Slot orari visite', 'Richieste ricette'])
+            choices: ChoiceFactory.toChoices(['Inserire paziente', 'Eliminare paziente', 'Slot orari visite', 'Visite del giorno', 'Richieste ricette'])
         });
     }
 
@@ -71,6 +78,23 @@ class medicoDialog extends ComponentDialog {
             return await step.beginDialog(REMOVE_PAZIENTE_DIALOG);
         } else if (resultchoice === 'Slot orari visite') {
             return await step.beginDialog(MEDICO_SLOTORARI_DIALOG);
+        } else if (resultchoice === 'Visite del giorno') {
+            var timeStamp = moment();
+            timeStamp.locale('it');
+            var oggi = timeStamp.format('dddd');
+
+            var idmedico = step.context.activity.from.id;
+            const query = await (prenotazioni.find({idmedico: idmedico, giorno: oggi})).toArray();
+            const orario = query.map(function(i) { return (', orario: '+ i.orario) });
+            const pazienti = query.map(function(i) { return i.idpaziente });
+            var message = "Pazienti prenotati oggi:\n\n";
+            for(let y=0; y < pazienti.length; y++) {
+                var paziente = await users.findOne({idutente: pazienti[y]});
+                message += '• ' + paziente.nome + orario[y] + '\n\n';
+            }
+
+            await step.context.sendActivity(message);
+            return await step.replaceDialog(this.id);
         }
     }
 
