@@ -1,0 +1,8 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "AzureWebJobsFeatureFlags": "EnableWorkerIndexing",
+    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=storageaccount24157;AccountKey=vM1G37NCgFgFqMuxQvC/6fb503t1gjXBzko9tqMd763M9MTRL7lbF9tSQSZMVZQiloJkIoFG87au+AStzXoPKQ==;EndpointSuffix=core.windows.net"
+  }
+}
