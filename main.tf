@@ -44,10 +44,10 @@ resource "azurerm_resource_group_template_deployment" "cloudasdeployment" {
     }
     "newAppServicePlanSku" = {
       value = {
-        "name": "S1",
+        "name": "F1",
         "tier": "Standard",
-        "size": "S1",
-        "family": "S",
+        "size": "F1",
+        "family": "F",
         "capacity": 1
       }
     }
@@ -147,22 +147,26 @@ resource "azurerm_cosmosdb_account" "cosmodbaccount" {
     max_staleness_prefix    = 100000
   }
 
-  geo_location {
-    location          = "eastus"
+geo_location {
+    location          = "West Europe"
     failover_priority = 1
   }
 
+
   geo_location {
-    location          = "westus"
+    location          = "north Europe"
     failover_priority = 0
   }
+
+  mongo_server_version = "4.0"
+  enable_free_tier = true
   depends_on = [azurerm_resource_group_template_deployment.cloudbotdeployment]
 }
 
 data "azurerm_cosmosdb_account" "cosmodbaccount" {
-  name                = "cosmodbaccount-92996"
+  name                = "cosmodbaccount-${random_integer.ri.result}"
   resource_group_name = azurerm_resource_group.cloudrg.name
-  //depends_on = [azurerm_resource_group_template_deployment.cloudbotdeployment]
+  depends_on = [azurerm_cosmosdb_account.cosmodbaccount]
 }
 
 resource "azurerm_cosmosdb_mongo_database" "mongodatabase" {
@@ -190,6 +194,41 @@ resource "azurerm_cosmosdb_mongo_collection" "userscollection" {
   }
 }
 
+resource "azurerm_cosmosdb_mongo_collection" "slotorariscollection" {
+  name                = "slotorari"
+  resource_group_name = azurerm_resource_group.cloudrg.name
+  account_name        = data.azurerm_cosmosdb_account.cosmodbaccount.name
+  database_name       = azurerm_cosmosdb_mongo_database.mongodatabase.name
+
+  default_ttl_seconds = "777"
+  //shard_key           = "uniqueKey"
+  throughput          = 400
+
+  depends_on = [azurerm_cosmosdb_mongo_database.mongodatabase]
+
+  index {
+    keys   = ["_id"]
+    unique = true
+  }
+}
+
+resource "azurerm_cosmosdb_mongo_collection" "prenotazioniscollection" {
+  name                = "prenotazioni"
+  resource_group_name = azurerm_resource_group.cloudrg.name
+  account_name        = data.azurerm_cosmosdb_account.cosmodbaccount.name
+  database_name       = azurerm_cosmosdb_mongo_database.mongodatabase.name
+
+  default_ttl_seconds = "777"
+  //shard_key           = "uniqueKey"
+  throughput          = 400
+
+  depends_on = [azurerm_cosmosdb_mongo_database.mongodatabase]
+
+  index {
+    keys   = ["_id"]
+    unique = true
+  }
+}
 
 resource "null_resource" "npm_env" {
   provisioner "local-exec" {
@@ -211,18 +250,22 @@ resource "null_resource" "npm_env" {
 
   depends_on = [azurerm_cosmosdb_mongo_collection.userscollection]
 }
-/*
-resource "null_resource" "finaldeploy" {
+
+/*resource "null_resource" "finaldeploy" {
   provisioner "local-exec" {
     command = "powershell Compress-Archive -Path . -DestinationPath deploy.zip"
   }
   provisioner "local-exec" {
     command = "az webapp deployment source config-zip --resource-group cloudrg --name cloudas --src CloudProject.zip"
   }
+  provisioner "local-exec" {
+    command = " func azure functionapp publish functionapp24157 --nozip"
+  }
 
   depends_on = [null_resource.npm_env]
-}
-*/
+}*/
+
+
 
 
 
