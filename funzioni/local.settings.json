@@ -1,0 +1,16 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "AzureWebJobsFeatureFlags": "EnableWorkerIndexing",
+    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=storageaccount93411;AccountKey=3Bht59+9l8CDuLQnqHPqkPe5fFqRw7YdGDGLttVP4Du1p9uQPfEAj+MdxcFFJ1JpVAQEM423qK72+ASthHyzhA==;EndpointSuffix=core.windows.net",
+    "FUNCTIONS_EXTENSION_VERSION": "~4",
+    "WEBSITE_NODE_DEFAULT_VERSION": "~18",
+    "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "DefaultEndpointsProtocol=https;AccountName=storageaccount93411;AccountKey=3Bht59+9l8CDuLQnqHPqkPe5fFqRw7YdGDGLttVP4Du1p9uQPfEAj+MdxcFFJ1JpVAQEM423qK72+ASthHyzhA==;EndpointSuffix=core.windows.net",
+    "WEBSITE_CONTENTSHARE": "functionapp93411-8116",
+    "APPINSIGHTS_INSTRUMENTATIONKEY": "6c0b0c0d-0f29-40a0-abf0-ea725d2e16f7",
+    "cosmodbaccount-93411_DOCUMENTDB": "AccountEndpoint=https://cosmodbaccount-93411.documents.azure.com:443/;AccountKey=xTdN0waIPogMQC5HP2U8UGH1KjEM1W5JkCl0XabyA4rLCfRyrVC4WLv27xi9ZDv9wSoii4CloVS8ACDbSZJznA==;",
+    "storageaccount93411_STORAGE": "DefaultEndpointsProtocol=https;AccountName=storageaccount93411;AccountKey=3Bht59+9l8CDuLQnqHPqkPe5fFqRw7YdGDGLttVP4Du1p9uQPfEAj+MdxcFFJ1JpVAQEM423qK72+ASthHyzhA=="
+  },
+  "ConnectionStrings": {}
+}
