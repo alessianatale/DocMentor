@@ -17,11 +17,11 @@
     },
     "dependencies": {
         "@azure/cosmos": "^3.11.5",
-        "mongodb": "^3.6.9",
-        "botbuilder": "~4.17.0",
-        "botbuilder-dialogs": "~4.17.0",
+        "botbuilder": "^4.19.3",
+        "botbuilder-dialogs": "^4.19.3",
         "dotenv": "^8.2.0",
         "moment": "^2.29.1",
+        "mongodb": "^4.15.0",
         "restify": "~8.6.0"
     },
     "devDependencies": {
