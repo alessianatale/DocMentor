@@ -18,7 +18,6 @@ module.exports = async function(context) {
     const slotorari = database.collection("slotorari");
     const prenotazioni = database.collection("prenotazioni");
 
-
     const prenotazioniEffettuate = await prenotazioni.find({giorno:giorno}).toArray();
     const mediciPrenotati = prenotazioniEffettuate.map(function(i) { return i.idmedico  });
     const orariGiornoCorrente = prenotazioniEffettuate.map(function(i) { return i.orario  });
@@ -32,28 +31,11 @@ module.exports = async function(context) {
 
             var updatedorari = {$push: {orari:orariGiornoCorrente[y] }};
             await slotorari.updateOne(slot, updatedorari);
-
-
         }
         prenotazioni.deleteMany({giorno:giorno})
-
-
-
-
     }else{
         console.log(`non sono presenti prenotazioni per ${giorno} `);
     }
 
-
-
-
-
-    //var slot = {idmedico: "1234", giorno: "lunedi", orari: ["2","3"]};
-    //slotorari.insertOne(slot);
-
-
     context.log('Ciao sono Alexxia!', timeStamp);
-
-
-
 };

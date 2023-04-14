@@ -9,6 +9,7 @@ const {
     WaterfallDialog
 } = require('botbuilder-dialogs');
 const { PRENOTA_VISITA_DIALOG, prenotaVisitaDialog } = require('./prenotaVisitaDialog.js');
+const { RICHIESTA_RICETTA_DIALOG, richiestaRicettaDialog } = require('./richiestaRicettaDialog.js');
 
 
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
@@ -25,7 +26,7 @@ class pazienteDialog extends ComponentDialog {
         this.addDialog(new TextPrompt(NAME_PROMPT));
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT));
         this.addDialog(new prenotaVisitaDialog(PRENOTA_VISITA_DIALOG));
-
+        this.addDialog(new richiestaRicettaDialog(RICHIESTA_RICETTA_DIALOG));
 
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
             this.choiceStep.bind(this),
@@ -68,7 +69,7 @@ class pazienteDialog extends ComponentDialog {
         if (resultchoice === 'Prenotare Visita') {
             return await step.beginDialog(PRENOTA_VISITA_DIALOG);
         } else if (resultchoice === 'Richiedi Ricetta') {
-           // return await step.beginDialog(REMOVE_PAZIENTE_DIALOG);
+            return await step.beginDialog(RICHIESTA_RICETTA_DIALOG);
         } else if (resultchoice === 'Richiedi info') {
            // return await step.beginDialog(MEDICO_SLOTORARI_DIALOG);
         }
