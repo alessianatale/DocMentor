@@ -6,6 +6,7 @@ const path = require('path');
 
 // Read botFilePath and botFileSecret from .env file
 const ENV_FILE = path.join(__dirname, '.env');
+const pdfGeneraor = require('./pdfGenerator');
 require('dotenv').config({ path: ENV_FILE });
 
 const restify = require('restify');
@@ -75,6 +76,7 @@ server.listen(process.env.port || process.env.PORT || 3978, function() {
     console.log(`\n${ server.name } listening to ${ server.url }`);
     console.log('\nGet Bot Framework Emulator: https://aka.ms/botframework-emulator');
     console.log('\nTo talk to your bot, open the emulator select "Open Bot"');
+
 });
 
 // Listen for incoming activities and route them to your bot main dialog.
