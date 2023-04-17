@@ -22,7 +22,10 @@
         "dotenv": "^8.2.0",
         "moment": "^2.29.1",
         "mongodb": "^4.15.0",
-        "restify": "~8.6.0"
+        "pdfkit": "^0.13.0",
+        "pdfkit-table": "^0.1.99",
+        "restify": "~8.6.0",
+        "voilab-pdf-table": "^0.5.1"
     },
     "devDependencies": {
         "eslint": "^7.0.0",
@@ -31,6 +34,6 @@
         "eslint-plugin-node": "^11.1.0",
         "eslint-plugin-promise": "^4.2.1",
         "eslint-plugin-standard": "^4.0.1",
-        "nodemon": "~2.0.4"
+        "nodemon": "~2.0.22"
     }
 }
