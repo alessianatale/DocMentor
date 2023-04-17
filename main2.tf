@@ -8,6 +8,12 @@ resource "azurerm_storage_account" "storageaccount" {
   account_kind = "Storage"
 }
 
+resource "azurerm_storage_container" "storagecontainer" {
+  name                  = "images"
+  storage_account_name  = azurerm_storage_account.storageaccount.name
+  container_access_type = "private"
+}
+
 resource "azurerm_service_plan" "serviceplan" {
   name                = "serviceplan${random_integer.ri.result}"
   location            = azurerm_resource_group.cloudrg.location
@@ -78,7 +84,7 @@ resource "azurerm_windows_function_app" "functionapp" {
 /*
 resource "null_resource" "finaldeploy" {
   provisioner "local-exec" {
-    command = " func azure functionapp publish functionapp24157 --nozip"
+    command = "func azure functionapp publish functionapp24157 --nozip"
   }
 }
 */
