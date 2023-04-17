@@ -36,7 +36,6 @@ resource "azurerm_windows_function_app" "functionapp" {
   resource_group_name = azurerm_resource_group.cloudrg.name
   service_plan_id     = azurerm_service_plan.serviceplan.id
   builtin_logging_enabled = false
-
   storage_account_name       = azurerm_storage_account.storageaccount.name
   storage_account_access_key = azurerm_storage_account.storageaccount.primary_access_key
 
