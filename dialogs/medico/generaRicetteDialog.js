@@ -33,15 +33,15 @@ const NAME_PROMPT = 'NAME_PROMPT';
 const WATERFALL_DIALOG = 'WATERFALL_DIALOG';
 const WATERFALL_DIALOG2 = 'WATERFALL_DIALOG2';
 const WATERFALL_DIALOG3 = 'WATERFALL_DIALOG3';
-const RICHIESTA_RICETTA_DIALOG = 'RICHIESTA_RICETTA_DIALOG';
+const GENERA_RICETTE_DIALOG = 'GENERA_RICETTE_DIALOG';
 const NUMBER_PROMPT = 'NUMBER_PROMPT';
 const CONFIRM_PROMPT = 'CONFIRM_PROMPT';
 const DATETIME_PROMPT = 'DATETIME_PROMPT';
 const ATTACHMENT_PROMPT = 'ATTACHMENT_PROMPT';
 
-class richiestaRicettaDialog extends ComponentDialog {
+class generaRicetteDialog extends ComponentDialog {
     constructor(userState) {
-        super(RICHIESTA_RICETTA_DIALOG);
+        super(GENERA_RICETTE_DIALOG);
         this.userState = userState;
 
         this.addDialog(new DateTimePrompt(DATETIME_PROMPT));
@@ -96,7 +96,6 @@ class richiestaRicettaDialog extends ComponentDialog {
     }
 
     async choiceStep(step) {
-        paziente = await users.findOne({idutente: step.context.activity.from.id});
         return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Vuoi allegare solo una foto di farmaci prescritti dal medico o richiederne anche altri? ',
             choices: ChoiceFactory.toChoices(['Inserire solo foto', 'Inserire anche altri'])
@@ -105,7 +104,7 @@ class richiestaRicettaDialog extends ComponentDialog {
 
     async farmaciUsualiStep(step) {
         if(step.result.value === "Inserire anche altri") {
-            //paziente = await users.findOne({idutente: step.context.activity.from.id});
+            paziente = await users.findOne({idutente: step.context.activity.from.id});
             var farmaci = paziente.farmaci;
             var message = "Ecco la lista dei tuoi farmaci usuali:\n\n";
             for (let y = 0; y < farmaci.length; y++)
@@ -155,7 +154,7 @@ class richiestaRicettaDialog extends ComponentDialog {
             return await step.prompt(ATTACHMENT_PROMPT, promptOptions);
         } else {
             // nessuna foto allegata
-            const richiesta = {idpaziente: paziente.idutente, farmaci: step.values.farmaciInseriti.array, qta: step.values.farmaciInseriti.qta, idmedico: paziente.idmedico}
+            const richiesta = {idpaziente: step.context.activity.from.id, farmaci: step.values.farmaciInseriti.array, qta: step.values.farmaciInseriti.qta}
             richiesteRicette.insertOne(richiesta);
 
             return await step.endDialog();
@@ -201,9 +200,9 @@ class richiestaRicettaDialog extends ComponentDialog {
         let richiesta;
         if (step.values.skippare == true) {
             //ha inserito solo foto
-            richiesta = {idpaziente: paziente.idutente, foto: arrayFoto, idmedico: paziente.idmedico}
+            richiesta = {idpaziente: step.context.activity.from.id, foto: arrayFoto}
         } else {
-            richiesta = {idpaziente: paziente.idutente, farmaci: step.values.farmaciInseriti.array, qta: step.values.farmaciInseriti.qta, foto: arrayFoto, idmedico: paziente.idmedico}
+            richiesta = {idpaziente: step.context.activity.from.id, farmaci: step.values.farmaciInseriti.array, qta: step.values.farmaciInseriti.qta, foto: arrayFoto}
         }
         richiesteRicette.insertOne(richiesta);
 
@@ -222,12 +221,12 @@ class richiestaRicettaDialog extends ComponentDialog {
         } else {
             step.values.farmaci = new Support();
         }
-        //style: ListStyle.suggestedAction
+        //style: ListStyle.heroCard
         const farmaciUsuali = paziente.farmaci;
         return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Seleziona un farmaco: ',
             choices: ChoiceFactory.toChoices(farmaciUsuali),
-            style: ListStyle.heroCard
+            style: ListStyle.suggestedAction
         });
     }
 
@@ -339,5 +338,5 @@ class richiestaRicettaDialog extends ComponentDialog {
 
 }
 
-module.exports.richiestaRicettaDialog = richiestaRicettaDialog;
-module.exports.RICHIESTA_RICETTA_DIALOG = RICHIESTA_RICETTA_DIALOG;
+module.exports.generaRicetteDialog = generaRicetteDialog;
+module.exports.GENERA_RICETTE_DIALOG = GENERA_RICETTE_DIALOG;

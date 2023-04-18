@@ -13,7 +13,7 @@ const {
 //Mongo Configuration
 const config = require('../../config');
 const { users, slotorari } = config;
-const { Slot } = require('./slot');
+const { Support } = require('../support');
 
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
 const NAME_PROMPT = 'NAME_PROMPT';
@@ -86,9 +86,9 @@ class medicoSlotOrariDialog extends ComponentDialog {
     async prendiOrariStep(step) {
         // mi prendo i valore che ho passato all'end dialog dell'altro waterfall
         const orari = step.result;
-        //console.log(orari);
+        //console.log(array);
 
-        // salvo nel db il giorno e gli orari insieme a idmedico
+        // salvo nel db il giorno e gli array insieme a idmedico
         var idmedico = step.context.activity.from.id;
         var slot = {idmedico: idmedico, giorno: step.values.giorno, orari: orari};
 
@@ -118,9 +118,9 @@ class medicoSlotOrariDialog extends ComponentDialog {
         const res = step.options["slot"];
         if (res != undefined) {
             step.values.slot = res
-            //console.log("da option: " + res.orari);
+            //console.log("da option: " + res.array);
         } else {
-            step.values.slot = new Slot();
+            step.values.slot = new Support();
         }
         const oraridisponibili = ["8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19"];
         return await step.prompt(CHOICE_PROMPT, {
@@ -130,8 +130,8 @@ class medicoSlotOrariDialog extends ComponentDialog {
     }
 
     async firstOrarioStep(step) {
-        if(!step.values.slot.orari.includes(step.result.value))
-            step.values.slot.orari.push(step.result.value);
+        if(!step.values.slot.array.includes(step.result.value))
+            step.values.slot.array.push(step.result.value);
         else
             await step.context.sendActivity(`Attenzione, questo orario è già stato inserito`);
 
@@ -140,11 +140,11 @@ class medicoSlotOrariDialog extends ComponentDialog {
 
     async waitingOrarioStep(step) {
         const slot = step.values.slot;
-        //console.log("ho preso l'ora: "+slot.orari);
+        //console.log("ho preso l'ora: "+slot.array);
         if (step.result) {
             return await step.beginDialog(WATERFALL_DIALOG2, {slot: slot});
         } else
-            return await step.endDialog(slot.orari);
+            return await step.endDialog(slot.array);
     }
 
 

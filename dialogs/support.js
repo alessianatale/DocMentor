@@ -1,9 +1,10 @@
-class Slot {
+class Support {
     constructor() {
         /*this.idmedico = idmedico;
         this.giorno = giorno;*/
-        this.orari = [];
+        this.array = [];
+        this.qta = [];
     }
 }
 
-module.exports.Slot = Slot;
+module.exports.Support = Support;

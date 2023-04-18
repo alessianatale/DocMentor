@@ -99,12 +99,9 @@ class prenotaVisitaDialog extends ComponentDialog {
         if(prenotazioniEffettuate.length > 1){
             return await step.context.sendActivity(`Attenzione, hai superato il numero di prenotazioni effettuabili per questa settimana`);
         }else{
-
             const index = slotg.orari.indexOf(step.values.orario);
             var orari = slotg.orari;
             orari.splice(index,1);
-
-
 
             var prenotazione = {idpaziente: step.context.activity.from.id, giorno: step.values.giorno, orario: step.values.orario, idmedico: idmedico};
 
