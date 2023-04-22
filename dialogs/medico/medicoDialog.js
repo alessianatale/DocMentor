@@ -13,7 +13,7 @@ var moment = require('moment');
 const { ADD_PAZIENTE_DIALOG, addPazienteDialog } = require('./addPazienteDialog');
 const { REMOVE_PAZIENTE_DIALOG, removePazienteDialog } = require('./removePazienteDialog');
 const { MEDICO_SLOTORARI_DIALOG, medicoSlotOrariDialog } = require('./medicoSlotOrariDialog');
-const { VISITE_DIALOG, visiteDialog } = require('./visiteDialog');
+
 
 //Mongo Configuration
 const config = require('../../config');
@@ -34,7 +34,7 @@ class medicoDialog extends ComponentDialog {
         this.addDialog(new addPazienteDialog(ADD_PAZIENTE_DIALOG));
         this.addDialog(new removePazienteDialog(REMOVE_PAZIENTE_DIALOG));
         this.addDialog(new medicoSlotOrariDialog(MEDICO_SLOTORARI_DIALOG));
-        this.addDialog(new visiteDialog(VISITE_DIALOG));
+        
 
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
             this.choiceStep.bind(this),
