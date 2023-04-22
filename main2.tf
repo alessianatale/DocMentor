@@ -1,6 +1,6 @@
 // per le function
 resource "azurerm_storage_account" "storageaccount" {
-  name                     = "storageaccount${random_integer.ri.result}4"
+  name                     = "storageaccount${random_integer.ri.result}"
   resource_group_name      = azurerm_resource_group.cloudrg.name
   location                 = azurerm_resource_group.cloudrg.location
   account_tier             = "Standard"

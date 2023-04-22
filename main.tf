@@ -34,12 +34,12 @@ resource "azurerm_user_assigned_identity" "cloudidentity" {
 
 # App Service deployment
 resource "azurerm_resource_group_template_deployment" "cloudasdeployment" {
-  name                = "cloudas1deployment"
+  name                = "cloudasdeployment"
   resource_group_name = azurerm_resource_group.cloudrg.name
   deployment_mode     = "Incremental"
   parameters_content = jsonencode({
     "appServiceName" = {
-      value = "cloudas1"
+      value = "cloudas"
     }
     "newAppServicePlanName" = {
       value = "cloudappserviceplan"
@@ -73,7 +73,7 @@ resource "azurerm_resource_group_template_deployment" "cloudasdeployment" {
     }
   })
 
-  template_content = file("C:\\Users\\saver\\CloudProject\\deploymentTemplates\\deployUseExistResourceGroup\\template-BotApp-with-rg.json")
+  template_content = file("C:\\Users\\Alessia\\Desktop\\DocMentorBot\\CloudProject\\deploymentTemplates\\deployUseExistResourceGroup\\template-BotApp-with-rg.json")
   depends_on = [azurerm_user_assigned_identity.cloudidentity]
 }
 
@@ -84,7 +84,7 @@ resource "azurerm_resource_group_template_deployment" "cloudbotdeployment" {
   deployment_mode     = "Incremental"
   parameters_content = jsonencode({
     "azureBotId" = {
-      value = "DocMentorBot"
+      value = "DocMentorBot2"
     }
     "azureBotSku" = {
       value = "S1"
@@ -93,7 +93,7 @@ resource "azurerm_resource_group_template_deployment" "cloudbotdeployment" {
       value = "global"
     }
     "botEndpoint" = {
-      value = "https://cloudas1.azurewebsites.net/api/messages"
+      value = "https://cloudas.azurewebsites.net/api/messages"
     }
     "appType" = {
       value = "UserAssignedMSI"
@@ -112,7 +112,7 @@ resource "azurerm_resource_group_template_deployment" "cloudbotdeployment" {
     }
   })
 
-  template_content = file("C:\\Users\\saver\\CloudProject\\deploymentTemplates\\deployUseExistResourceGroup\\template-AzureBot-with-rg.json")
+  template_content = file("C:\\Users\\Alessia\\Desktop\\DocMentorBot\\CloudProject\\deploymentTemplates\\deployUseExistResourceGroup\\template-AzureBot-with-rg.json")
   depends_on = [azurerm_resource_group_template_deployment.cloudasdeployment]
 }
 
@@ -128,7 +128,7 @@ resource "azurerm_cosmosdb_account" "cosmodbaccount" {
   offer_type          = "Standard"
   kind                = "MongoDB"
 
-  enable_automatic_failover = true
+  #enable_automatic_failover = true
 
   capabilities {
     name = "EnableAggregationPipeline"
@@ -138,9 +138,9 @@ resource "azurerm_cosmosdb_account" "cosmodbaccount" {
     name = "mongoEnableDocLevelTTL"
   }
 
-  capabilities {
-    name = "MongoDBv3.4"
-  }
+  # capabilities {
+  #   name = "MongoDBv3.4"
+  # }
 
   capabilities {
     name = "EnableMongo"
@@ -152,10 +152,10 @@ resource "azurerm_cosmosdb_account" "cosmodbaccount" {
     max_staleness_prefix    = 100000
   }
 
-geo_location {
-    location          = "West Europe"
-    failover_priority = 1
-  }
+  # geo_location {
+  #   location          = "West Europe"
+  #   failover_priority = 1
+  # }
 
 
   geo_location {
@@ -235,15 +235,31 @@ resource "azurerm_cosmosdb_mongo_collection" "prenotazioniscollection" {
   }
 }
 
+resource "azurerm_cosmosdb_mongo_collection" "richiestericettecollection" {
+  name                = "richiesteRicette"
+  resource_group_name = azurerm_resource_group.cloudrg.name
+  account_name        = data.azurerm_cosmosdb_account.cosmodbaccount.name
+  database_name       = azurerm_cosmosdb_mongo_database.mongodatabase.name
+
+  default_ttl_seconds = "777"
+  //shard_key           = "uniqueKey"
+  throughput          = 400
+
+  depends_on = [azurerm_cosmosdb_mongo_database.mongodatabase]
+
+  index {
+    keys   = ["_id"]
+    unique = true
+  }
+}
+
 resource "null_resource" "npm_env" {
   provisioner "local-exec" {
-    command = "cd C:\\Users\\saver\\CloudProject"
+    command = "az bot update --resource-group cloudrg --name DocMentorBot2 --endpoint https://cloudas.azurewebsites.net/api/messages"
   }
   provisioner "local-exec" {
-    command = "az bot update --resource-group cloudrg --name DocMentorBot --endpoint https://cloudas1.azurewebsites.net/api/messages"
-  }
-  provisioner "local-exec" {
-    command = "az bot telegram create --resource-group cloudrg --name DocMentorBot --access-token 6054944368:AAErutT3RsFs-uLAYb2YMZcw-u5vls5JEIE --is-validated"
+    command = "az bot telegram create --resource-group cloudrg --name DocMentorBot2 --access-token 6296149829:AAGL93aAdMIpTrLgtJJjDAT1ihi5riGtGMw --is-validated"
+    //command = "az bot telegram create --resource-group cloudrg --name DocMentorBot2 --access-token 6054944368:AAErutT3RsFs-uLAYb2YMZcw-u5vls5JEIE --is-validated"
   }
   provisioner "local-exec" {
     command = "npm install"
@@ -253,7 +269,7 @@ resource "null_resource" "npm_env" {
     command = "az bot prepare-deploy --lang Javascript"
   }
 
-  depends_on = [azurerm_cosmosdb_mongo_collection.userscollection]
+  depends_on = [azurerm_cosmosdb_mongo_collection.richiestericettecollection]
 }
 
 /*resource "null_resource" "finaldeploy" {
@@ -261,7 +277,7 @@ resource "null_resource" "npm_env" {
     command = "powershell Compress-Archive -Path . -DestinationPath deploy.zip"
   }
   provisioner "local-exec" {
-    command = "az webapp deployment source config-zip --resource-group cloudrg --name cloudas1 --src CloudProject.zip"
+    command = "az webapp deployment source config-zip --resource-group cloudrg --name cloudas --src CloudProject.zip"
   }
   provisioner "local-exec" {
     command = " func azure functionapp publish functionapp24157 --nozip"
