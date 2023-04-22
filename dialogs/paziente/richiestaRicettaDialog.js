@@ -97,19 +97,21 @@ class richiestaRicettaDialog extends ComponentDialog {
 
     async choiceStep(step) {
         paziente = await users.findOne({idutente: step.context.activity.from.id});
+        await step.context.sendActivity(`Ciao ${paziente.nome}, per richiedere la ricetta medica di farmaci ti ricordiamo che puoi inserire farmaci sia manualmente, scegliendo da una lista di farmaci che solitamente richiedi o inserendo nuovi farmaci, sia inviando una o più foto di farmaci prescritti dal tuo medico!`);
         return await step.prompt(CHOICE_PROMPT, {
-            prompt: 'Vuoi allegare solo una foto di farmaci prescritti dal medico o richiederne anche altri? ',
-            choices: ChoiceFactory.toChoices(['Inserire solo foto', 'Inserire anche altri'])
+            prompt: 'Vuoi allegare solo una foto di farmaci prescritti dal medico o richiederne anche altri?',
+            choices: ChoiceFactory.toChoices(['Inserire solo foto', 'Inserire anche altri manualmente']),
+            style: ListStyle.suggestedAction
         });
     }
 
     async farmaciUsualiStep(step) {
-        if(step.result.value === "Inserire anche altri") {
+        if(step.result.value === "Inserire anche altri manualmente") {
             //paziente = await users.findOne({idutente: step.context.activity.from.id});
             var farmaci = paziente.farmaci;
             var message = "Ecco la lista dei tuoi farmaci usuali:\n\n";
             for (let y = 0; y < farmaci.length; y++)
-                message += String(y) + ': ' + farmaci[y] + '\n\n';
+                message += '• ' + farmaci[y] + '\n\n';
 
             await step.context.sendActivity(message);
 
@@ -157,6 +159,7 @@ class richiestaRicettaDialog extends ComponentDialog {
             // nessuna foto allegata
             const richiesta = {idpaziente: paziente.idutente, farmaci: step.values.farmaciInseriti.array, qta: step.values.farmaciInseriti.qta, idmedico: paziente.idmedico}
             richiesteRicette.insertOne(richiesta);
+            await step.context.sendActivity(`Richiesta inviata con successo!`);
 
             return await step.endDialog();
         }
@@ -176,28 +179,30 @@ class richiestaRicettaDialog extends ComponentDialog {
         const containerClient = blobServiceClient.getContainerClient("images");
 
         const arrayFoto = [];
-        for (let i = 0; i < step.values.picture.length; i++) {
-            const blobPath = step.values.picture[i].contentUrl;
-            //console.log(blobPath);
+        if(step.values.picture != undefined) {
+            for (let i = 0; i < step.values.picture.length; i++) {
+                const blobPath = step.values.picture[i].contentUrl;
+                //console.log(blobPath);
 
-            const filename = uuidv1() + ".png";
-            //console.log("uuid: " + filename);
-            const blockBlobClient = containerClient.getBlockBlobClient(filename);
+                const filename = uuidv1() + ".png";
+                //console.log("uuid: " + filename);
+                const blockBlobClient = containerClient.getBlockBlobClient(filename);
 
-            //let fileStream = fs.createReadStream(blobPath);
-            http.get(blobPath, (stream) => {
-                const blobOptions = {
-                    blobHTTPHeaders: {
-                        blobContentType: 'image/png'
-                    }
-                };
-                blockBlobClient.uploadStream(stream, undefined, undefined, blobOptions);
-            });
+                //let fileStream = fs.createReadStream(blobPath);
+                http.get(blobPath, (stream) => {
+                    const blobOptions = {
+                        blobHTTPHeaders: {
+                            blobContentType: 'image/png'
+                        }
+                    };
+                    blockBlobClient.uploadStream(stream, undefined, undefined, blobOptions);
+                });
 
-            var foto = 'https://' + STORAGE_ACCOUNT_NAME + '.blob.core.windows.net/images/' + filename;
-            arrayFoto.push(foto);
+                var foto = 'https://' + STORAGE_ACCOUNT_NAME + '.blob.core.windows.net/images/' + filename;
+                arrayFoto.push(foto);
+            }
+            console.log(arrayFoto);
         }
-        console.log(arrayFoto);
         let richiesta;
         if (step.values.skippare == true) {
             //ha inserito solo foto
@@ -206,6 +211,7 @@ class richiestaRicettaDialog extends ComponentDialog {
             richiesta = {idpaziente: paziente.idutente, farmaci: step.values.farmaciInseriti.array, qta: step.values.farmaciInseriti.qta, foto: arrayFoto, idmedico: paziente.idmedico}
         }
         richiesteRicette.insertOne(richiesta);
+        await step.context.sendActivity(`Richiesta inviata con successo!`);
 
         return await step.endDialog();
     }
@@ -240,7 +246,8 @@ class richiestaRicettaDialog extends ComponentDialog {
         const quantita = ["1", "2", "3", "4", "5", "6"];
         return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Seleziona la quantità: ',
-            choices: ChoiceFactory.toChoices(quantita)
+            choices: ChoiceFactory.toChoices(quantita),
+            style: ListStyle.heroCard
         });
     }
 
@@ -248,7 +255,7 @@ class richiestaRicettaDialog extends ComponentDialog {
         step.values.farmaci.qta.push(step.result.value);
         var message = "Hai richiesto i seguenti farmaci:\n\n";
         for (let y = 0; y < step.values.farmaci.array.length; y++)
-            message += '• ' + step.values.farmaci.array[y] + '; qtà: ' + step.values.farmaci.qta[y] + '\n\n';
+            message += '• ' + step.values.farmaci.array[y] + ', qtà: ' + step.values.farmaci.qta[y] + '\n\n';
 
         await step.context.sendActivity(message);
         return await step.prompt(CONFIRM_PROMPT, { prompt: 'Vuoi inserire un altro farmaco della lista precedente?' });
@@ -289,7 +296,8 @@ class richiestaRicettaDialog extends ComponentDialog {
         const quantita = ["1", "2", "3", "4", "5", "6"];
         return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Seleziona la quantità: ',
-            choices: ChoiceFactory.toChoices(quantita)
+            choices: ChoiceFactory.toChoices(quantita),
+            style: ListStyle.heroCard
         });
     }
 
@@ -297,7 +305,7 @@ class richiestaRicettaDialog extends ComponentDialog {
         step.values.farmaci.qta.push(step.result.value);
         var message = "Hai richiesto i seguenti farmaci:\n\n";
         for (let y = 0; y < step.values.farmaci.array.length; y++)
-            message += '• ' + step.values.farmaci.array[y] + '; qtà: ' + step.values.farmaci.qta[y] + '\n\n';
+            message += '• ' + step.values.farmaci.array[y] + ', qtà: ' + step.values.farmaci.qta[y] + '\n\n';
 
         await step.context.sendActivity(message);
         return await step.prompt(CONFIRM_PROMPT, { prompt: 'Vuoi richiedere un altro farmaco?' });
@@ -330,7 +338,7 @@ class richiestaRicettaDialog extends ComponentDialog {
             // If none of the attachments are valid images, the retry prompt should be sent.
             return !!validImages.length;
         } else {
-            await promptContext.context.sendActivity('No attachments received. Proceeding without a profile picture...');
+            await promptContext.context.sendActivity('Nessuna foto inserita.');
 
             // We can return true from a validator function even if Recognized.Succeeded is false.
             return true;

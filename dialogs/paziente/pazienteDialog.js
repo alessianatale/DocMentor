@@ -1,4 +1,3 @@
-
 const {
     ChoiceFactory,
     ChoicePrompt,
@@ -6,7 +5,8 @@ const {
     DialogSet,
     DialogTurnStatus,
     TextPrompt,
-    WaterfallDialog
+    WaterfallDialog,
+    ListStyle
 } = require('botbuilder-dialogs');
 const { PRENOTA_VISITA_DIALOG, prenotaVisitaDialog } = require('./prenotaVisitaDialog.js');
 const { RICHIESTA_RICETTA_DIALOG, richiestaRicettaDialog } = require('./richiestaRicettaDialog.js');
@@ -58,9 +58,9 @@ class pazienteDialog extends ComponentDialog {
         const userName = step.context.activity.from.name;
 
         return await step.prompt(CHOICE_PROMPT, {
-
             prompt: `Ciao ${ userName }, cosa desideri fare?`,
-            choices: ChoiceFactory.toChoices(['Prenotare Visita', 'Richiedi Ricetta', 'Richiedi info'])
+            choices: ChoiceFactory.toChoices(['Prenotare Visita', 'Richiedi Ricetta', 'Richiedi info']),
+            style: ListStyle.heroCard
         });
     }
 

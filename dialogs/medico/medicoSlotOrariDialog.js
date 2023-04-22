@@ -8,7 +8,8 @@ const {
     WaterfallDialog,
     NumberPrompt,
     ConfirmPrompt,
-    DateTimePrompt
+    DateTimePrompt,
+    ListStyle
 } = require('botbuilder-dialogs');
 //Mongo Configuration
 const config = require('../../config');
@@ -23,7 +24,8 @@ const MEDICO_SLOTORARI_DIALOG = 'MEDICO_SLOTORARI_DIALOG';
 const NUMBER_PROMPT = 'NUMBER_PROMPT';
 const CONFIRM_PROMPT = 'CONFIRM_PROMPT';
 const DATETIME_PROMPT = 'DATETIME_PROMPT';
-//const SLOT_PROPERTY = 'SLOT_PROPERTY';
+
+let idmedico;
 
 class medicoSlotOrariDialog extends ComponentDialog {
     constructor(userState) {
@@ -71,11 +73,20 @@ class medicoSlotOrariDialog extends ComponentDialog {
     }
 
     async giornoStep(step) {
+        const slots = await slotorari.find({idmedico: idmedico }).toArray();
+        if (slots.length != 0) {
+            const giorni = slots.map(function(i) { return i.giorno + " ora: " + i.orari });
+            var message = "Ecco i tuoi slot:\n\n";
+            for (let y = 0; y < slots.length; y++)
+                message += '• ' + giorni[y] + '\n\n';
 
-            return await step.prompt(CHOICE_PROMPT, {
-                prompt: 'Seleziona un giorno di visita: ',
-                choices: ChoiceFactory.toChoices(['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì'])
-            });
+            await step.context.sendActivity(message);
+        }
+        return await step.prompt(CHOICE_PROMPT, {
+            prompt: 'Seleziona un giorno di visita: ',
+            choices: ChoiceFactory.toChoices(['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì']),
+            style: ListStyle.heroCard
+        });
     }
 
     async redirectOrariStep(step) {
@@ -89,17 +100,17 @@ class medicoSlotOrariDialog extends ComponentDialog {
         //console.log(array);
 
         // salvo nel db il giorno e gli array insieme a idmedico
-        var idmedico = step.context.activity.from.id;
+        idmedico = step.context.activity.from.id;
         var slot = {idmedico: idmedico, giorno: step.values.giorno, orari: orari};
 
         const giornoesistente = await slotorari.findOne({ idmedico: step.context.activity.from.id, giorno: step.values.giorno});
         if (giornoesistente == undefined) {
             slotorari.insertOne(slot);
-            console.log("Ho inserito");
+            //console.log("Ho inserito");
         } else {
             var neworari = {$set: {orari: orari}};
             slotorari.updateOne(giornoesistente, neworari);
-            console.log("Ho modificato");
+            //console.log("Ho modificato");
         }
 
         return await step.prompt(CONFIRM_PROMPT, { prompt: 'Vuoi inserire un altro giorno?' });
@@ -109,8 +120,16 @@ class medicoSlotOrariDialog extends ComponentDialog {
     async loopGiornoStep(step) {
         if (step.result) {
             return await step.beginDialog(WATERFALL_DIALOG1);
-        } else
+        } else {
+            const slots = await slotorari.find({idmedico: idmedico }).toArray();
+            const giorni = slots.map(function(i) { return i.giorno + " ora: " + i.orari });
+            var message = "Ecco gli slot che hai inserito:\n\n";
+            for (let y = 0; y < slots.length; y++)
+                message += '• ' + giorni[y] + '\n\n';
+
+            await step.context.sendActivity(message);
             return await step.endDialog();
+        }
     }
 
     // waterfall 2
@@ -125,7 +144,8 @@ class medicoSlotOrariDialog extends ComponentDialog {
         const oraridisponibili = ["8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19"];
         return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Seleziona un orario di visita: ',
-            choices: ChoiceFactory.toChoices(oraridisponibili)
+            choices: ChoiceFactory.toChoices(oraridisponibili),
+            style: ListStyle.heroCard
         });
     }
 

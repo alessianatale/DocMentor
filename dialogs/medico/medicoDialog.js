@@ -5,7 +5,8 @@ const {
     DialogSet,
     DialogTurnStatus,
     TextPrompt,
-    WaterfallDialog
+    WaterfallDialog,
+    ListStyle
 } = require('botbuilder-dialogs');
 var moment = require('moment');
 
@@ -66,7 +67,8 @@ class medicoDialog extends ComponentDialog {
         const userName = step.context.activity.from.name;
          return await step.prompt(CHOICE_PROMPT, {
             prompt: `Ciao ${userName}, cosa desideri fare?`,
-            choices: ChoiceFactory.toChoices(['Inserire paziente', 'Eliminare paziente', 'Slot orari visite', 'Visite del giorno', 'Richieste ricette'])
+            choices: ChoiceFactory.toChoices(['Inserire paziente', 'Eliminare paziente', 'Slot orari visite', 'Visite del giorno', 'Richieste ricette']),
+            style: ListStyle.heroCard
         });
     }
 

@@ -8,7 +8,8 @@ const {
     WaterfallDialog,
     NumberPrompt,
     ConfirmPrompt,
-    DateTimePrompt
+    DateTimePrompt,
+    ListStyle,
 } = require('botbuilder-dialogs');
 //Mongo Configuration
 const config = require('../../config');
@@ -74,7 +75,8 @@ class prenotaVisitaDialog extends ComponentDialog {
 
         return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Ecco i giorni disponibili per il tuo medico: ',
-            choices: ChoiceFactory.toChoices(giorni)
+            choices: ChoiceFactory.toChoices(giorni),
+            style: ListStyle.heroCard
         });
 
     }
@@ -87,8 +89,9 @@ class prenotaVisitaDialog extends ComponentDialog {
             return await step.context.sendActivity(`Attenzione, sono terminati gli slot per questo giorno`);
         }else {
             return await step.prompt(CHOICE_PROMPT, {
-                prompt: 'Ecco i giorni disponibili per il tuo medico: ',
-                choices: ChoiceFactory.toChoices(slotg.orari)
+                prompt: 'Ecco gli orari disponibili per il tuo medico: ',
+                choices: ChoiceFactory.toChoices(slotg.orari),
+                style: ListStyle.heroCard
             });
         }
     }
@@ -110,7 +113,7 @@ class prenotaVisitaDialog extends ComponentDialog {
             console.log(slotnew);
             var neworari = {$set: {orari: orari}};
             await slotorari.updateOne(slotnew, neworari);
-            console.log("Ho modificato");
+            //console.log("Ho modificato");
 
             return await step.context.sendActivity(`Prenotazione effettuata per ${step.values.giorno} alle ore ${step.values.orario} `);
 

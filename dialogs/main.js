@@ -13,6 +13,7 @@ const {
     NumberPrompt,
     TextPrompt,
     WaterfallDialog,
+    ListStyle
 } = require('botbuilder-dialogs');
 const { Channels } = require('botbuilder-core');
 
@@ -78,7 +79,8 @@ class main extends ComponentDialog {
         // Running a prompt here means the next WaterfallStep will be run when the user's response is received.
         return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Seleziona cosa vuoi fare',
-            choices: ChoiceFactory.toChoices(['Login', 'Genera ID', 'Apri HealtBot', 'Elimina tutto',])
+            choices: ChoiceFactory.toChoices(['Login', 'Genera ID', 'Apri HealtBot', 'Elimina tutto',]),
+            style: ListStyle.heroCard
         });
     }
 
@@ -131,9 +133,13 @@ class main extends ComponentDialog {
 
     async utenteEmulatore(step) {
         var idutentecorrente = step.context.activity.from.id;
-        var newuser = { idutente: idutentecorrente, ruolo: "paziente", nome: "Emulatore", citta: "fantasma", dataNascita: "03/07/00", codiceFiscale: "MMMMMMMM", pdf: "url", idmedico: "2b6a7adf-6ea1-4417-8912-47aef6d61870", farmaci: ["efferaaaaaaaaaaaaaaaaaaaaaaaaaaalgan", "insulina", "tachipirina 1000", "vitamina C"]};
+        var newuser = { idutente: idutentecorrente, ruolo: "medico", nome: "Emulatore", citta: "fantasma", dataNascita: "03/07/00", codiceFiscale: "MMMMMMMM", pdf: "url", idmedico: "2b6a7adf-6ea1-4417-8912-47aef6d61870", farmaci: ["efferaaaaaaaaaaaaaaaaaaaaaaaaaaalgan", "insulina", "tachipirina 1000", "vitamina C"], esenzioni: ["E20"]};
         users.insertOne(newuser);
-        //await step.context.sendActivity('nomi: \n' + nomiutenti);
+
+        // da aggiungere se mettiamo ruolo medico
+        var paziente = {idutente: "1234567" , ruolo: "paziente", nome: "Viviana Veccia", dataNascita: "14/06/1968", citta: "Caserta", indirizzo: "Via ss 9", codiceFiscale: "VCCVN89H45SD", pdf: "", idmedico: idutentecorrente};
+        users.insertOne(paziente);
+        
     }
 
 }
