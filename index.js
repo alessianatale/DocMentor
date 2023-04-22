@@ -6,7 +6,7 @@ const path = require('path');
 
 // Read botFilePath and botFileSecret from .env file
 const ENV_FILE = path.join(__dirname, '.env');
-const pdfGeneraor = require('./pdfGenerator');
+const generaPDF = require('./pdfGenerator');
 require('dotenv').config({ path: ENV_FILE });
 
 const restify = require('restify');
@@ -52,7 +52,7 @@ adapter.onTurnError = async (context, error) => {
     // Clear out state
     await conversationState.delete(context);
 };
-
+generaPDF();
 // Define a state store for your bot. See https://aka.ms/about-bot-state to learn more about using MemoryStorage.
 // A bot requires a state store to persist the dialog and user state between messages.
 

@@ -1,53 +1,138 @@
 // Import dependencies
-const fs = require("fs");
-const PDFDocument = require("./pdfkit-tables");
+var pdf = require("pdf-creator-node");
 
-// Load the patients
-const patients = require("./patients.json");
+       function generaPDF() {
+                
+var html = '<!DOCTYPE html>\n' +
+    '<html>\n' +
+    '<head>\n' +
+    '<link href=\'https://fonts.googleapis.com/css?family=Libre Barcode 39\' rel=\'stylesheet\'>\n' +
+    '<style>\n' +
+    'h1 {\n' +
+    '  text-align: center;\n' +
+    '}\n' +
+    '\n' +
+    'h2 {\n' +
+    ' text-align: center;\n' +
+    '}\n' +
+    '\n' +
+    'h3 {\n' +
+    ' text-align: center;\n' +
+    '}\n' +
+    '\n' +
+    'p {\n' +
+    '    font-family: \'Libre Barcode 39\';font-size: 22px;\n' +
+    '}\n' +
+    '\n' +
+    '\n' +
+    '</style>\n' +
+    '\n' +
+    '\t<title>Ricetta medica italiana</title>\n' +
+    '</head>\n' +
+    '<body>\n' +
+    '<div  style="border: 1px solid black;">\n' +
+    '\t<h1 >Ricetta medica italiana</h1>\n' +
+    '\n' +
+    '\t<table >\n' +
+    '\t\t<tr>\n' +
+    '\t\t\t<th>Nome paziente:</th>\n' +
+    '\t\t\t<td>Nome Cognome</td>\n' +
+    '\t\t\t<td>                   </td>\n' +
+    '\t\t\t<td><p>DSTSVR98L03A399F</p></td>\n' +
+    '\t\t</tr>\n' +
+    '\t\t<tr>\n' +
+    '\t\t\t<th>Data di nascita:</th>\n' +
+    '\t\t\t<td>01/01/1970</td>\n' +
+    '\t\t</tr>\n' +
+    '\t\t<tr>\n' +
+    '\t\t\t<th>Data di emissione:</th>\n' +
+    '\t\t\t<td>22/04/2023</td>\n' +
+    '\t\t</tr>\n' +
+    '\t\t<tr>\n' +
+    '\t\t\t<th>Medico prescrittore:</th>\n' +
+    '\t\t\t<td>Nome Cognome</td>\n' +
+    '\t\t</tr>\n' +
+    '\t\t<tr>\n' +
+    '\t\t\t<th>Specializzazione:</th>\n' +
+    '\t\t\t<td>Specializzazione medica</td>\n' +
+    '\t\t</tr>\n' +
+    '\t\t<tr>\n' +
+    '\t\t\t<th>Indirizzo:</th>\n' +
+    '\t\t\t<td>Via Nome Via, Numero Civico</td>\n' +
+    '\t\t</tr>\n' +
+    '\t\t<tr>\n' +
+    '\t\t\t<th>Telefono:</th>\n' +
+    '\t\t\t<td>000 0000000</td>\n' +
+    '\t\t\t\n' +
+    '\t\t\t\n' +
+    '\t\t</tr>\n' +
+    '\t</table>\n' +
+    '\t<h2 >Prescrizione</h2>\n' +
+    '\t<table style="margin-left: auto;\n' +
+    '  margin-right: auto;">\n' +
+    '\t\t<thead>\n' +
+    '\t\t\t<tr>\n' +
+    '\t\t\t\t<th style="border: 1px solid black;\n' +
+    'border-right-style: none">Quantità</th>\n' +
+    '\t\t\t\t<th style="border: 1px solid black;">Nome farmaco</th>\n' +
+    '\t\t\t\t<th style="border: 1px solid black;">Dosaggio</th>\n' +
+    '\t\t\t\t\n' +
+    '\t\t\t\t<th style="border: 1px solid black;">Durata trattamento</th>\n' +
+    '\t\t\t\t<th style="border: 1px solid black;">Note</th>\n' +
+    '\t\t\t</tr>\n' +
+    '\t\t</thead>\n' +
+    '\t\t<tbody>\n' +
+    '\t\t\t<tr>\n' +
+    '\t\t\t\t<td style="border: 1px solid black;">1</td>\n' +
+    '\t\t\t\t<td style="border: 1px solid black;">Nome del farmaco 1</td>\n' +
+    '\t\t\t\t<td style="border: 1px solid black;">xxx mg</td>\n' +
+    '\t\t\t\t\n' +
+    '\t\t\t\t<td style="border: 1px solid black;">xxx giorni/mesi</td>\n' +
+    '\t\t\t\t<td style="border: 1px solid black;">Da assumere a stomaco vuoto</td>\n' +
+    '\t\t\t</tr>\n' +
+    '\t\t\t\n' +
+    '\t\t\t<tr>\n' +
+    '\t\t\t\t<td style="border: 1px solid black;">2</td>\n' +
+    '\t\t\t\t<td style="border: 1px solid black;">Nome del farmaco 2</td>\n' +
+    '\t\t\t\t<td style="border: 1px solid black;">yyy mg</td>\n' +
+    '\t\t\t\t\n' +
+    '\t\t\t\t<td style="border: 1px solid black;">yyy giorni/mesi</td>\n' +
+    '\t\t\t\t<td style="border: 1px solid black;">Da assumere dopo i pasti</td>\n' +
+    '\t\t\t</tr>\n' +
+    '</div>\n' +
+    '\t\t\t\n' +
+    '\t\t\t<!-- Aggiungi altre righe per altri\n';
 
-// Create The PDF document
-const doc = new PDFDocument();
+var options = {
+    format: "A5",
+    orientation: "portrait",
+    border: "1mm",
 
-// Pipe the PDF into a patient's file
-doc.pipe(fs.createWriteStream(`patients.pdf`));
+};
 
 
-class pdfGenerator
-{
+var document = {
+    html: html,
+    data: {
 
-     static generaPDF()
-    {
+    },
+    path: "./ricetta.pdf",
+    type: "",
+};
 
-// Add the header - https://pspdfkit.com/blog/2019/generate-invoices-pdfkit-node/
-        doc
-            .image("logo.png", 50, 45, { width: 50 })
-            .fillColor("#444444")
-            .fontSize(20)
-            .text("Patient Information.", 110, 57)
-            .fontSize(10)
-            .text("725 Fowler Avenue", 200, 65, { align: "right" })
-            .text("Chamblee, GA 30341", 200, 80, { align: "right" })
-            .moveDown();
+pdf
+    .create(document, options)
+    .then((res) => {
+        console.log(res);
+    })
+    .catch((error) => {
+        console.error(error);
+    });
 
-// Create the table - https://www.andronio.me/2017/09/02/pdfkit-tables/
-        const table = {
-            headers: ["Name", "Address", "Phone", "Birthday", "Email Address", "Blood Type", "Height", "Weight"],
-            rows: []
-        };
 
-// Add the patients to the table
-        for (const patient of patients) {
-            table.rows.push([patient.name, patient.address, patient.phone, patient.birthday, patient.emailAddress, patient.bloodType, patient.height, patient.weight])
         }
-
-// Draw the table
-        doc.moveDown().table(table, 10, 125, { width: 590 });
-
-// Finalize the PDF and end the stream
-        doc.end();
-    }
-}
+      
 
 //pdfGenerator.generaPDF();
 
-module.exports.pdfGenerator = pdfGenerator;
+module.exports = generaPDF;
