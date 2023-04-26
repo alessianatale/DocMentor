@@ -13,7 +13,7 @@ var moment = require('moment');
 const { ADD_PAZIENTE_DIALOG, addPazienteDialog } = require('./addPazienteDialog');
 const { REMOVE_PAZIENTE_DIALOG, removePazienteDialog } = require('./removePazienteDialog');
 const { MEDICO_SLOTORARI_DIALOG, medicoSlotOrariDialog } = require('./medicoSlotOrariDialog');
-
+const { GENERA_RICETTE_DIALOG, generaRicetteDialog } = require('./generaRicetteDialog');
 
 //Mongo Configuration
 const config = require('../../config');
@@ -34,7 +34,7 @@ class medicoDialog extends ComponentDialog {
         this.addDialog(new addPazienteDialog(ADD_PAZIENTE_DIALOG));
         this.addDialog(new removePazienteDialog(REMOVE_PAZIENTE_DIALOG));
         this.addDialog(new medicoSlotOrariDialog(MEDICO_SLOTORARI_DIALOG));
-        
+        this.addDialog(new generaRicetteDialog(GENERA_RICETTE_DIALOG));
 
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
             this.choiceStep.bind(this),
@@ -80,6 +80,8 @@ class medicoDialog extends ComponentDialog {
             return await step.beginDialog(REMOVE_PAZIENTE_DIALOG);
         } else if (resultchoice === 'Slot orari visite') {
             return await step.beginDialog(MEDICO_SLOTORARI_DIALOG);
+        } else if (resultchoice === 'Richieste ricette') {
+            return await step.beginDialog(GENERA_RICETTE_DIALOG);
         } else if (resultchoice === 'Visite del giorno') {
             var timeStamp = moment();
             timeStamp.locale('it');

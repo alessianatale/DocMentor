@@ -1,7 +1,3 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
-
-const { MessageFactory } = require('botbuilder');
 const {
     AttachmentPrompt,
     ChoiceFactory,
@@ -15,7 +11,6 @@ const {
     WaterfallDialog,
     ListStyle
 } = require('botbuilder-dialogs');
-const { Channels } = require('botbuilder-core');
 
 //Mongo Configuration
 const config = require('../config');
@@ -23,15 +18,12 @@ const { ADMIN_DIALOG, adminDialog } = require('./admin/adminDialog');
 const { MEDICO_DIALOG, medicoDialog } = require('./medico/medicoDialog');
 const { PAZIENTE_DIALOG, pazienteDialog } = require('./paziente/pazienteDialog');
 
-const ATTACHMENT_PROMPT = 'ATTACHMENT_PROMPT';
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
 const CONFIRM_PROMPT = 'CONFIRM_PROMPT';
 const NAME_PROMPT = 'NAME_PROMPT';
-const NUMBER_PROMPT = 'NUMBER_PROMPT';
-const USER_PROFILE = 'USER_PROFILE';
 const WATERFALL_DIALOG = 'WATERFALL_DIALOG';
 
-const { users, slotorari } = config;
+const { users, slotorari, richiesteRicette } = config;
 
 class main extends ComponentDialog {
     constructor(userState) {
@@ -133,15 +125,29 @@ class main extends ComponentDialog {
 
     async utenteEmulatore(step) {
         var idutentecorrente = step.context.activity.from.id;
-        var newuser = { idutente: idutentecorrente, ruolo: "medico", nome: "Emulatore", citta: "fantasma", dataNascita: "03/07/00", codiceFiscale: "MMMMMMMM", pdf: "url", idmedico: "2b6a7adf-6ea1-4417-8912-47aef6d61870", farmaci: ["efferaaaaaaaaaaaaaaaaaaaaaaaaaaalgan", "insulina", "tachipirina 1000", "vitamina C"], esenzioni: ["E20"]};
+        var newuser = { idutente: idutentecorrente, ruolo: "medico", nome: "Emulatore", citta: "fantasma", dataNascita: "03/07/00", codiceFiscale: "MMMMMMMM", pdf: "url", idmedico: "2b6a7adf-6ea1-4417-8912-47aef6d61870", farmaci: ["efferaaaaaaaaaaaaaaaaaaaaaaaaaaalgan", "insulina", "tachipirina 1000", "vitamina C"], esenzioni: ["E20"], counter: 0};
         users.insertOne(newuser);
 
         // da aggiungere se mettiamo ruolo medico
         var paziente = {idutente: "1234567" , ruolo: "paziente", nome: "Viviana Veccia", dataNascita: "14/06/1968", citta: "Caserta", indirizzo: "Via ss 9", codiceFiscale: "VCCVN89H45SD", pdf: "", idmedico: idutentecorrente};
         users.insertOne(paziente);
-        
-    }
 
+        async function getNextSequence(name) {
+            var res = await users.findOneAndUpdate(
+                { idutente: name },
+                { $inc: { counter: 1 } },
+                { returnNewDocument: true }
+            ).then(function(data) {
+                return data.value.counter + 1;
+            });
+            return res;
+        }
+
+        var newid = await getNextSequence(idutentecorrente);
+        console.log(newid)
+        var richiestaricetta = {id: newid, idpaziente: "1234567", farmaci: ["insulina", "vit C"], qta: ["3", "1"], idmedico: idutentecorrente}
+        richiesteRicette.insertOne(richiestaricetta);
+    }
 }
 
 module.exports.main = main;

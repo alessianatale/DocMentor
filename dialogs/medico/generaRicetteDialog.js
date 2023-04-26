@@ -11,7 +11,7 @@ const {
     ConfirmPrompt,
     DateTimePrompt,
     ListStyle,
-    AttachmentPrompt
+    AttachmentPrompt,
 } = require('botbuilder-dialogs');
 //Mongo Configuration
 const config = require('../../config');
@@ -96,13 +96,24 @@ class generaRicetteDialog extends ComponentDialog {
     }
 
     async choiceStep(step) {
+        idmedico = step.context.activity.from.id;
+        const query = await ((richiesteRicette.find({idmedico: idmedico})).toArray());
+        const ricette = []
+        for (let i=0; i<query.length; i++) {
+            const paziente = await retPaziente(query[i]);
+            const val = 'id: '+ String(query[i].id) +', nome: '+ paziente.nome +'\n cod.fiscale: '+ paziente.codiceFiscale;
+            console.log(val);
+            ricette.push(val);
+        }
         return await step.prompt(CHOICE_PROMPT, {
-            prompt: 'Vuoi allegare solo una foto di farmaci prescritti dal medico o richiederne anche altri? ',
-            choices: ChoiceFactory.toChoices(['Inserire solo foto', 'Inserire anche altri'])
+            prompt: 'Ecco le ricette mediche: ',
+            choices: ChoiceFactory.toChoices(ricette),
+            style: ListStyle.heroCard
         });
     }
 
     async farmaciUsualiStep(step) {
+        console.log(step.result.value)
         if(step.result.value === "Inserire anche altri") {
             paziente = await users.findOne({idutente: step.context.activity.from.id});
             var farmaci = paziente.farmaci;
@@ -336,6 +347,12 @@ class generaRicetteDialog extends ComponentDialog {
         }
     }
 
+}
+
+async function retPaziente(i) {
+    const paziente = await users.findOne({idutente: i.idpaziente}).then(function(data) {
+        return data; });
+    return paziente;
 }
 
 module.exports.generaRicetteDialog = generaRicetteDialog;

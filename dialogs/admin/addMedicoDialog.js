@@ -100,7 +100,7 @@ class addMedicoDialog extends ComponentDialog {
         if (step.result) {
             // Get the current profile object from user state.
 
-            var newuser = {idutente: String(step.values.id) , ruolo: "medico", nome: step.values.nome, citta: step.values.citta, indirizzo: step.values.indirizzo, codiceFiscale: step.values.cf};
+            var newuser = {idutente: String(step.values.id) , ruolo: "medico", nome: step.values.nome, citta: step.values.citta, indirizzo: step.values.indirizzo, codiceFiscale: step.values.cf, counter: 0};
             users.insertOne(newuser);
 
             let msg = `è stato aggiunto il seguente medico: \n\n ${ step.values.nome } \n\n id: ${ step.values.id }` +

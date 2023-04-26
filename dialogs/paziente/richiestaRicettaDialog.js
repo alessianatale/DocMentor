@@ -95,6 +95,8 @@ class richiestaRicettaDialog extends ComponentDialog {
         }
     }
 
+
+
     async choiceStep(step) {
         paziente = await users.findOne({idutente: step.context.activity.from.id});
         await step.context.sendActivity(`Ciao ${paziente.nome}, per richiedere la ricetta medica di farmaci ti ricordiamo che puoi inserire farmaci sia manualmente, scegliendo da una lista di farmaci che solitamente richiedi o inserendo nuovi farmaci, sia inviando una o più foto di farmaci prescritti dal tuo medico!`);
@@ -157,7 +159,9 @@ class richiestaRicettaDialog extends ComponentDialog {
             return await step.prompt(ATTACHMENT_PROMPT, promptOptions);
         } else {
             // nessuna foto allegata
-            const richiesta = {idpaziente: paziente.idutente, farmaci: step.values.farmaciInseriti.array, qta: step.values.farmaciInseriti.qta, idmedico: paziente.idmedico}
+            var newid = await getNextSequence(paziente.idmedico);
+
+            const richiesta = {id: newid, idpaziente: paziente.idutente, farmaci: step.values.farmaciInseriti.array, qta: step.values.farmaciInseriti.qta, idmedico: paziente.idmedico}
             richiesteRicette.insertOne(richiesta);
             await step.context.sendActivity(`Richiesta inviata con successo!`);
 
@@ -204,11 +208,12 @@ class richiestaRicettaDialog extends ComponentDialog {
             console.log(arrayFoto);
         }
         let richiesta;
+        var newid = await getNextSequence(paziente.idmedico);
         if (step.values.skippare == true) {
             //ha inserito solo foto
-            richiesta = {idpaziente: paziente.idutente, foto: arrayFoto, idmedico: paziente.idmedico}
+            richiesta = {id: newid, idpaziente: paziente.idutente, foto: arrayFoto, idmedico: paziente.idmedico}
         } else {
-            richiesta = {idpaziente: paziente.idutente, farmaci: step.values.farmaciInseriti.array, qta: step.values.farmaciInseriti.qta, foto: arrayFoto, idmedico: paziente.idmedico}
+            richiesta = {id: newid, idpaziente: paziente.idutente, farmaci: step.values.farmaciInseriti.array, qta: step.values.farmaciInseriti.qta, foto: arrayFoto, idmedico: paziente.idmedico}
         }
         richiesteRicette.insertOne(richiesta);
         await step.context.sendActivity(`Richiesta inviata con successo!`);
@@ -345,6 +350,17 @@ class richiestaRicettaDialog extends ComponentDialog {
         }
     }
 
+}
+
+async function getNextSequence(name) {
+    var res = await users.findOneAndUpdate(
+        { idutente: name },
+        { $inc: { counter: 1 } },
+        { returnNewDocument: true }
+    ).then(function(data) {
+        return data.value.counter + 1;
+    });
+    return res;
 }
 
 module.exports.richiestaRicettaDialog = richiestaRicettaDialog;
