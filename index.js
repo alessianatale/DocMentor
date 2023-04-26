@@ -8,6 +8,8 @@ const path = require('path');
 const ENV_FILE = path.join(__dirname, '.env');
 const generaPDF = require('./pdfGenerator');
 require('dotenv').config({ path: ENV_FILE });
+const {Ricetta} = require('./dialogs/ricetta.js');
+const {Farmaco} = require('./dialogs/farmaco.js');
 
 const restify = require('restify');
 
@@ -52,7 +54,11 @@ adapter.onTurnError = async (context, error) => {
     // Clear out state
     await conversationState.delete(context);
 };
-generaPDF();
+
+var farmaci =[];
+farmaci.push(new Farmaco("zuzu",1,3,"messuna"));
+farmaci.push(new Farmaco("zuzu",1,3,"messuna"));
+generaPDF(new Ricetta("antonio","pasqualo","" ,"","","", farmaci));
 // Define a state store for your bot. See https://aka.ms/about-bot-state to learn more about using MemoryStorage.
 // A bot requires a state store to persist the dialog and user state between messages.
 
