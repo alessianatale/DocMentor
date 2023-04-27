@@ -1,4 +1,4 @@
-const { MessageFactory } = require('botbuilder');
+const { MessageFactory, ActivityHandler, ActionTypes, ActivityTypes, CardFactory } = require('botbuilder');
 const {
     ChoiceFactory,
     ChoicePrompt,
@@ -19,6 +19,7 @@ const { users, richiesteRicette } = config;
 const { Support } = require('../support');
 const { BlobServiceClient } = require('@azure/storage-blob');
 const { v1: uuidv1 } = require("uuid");
+const path = require('path');
 const fs = require('fs');
 const http = require('http');
 
@@ -111,23 +112,65 @@ class generaRicetteDialog extends ComponentDialog {
             style: ListStyle.heroCard
         });
     }
+    
+    getInternetAttachment(url) {
+        // NOTE: The contentUrl must be HTTPS.
+        return {
+           
+            contentType: 'image/png',
+            contentUrl: url
+        };
+    }
 
     async farmaciUsualiStep(step) {
-        console.log(step.result.value)
-        if(step.result.value === "Inserire anche altri") {
-            paziente = await users.findOne({idutente: step.context.activity.from.id});
-            var farmaci = paziente.farmaci;
-            var message = "Ecco la lista dei tuoi farmaci usuali:\n\n";
-            for (let y = 0; y < farmaci.length; y++)
-                message += String(y) + ': ' + farmaci[y] + '\n\n';
+        console.log("farmaci usuali")
+        const richiestaRicetta = step.result.value;
+        var idRicetta = richiestaRicetta.substring(
+            richiestaRicetta.indexOf(":") + 2, 
+            richiestaRicetta.indexOf(",")
+        );  
 
-            await step.context.sendActivity(message);
+        
+        const query = await richiesteRicette.findOne({id: Number(idRicetta)});
+        console.log(query.foto[0]);
+        console.log( query.farmaci);
+        var message="";
+        for (let y = 0; y < query.farmaci.length; y++)
+            message +="• "+ String(y) + ': ' + query.farmaci[y] + '\n\n';
 
-            return await step.prompt(CONFIRM_PROMPT, {prompt: 'Vuoi richiedere la ricetta per uno o più di questi farmaci?'});
-        } else if (step.result.value === "Inserire solo foto") {
-            step.values.skippare = true;
-            return await step.next();
-        }
+       
+
+        const reply = { type: ActivityTypes.Message };
+       // reply.text = message;
+
+        for (let y = 0; y < query.foto.length; y++){
+        reply.attachments = [this.getInternetAttachment(query.foto[y])];
+        await step.context.sendActivity(reply);
+            
+    }
+
+
+        
+        await step.context.sendActivity(message);
+        //await step.context.sendActivity(reply);
+
+
+
+
+        // if(step.result.value === "Inserire anche altri") {
+        //     paziente = await users.findOne({idutente: step.context.activity.from.id});
+        //     var farmaci = paziente.farmaci;
+        //     var message = "Ecco la lista dei tuoi farmaci usuali:\n\n";
+        //     for (let y = 0; y < farmaci.length; y++)
+        //         message += String(y) + ': ' + farmaci[y] + '\n\n';
+
+        //     await step.context.sendActivity(message);
+
+        //     return await step.prompt(CONFIRM_PROMPT, {prompt: 'Vuoi richiedere la ricetta per uno o più di questi farmaci?'});
+        // } else if (step.result.value === "Inserire solo foto") {
+        //     step.values.skippare = true;
+        //     return await step.next();
+        // }
     }
 
     async selezioneFarmaciStep(step) {

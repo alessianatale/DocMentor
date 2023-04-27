@@ -8,6 +8,7 @@ class Ricetta {
         this.dataEmissione=dataEmissione;
         this.indirizzo = indirizzo;
         this.codiceFiscale=codiceFiscale;
+        //array farmaci
         this.farmaci=farmaci;
         
         
