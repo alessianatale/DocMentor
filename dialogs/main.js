@@ -125,32 +125,32 @@ class main extends ComponentDialog {
 
     async utenteEmulatore(step) {
         var idutentecorrente = step.context.activity.from.id;
-        var newuser = { idutente: idutentecorrente, ruolo: "paziente", nome: "Emulatore", citta: "fantasma", dataNascita: "03/07/00", codiceFiscale: "MMMMMMMM", pdf: "url", idmedico: "12345", farmaci: [28511095, 42996013, 43305034], esenzioni: ["E20"], counter: 0};
+        var newuser = { idutente: idutentecorrente, ruolo: "medico", nome: "Emulatore", citta: "fantasma", dataNascita: "03/07/00", codiceFiscale: "MMMMMMMM", pdf: "url", idmedico: "12345", farmaci: [28511095, 42996013, 43305034], esenzioni: ["E20"], counter: 0};
         users.insertOne(newuser);
 
         // da aggiungere se mettiamo ruolo paziente
-        var medico = { idutente: "12345", ruolo: "medico", nome: "MedicoEmulatore", citta: "Caserta", dataNascita: "12/07/99", codiceFiscale: "FFFFFF",  counter: 0};
-        users.insertOne(medico);
+        // var medico = { idutente: "12345", ruolo: "medico", nome: "MedicoEmulatore", citta: "Caserta", dataNascita: "12/07/99", codiceFiscale: "FFFFFF",  counter: 0};
+        // users.insertOne(medico);
 
         // da aggiungere se mettiamo ruolo medico
-        // var paziente = {idutente: "1234567" , ruolo: "paziente", nome: "Viviana Veccia", dataNascita: "14/06/1968", citta: "Caserta", indirizzo: "Via ss 9", codiceFiscale: "VCCVN89H45SD", pdf: "", idmedico: idutentecorrente};
-        // users.insertOne(paziente);
+        var paziente = {idutente: "1234567" , ruolo: "paziente", nome: "Viviana Veccia", dataNascita: "14/06/1968", citta: "Caserta", indirizzo: "Via ss 9", codiceFiscale: "VCCVN89H45SD", pdf: "", idmedico: idutentecorrente};
+        users.insertOne(paziente);
 
-        // async function getNextSequence(name) {
-        //     var res = await users.findOneAndUpdate(
-        //         { idutente: name },
-        //         { $inc: { counter: 1 } },
-        //         { returnNewDocument: true }
-        //     ).then(function(data) {
-        //         return data.value.counter + 1;
-        //     });
-        //     return res;
-        // }
+        async function getNextSequence(name) {
+            var res = await users.findOneAndUpdate(
+                { idutente: name },
+                { $inc: { counter: 1 } },
+                { returnNewDocument: true }
+            ).then(function(data) {
+                return data.value.counter + 1;
+            });
+            return res;
+        }
 
-        // var newid = await getNextSequence(idutentecorrente);
-        // console.log(newid)
-        // var richiestaricetta = {id: newid, idpaziente: "1234567", farmaci: ["insulina", "vit C"], qta: ["3", "1"], idmedico: idutentecorrente,foto:["https://storageaccount469404.blob.core.windows.net/images/barcode.png","https://storageaccount469404.blob.core.windows.net/images/logo.png"]}
-        // richiesteRicette.insertOne(richiestaricetta);
+        var newid = await getNextSequence(idutentecorrente);
+        console.log(newid)
+        var richiestaricetta = {id: newid, idpaziente: "1234567", farmaci: [28511095, 42996013], qta: ["2", "1"], idmedico: idutentecorrente,foto:["https://storageaccount469404.blob.core.windows.net/images/barcode.png","https://storageaccount469404.blob.core.windows.net/images/logo.png"]}
+        richiesteRicette.insertOne(richiestaricetta);
     }
 }
 

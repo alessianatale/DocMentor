@@ -58,7 +58,7 @@ adapter.onTurnError = async (context, error) => {
 var farmaci =[];
 farmaci.push(new Farmaco("zuzu",1,3,"messuna"));
 farmaci.push(new Farmaco("zuzu",1,3,"messuna"));
-generaPDF(new Ricetta("antonio","pasqualo","" ,"","","", farmaci));
+generaPDF(new Ricetta("antonio","pasqualo","" ,"","",farmaci, "", "", ""));
 // Define a state store for your bot. See https://aka.ms/about-bot-state to learn more about using MemoryStorage.
 // A bot requires a state store to persist the dialog and user state between messages.
 

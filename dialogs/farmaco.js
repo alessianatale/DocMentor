@@ -1,10 +1,9 @@
 class Farmaco {
-    constructor(nome,quantità,dosaggio,note) {
+    constructor(nome,dosaggio,quantita,note) {
        this.nome=nome;
-       this.quantità=quantità;
        this.dosaggio=dosaggio;
+       this.quantita=quantita;
        this.note=note;
-        
     }
 }
 

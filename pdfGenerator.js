@@ -78,7 +78,7 @@ var html = '<!DOCTYPE html>\n' +
     '\t\t</thead>\n' +
     '\t\t<tbody>\n' +
     '\t\t\t<tr>\n' +
-    '\t\t\t\t<td style="border: 1px solid black;">'+ricetta.farmaci[0].quantità+'</td>\n' +
+    '\t\t\t\t<td style="border: 1px solid black;">'+ricetta.farmaci[0].quantita+'</td>\n' +
     '\t\t\t\t<td style="border: 1px solid black;">'+ricetta.farmaci[0].nome+'</td>\n' +
     '\t\t\t\t<td style="border: 1px solid black;">'+ricetta.farmaci[0].dosaggio+'</td>\n' +
     '\t\t\t\t\n' +
@@ -87,7 +87,7 @@ var html = '<!DOCTYPE html>\n' +
     '\t\t\t</tr>\n' +
     '\t\t\t\n' +
     '\t\t\t<tr>\n' +
-    '\t\t\t\t<td style="border: 1px solid black;">'+ricetta.farmaci[0].quantità+'</td>\n' +
+    '\t\t\t\t<td style="border: 1px solid black;">'+ricetta.farmaci[0].quantita+'</td>\n' +
     '\t\t\t\t<td style="border: 1px solid black;">'+ricetta.farmaci[0].nome+'</td>\n' +
     '\t\t\t\t<td style="border: 1px solid black;">'+ricetta.farmaci[0].dosaggio+'</td>\n' +
     '\t\t\t\t\n' +

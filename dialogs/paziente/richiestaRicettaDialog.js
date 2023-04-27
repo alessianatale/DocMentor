@@ -104,13 +104,13 @@ class richiestaRicettaDialog extends ComponentDialog {
         await step.context.sendActivity(`Ciao ${paziente.nome}, per richiedere la ricetta medica di farmaci ti ricordiamo che puoi inserire farmaci sia manualmente, scegliendo da una lista di farmaci che solitamente richiedi o inserendo nuovi farmaci, sia inviando una o più foto di farmaci prescritti dal tuo medico!`);
         return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Vuoi allegare solo una foto di farmaci prescritti dal medico o richiederne anche altri?',
-            choices: ChoiceFactory.toChoices(['Inserire solo foto', 'Inserire anche altri manualmente']),
+            choices: ChoiceFactory.toChoices(['Inserire solo foto', 'Inserire farmaci e foto']),
             style: ListStyle.suggestedAction
         });
     }
 
     async farmaciUsualiStep(step) {
-        if(step.result.value === "Inserire anche altri manualmente") {
+        if(step.result.value === "Inserire farmaci e foto") {
             // lista di farmaci usuali
             var farmacipaziente = paziente.farmaci;
             var message = "Ecco la lista dei tuoi farmaci usuali:\n\n";
@@ -154,7 +154,7 @@ class richiestaRicettaDialog extends ComponentDialog {
 
         return await step.prompt(CONFIRM_PROMPT, { prompt: 'Vuoi allegare una foto di farmaci prescritti dal tuo medico?' });
     }
-    
+
     async fotoStep(step) {
         if (step.result) {
             // allegare foto
@@ -262,9 +262,9 @@ class richiestaRicettaDialog extends ComponentDialog {
         } // altrimenti inserisco l'id del farmaco nell'array
         else {
             step.values.farmaci.array.push(aic);
-            const quantita = ["1", "2", "3", "4", "5", "6"];
+            const quantita = ["1", "2"];
             return await step.prompt(CHOICE_PROMPT, {
-                prompt: 'Seleziona la quantità: ',
+                prompt: 'Seleziona la quantità: \n\n Nota: se vuoi richiederne più di 2 fai un\'altra richiesta!',
                 choices: ChoiceFactory.toChoices(quantita),
                 style: ListStyle.heroCard
             });
@@ -327,9 +327,9 @@ class richiestaRicettaDialog extends ComponentDialog {
         else {
             //const farm = await farmaci.findOne({AIC: Number(aic)});
             step.values.farmaci.array.push(aic);
-            const quantita = ["1", "2", "3", "4", "5", "6"];
+            const quantita = ["1", "2"];
             return await step.prompt(CHOICE_PROMPT, {
-                prompt: 'Seleziona la quantità: ',
+                prompt: 'Seleziona la quantità: \n\n Nota: se vuoi richiederne più di 2 fai un\'altra richiesta!',
                 choices: ChoiceFactory.toChoices(quantita),
                 style: ListStyle.heroCard
             });

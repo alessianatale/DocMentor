@@ -15,7 +15,7 @@ const {
 } = require('botbuilder-dialogs');
 //Mongo Configuration
 const config = require('../../config');
-const { users, richiesteRicette } = config;
+const { users, richiesteRicette, farmaci } = config;
 const { Support } = require('../support');
 const { BlobServiceClient } = require('@azure/storage-blob');
 const { v1: uuidv1 } = require("uuid");
@@ -102,8 +102,8 @@ class generaRicetteDialog extends ComponentDialog {
         const ricette = []
         for (let i=0; i<query.length; i++) {
             const paziente = await retPaziente(query[i]);
-            const val = 'id: '+ String(query[i].id) +', nome: '+ paziente.nome +'\n cod.fiscale: '+ paziente.codiceFiscale;
-            console.log(val);
+            const val = '['+ String(query[i].id) +'] nome: '+ paziente.nome +'\n cod.fiscale: '+ paziente.codiceFiscale;
+            //console.log(val);
             ricette.push(val);
         }
         return await step.prompt(CHOICE_PROMPT, {
@@ -114,45 +114,44 @@ class generaRicetteDialog extends ComponentDialog {
     }
     
     getInternetAttachment(url) {
-        // NOTE: The contentUrl must be HTTPS.
         return {
-           
             contentType: 'image/png',
             contentUrl: url
         };
     }
 
     async farmaciUsualiStep(step) {
-        console.log("farmaci usuali")
         const richiestaRicetta = step.result.value;
         var idRicetta = richiestaRicetta.substring(
-            richiestaRicetta.indexOf(":") + 2, 
-            richiestaRicetta.indexOf(",")
-        );  
+            richiestaRicetta.indexOf("[") + 1, 
+            richiestaRicetta.indexOf("]")
+        );   
+        const query = await richiesteRicette.findOne({id: Number(idRicetta), idmedico: idmedico});
+        // console.log(query.foto[0]);
+        //console.log( query);
 
-        
-        const query = await richiesteRicette.findOne({id: Number(idRicetta)});
-        console.log(query.foto[0]);
-        console.log( query.farmaci);
-        var message="";
-        for (let y = 0; y < query.farmaci.length; y++)
-            message +="• "+ String(y) + ': ' + query.farmaci[y] + '\n\n';
+        if(query.farmaci != undefined) {
+            // ha inserito farmaci
+            // waterfall dove clicca i farmaci richiesti
+            return await step.beginDialog(WATERFALL_DIALOG2, {farmaci: query});
+        }
+        if(query.foto != undefined) {
+            // ha inserito foto
+            // waterfall dove inserisce i farmaci
+        }
 
+        // var message="";
+        // for (let y = 0; y < query.farmaci.length; y++) {
+        //     message +="• "+ String(y) + ': ' + query.farmaci[y] + '\n\n';
+        // }
        
+        // const reply = { type: ActivityTypes.Message };
 
-        const reply = { type: ActivityTypes.Message };
-       
-
-        for (let y = 0; y < query.foto.length; y++){
-        reply.attachments = [this.getInternetAttachment(query.foto[y])];
-        await step.context.sendActivity(reply);
-            
-    }
-
-
-        
-        await step.context.sendActivity(message);
-        
+        // for (let y = 0; y < query.foto.length; y++){
+        // reply.attachments = [this.getInternetAttachment(query.foto[y])];
+        // await step.context.sendActivity(reply);        
+        // }      
+        // await step.context.sendActivity(message);
 
 
 
@@ -268,19 +267,26 @@ class generaRicetteDialog extends ComponentDialog {
 
     // waterfall 2
     async lista1Step(step) {
-        const res = step.options["farmaci"];
-        if (res != undefined) {
-            step.values.farmaci = res
+        const richiesta = step.options["farmaci"];
+        const farmacirimanenti = step.options["farmacirimanenti"];
+        if (farmacirimanenti != undefined) {
+            step.values.farmaci = farmacirimanenti
             //console.log("da option: " + res.array);
         } else {
             step.values.farmaci = new Support();
+            step.values.farmaci.array = richiesta.farmaci;
+            step.values.farmaci.qta = richiesta.qta;
         }
-        //style: ListStyle.heroCard
-        const farmaciUsuali = paziente.farmaci;
+        var listafarmaci = [];
+        for (let y = 0; y < step.values.farmaci.array.length; y++) {
+            var farm = await farmaci.findOne({AIC: step.values.farmaci.array[y]});
+            listafarmaci.push(String("[" + farm.AIC + "] " + farm.Farmaco + "\n Ditta: " + farm.Ditta + "\n " + farm["Confezione di riferimento"] + "\n Quantità: " + step.values.farmaci.qta[y]));
+        }
+
         return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Seleziona un farmaco: ',
-            choices: ChoiceFactory.toChoices(farmaciUsuali),
-            style: ListStyle.suggestedAction
+            choices: ChoiceFactory.toChoices(listafarmaci),
+            style: ListStyle.heroCard
         });
     }
 
