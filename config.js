@@ -49,6 +49,7 @@ const users = dbo.collection("users");
 const slotorari = dbo.collection("slotorari");
 const prenotazioni = dbo.collection("prenotazioni");
 const richiesteRicette = dbo.collection("richiesteRicette")
-const config = { users, slotorari, prenotazioni, richiesteRicette }
+const farmaci = dbo.collection("farmaci")
+const config = { users, slotorari, prenotazioni, richiesteRicette, farmaci }
 
 module.exports = config;
