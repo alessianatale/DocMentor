@@ -141,7 +141,7 @@ class generaRicetteDialog extends ComponentDialog {
        
 
         const reply = { type: ActivityTypes.Message };
-       // reply.text = message;
+       
 
         for (let y = 0; y < query.foto.length; y++){
         reply.attachments = [this.getInternetAttachment(query.foto[y])];
@@ -152,7 +152,7 @@ class generaRicetteDialog extends ComponentDialog {
 
         
         await step.context.sendActivity(message);
-        //await step.context.sendActivity(reply);
+        
 
 
 
