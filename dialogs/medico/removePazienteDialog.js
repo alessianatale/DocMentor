@@ -59,6 +59,10 @@ class removePazienteDialog extends ComponentDialog {
         const query = await ((users.find({ruolo: "paziente", idmedico: idmedico})).toArray());
         const pazienti = query.map(function(i) { return ('id: '+i.idutente +', nome: '+ i.nome +', città: '+ i.citta) });
 
+        if(query.length < 1){
+            await step.context.sendActivity(`Non sono presenti pazienti da eliminare`);
+            return await step.endDialog();
+        }
         return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Seleziona il paziente che vuoi eliminare: ',
             choices: ChoiceFactory.toChoices(pazienti),

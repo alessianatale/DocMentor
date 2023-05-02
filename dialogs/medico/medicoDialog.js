@@ -92,12 +92,16 @@ class medicoDialog extends ComponentDialog {
             const orario = query.map(function(i) { return (', orario: '+ i.orario) });
             const pazienti = query.map(function(i) { return i.idpaziente });
             var message = "Pazienti prenotati oggi:\n\n";
+            if(query.length <1){
+                await step.context.sendActivity("Non ci sono prenotazioni per oggi");
+            }else{
             for(let y=0; y < pazienti.length; y++) {
                 var paziente = await users.findOne({idutente: pazienti[y]});
                 message += '• ' + paziente.nome + orario[y] + '\n\n';
             }
 
             await step.context.sendActivity(message);
+            }
             return await step.replaceDialog(this.id);
         }
     }

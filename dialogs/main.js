@@ -94,7 +94,7 @@ class main extends ComponentDialog {
             await slotorari.deleteMany({});
         }
 
-        return await step.endDialog();
+        return await step.replaceDialog(this.id);
     }
 
     async showusername(step) {
@@ -117,20 +117,23 @@ class main extends ComponentDialog {
                     return await step.beginDialog(MEDICO_DIALOG);
                 case 'paziente':
                     return await step.beginDialog(PAZIENTE_DIALOG);
-                    break;
             }
-        } else
+        } else{
             await step.context.sendActivity(`Non sei registrato, comunica il tuo ID al medico/admin.`);
+            return await step.replaceDialog(this.id);
+        }
     }
 
     async utenteEmulatore(step) {
         var idutentecorrente = step.context.activity.from.id;
-        var newuser = { idutente: idutentecorrente, ruolo: "medico", nome: "Emulatore", citta: "fantasma", dataNascita: "03/07/00", codiceFiscale: "MMMMMMMM", pdf: "url", idmedico: "12345", farmaci: [28511095, 42996013, 43305034], esenzioni: ["E20"], counter: 0};
+        var newuser = { idutente: idutentecorrente, ruolo: "medico", nome: "Emulatore", citta: "fantasma", dataNascita: "03/07/00", codiceFiscale: "MMMMMMMM", pdf: "url", idmedico: "12345", farmaci: [], esenzioni: ["E20"], counter: 0};
         users.insertOne(newuser);
 
         // da aggiungere se mettiamo ruolo paziente
         // var medico = { idutente: "12345", ruolo: "medico", nome: "MedicoEmulatore", citta: "Caserta", dataNascita: "12/07/99", codiceFiscale: "FFFFFF",  counter: 0};
         // users.insertOne(medico);
+        // var slot = {idmedico: "12345", giorno: "Lunedì", orari: ["3","4"]};
+        // slotorari.insertOne(slot);
 
         // da aggiungere se mettiamo ruolo medico
         var paziente = {idutente: "1234567" , ruolo: "paziente", nome: "Viviana Veccia", dataNascita: "14/06/1968", citta: "Caserta", indirizzo: "Via ss 9", codiceFiscale: "VCCVN89H45SD", pdf: "", idmedico: idutentecorrente};

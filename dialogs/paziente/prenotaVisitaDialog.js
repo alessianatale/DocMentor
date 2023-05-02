@@ -73,11 +73,15 @@ class prenotaVisitaDialog extends ComponentDialog {
         const slots = await slotorari.find({idmedico: idmedico }).toArray();
         const giorni = slots.map(function(i) { return i.giorno });
 
-        return await step.prompt(CHOICE_PROMPT, {
-            prompt: 'Ecco i giorni disponibili per il tuo medico: ',
-            choices: ChoiceFactory.toChoices(giorni),
-            style: ListStyle.heroCard
-        });
+        if(slots.length < 1){
+            await step.context.sendActivity("Non ci sono slot disponibili per il tuo medico");
+            return await step.endDialog();
+        }else
+            return await step.prompt(CHOICE_PROMPT, {
+                prompt: 'Ecco i giorni disponibili per il tuo medico: ',
+                choices: ChoiceFactory.toChoices(giorni),
+                style: ListStyle.heroCard
+            });
 
     }
 

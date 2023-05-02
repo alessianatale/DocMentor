@@ -112,7 +112,13 @@ class richiestaRicettaDialog extends ComponentDialog {
     async farmaciUsualiStep(step) {
         if(step.result.value === "Inserire farmaci e foto") {
             // lista di farmaci usuali
+           
             var farmacipaziente = paziente.farmaci;
+            if(farmacipaziente.length<1){
+                step.values.nofarm = true;
+                // far scrivere i farmaci
+                return await step.beginDialog(WATERFALL_DIALOG3);
+            }
             var message = "Ecco la lista dei tuoi farmaci usuali:\n\n";
             for (let y = 0; y < farmacipaziente.length; y++) {
                 var farm = await farmaci.findOne({AIC: farmacipaziente[y]});
@@ -135,19 +141,24 @@ class richiestaRicettaDialog extends ComponentDialog {
             //await step.context.sendActivity("Ho skippato, sei in selezioneFarmaciStep");
             return await step.next();
         } else {
-            if (step.result) {
-                // far scegliere dalla lista
-                return await step.beginDialog(WATERFALL_DIALOG2);
+            if(step.values.nofarm == true) {
+                step.values.farmaciInseriti = step.result;
+                return await step.next();
             } else {
-                // far scrivere i farmaci
-                return await step.beginDialog(WATERFALL_DIALOG3);
+                if (step.result) {
+                    // far scegliere dalla lista
+                    return await step.beginDialog(WATERFALL_DIALOG2);
+                } else {
+                    // far scrivere i farmaci
+                    return await step.beginDialog(WATERFALL_DIALOG3);
+                }
             }
         }
     }
 
     async allegatoStep(step) {
         //await step.context.sendActivity("Ho skippato, sei in allegatoStep");
-        if(step.values.skippare != true) {
+        if(step.values.skippare != true && step.values.nofarm != true) {
             step.values.farmaciInseriti = step.result;
             console.log(step.values.farmaciInseriti.array + ' ' + step.values.farmaciInseriti.qta);
         }
@@ -165,14 +176,21 @@ class richiestaRicettaDialog extends ComponentDialog {
 
             return await step.prompt(ATTACHMENT_PROMPT, promptOptions);
         } else {
-            // nessuna foto allegata
-            var newid = await getNextSequence(paziente.idmedico);
+            if(step.values.skippare != true) {
+                // nessuna foto allegata
+                var newid = await getNextSequence(paziente.idmedico);
 
-            const richiesta = {id: newid, idpaziente: paziente.idutente, farmaci: step.values.farmaciInseriti.array, qta: step.values.farmaciInseriti.qta, idmedico: paziente.idmedico}
-            richiesteRicette.insertOne(richiesta);
-            await step.context.sendActivity(`Richiesta inviata con successo!`);
+                const richiesta = {id: newid, idpaziente: paziente.idutente, farmaci: step.values.farmaciInseriti.array, qta: step.values.farmaciInseriti.qta, idmedico: paziente.idmedico}
+                richiesteRicette.insertOne(richiesta);
+                await step.context.sendActivity(`Richiesta inviata con successo!`);
 
-            return await step.endDialog();
+                return await step.endDialog();
+            } else {
+                await step.context.sendActivity(`Nessuna richiesta inviata!`);
+
+                return await step.endDialog();
+            }
+            
         }
 
     }
@@ -304,7 +322,12 @@ class richiestaRicettaDialog extends ComponentDialog {
     async nuoviFarmaci2Step(step) {
         const farmaciscelti = await farmaci.find({ 'Farmaco' : { '$regex' : step.result, '$options' : 'i' } }).toArray();
         const listafarmaci = farmaciscelti.map(function(i) { return "[" + i.AIC + "] " + i.Farmaco + "\n Ditta: " + i.Ditta + "\n " + i["Confezione di riferimento"] });
-        
+
+        if(farmaciscelti.length < 1){
+            await step.context.sendActivity("Farmaco non trovato!");
+            const farmaci = step.values.farmaci;
+            return await step.replaceDialog(WATERFALL_DIALOG3, {farmaci: farmaci});
+        }
         return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Seleziona il farmaco: ',
             choices: ChoiceFactory.toChoices(listafarmaci),

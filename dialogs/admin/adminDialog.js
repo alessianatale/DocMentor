@@ -6,7 +6,8 @@ const {
     DialogSet,
     DialogTurnStatus,
     TextPrompt,
-    WaterfallDialog
+    WaterfallDialog,
+    ListStyle
 } = require('botbuilder-dialogs');
 const { ADD_MEDICO_DIALOG, addMedicoDialog } = require('./addMedicoDialog');
 const { REMOVE_MEDICO_DIALOG, removeMedicoDialog } = require('./removeMedicoDialog');
@@ -56,7 +57,8 @@ class adminDialog extends ComponentDialog {
         const userName = step.context.activity.from.name;
         return await step.prompt(CHOICE_PROMPT, {
             prompt: `Ciao ${ userName }, cosa desideri fare?`,
-            choices: ChoiceFactory.toChoices(['Inserire medico', 'Elimina medico'])
+            choices: ChoiceFactory.toChoices(['Inserire medico', 'Elimina medico']),
+            style: ListStyle.heroCard
         });
     }
 
