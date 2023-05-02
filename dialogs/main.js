@@ -152,7 +152,7 @@ class main extends ComponentDialog {
 
         var newid = await getNextSequence(idutentecorrente);
         console.log(newid)
-        var richiestaricetta = {id: newid, idpaziente: "1234567", farmaci: [28511095, 42996013], qta: ["2", "1"], idmedico: idutentecorrente,foto:["https://storageaccount469404.blob.core.windows.net/images/barcode.png","https://storageaccount469404.blob.core.windows.net/images/logo.png"]}
+        var richiestaricetta = {id: newid, idpaziente: "1234567", farmaci: [28511095, 42996013, 38835144], qta: ["1", "1", "1"], idmedico: idutentecorrente,foto:["https://storageaccount469404.blob.core.windows.net/images/barcode.png","https://storageaccount469404.blob.core.windows.net/images/logo.png"]}
         richiesteRicette.insertOne(richiestaricetta);
     }
 }
