@@ -89,7 +89,7 @@ class addMedicoDialog extends ComponentDialog {
     }
 
     async confirmStep(step) {
-        step.values.cf = step.result;
+        step.values.cf = step.result.toUpperCase();
 
         // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
         return await step.prompt(CONFIRM_PROMPT, { prompt: 'Confermi?' });

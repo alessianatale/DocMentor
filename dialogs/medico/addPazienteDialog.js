@@ -40,6 +40,7 @@ class addPazienteDialog extends ComponentDialog {
             this.cittaStep.bind(this),
             this.indirizzoStep.bind(this),
             this.cfStep.bind(this),
+            this.esenzioneStep.bind(this),
             this.confirmStep.bind(this),
             this.summaryStep.bind(this)
         ]));
@@ -93,9 +94,13 @@ class addPazienteDialog extends ComponentDialog {
         step.values.indirizzo = step.result;
         return await step.prompt(NAME_PROMPT, 'Inserisci il codice fiscale');
     }
+    async esenzioneStep(step) {
+        step.values.cf = step.result.toUpperCase();
+        return await step.prompt(NAME_PROMPT, 'Inserisci il tipo di esenzione del paziente');
+    }
 
     async confirmStep(step) {
-        step.values.cf = step.result;
+        step.values.esenzione = step.result;
 
         // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
         return await step.prompt(CONFIRM_PROMPT, { prompt: 'Confermi?' });
@@ -110,7 +115,7 @@ class addPazienteDialog extends ComponentDialog {
             users.insertOne(newuser);
 
             let msg = `è stato aggiunto il seguente paziente: \n\n ${ step.values.nome } \n\n id: ${ step.values.id } \n\n data nascita: ${ step.values.dataNascita }` +
-              `\n\n codice fiscale: ${ step.values.cf } \n\n indirizzo: ${ step.values.citta } , ${ step.values.indirizzo }`;
+              `\n\n codice fiscale: ${ step.values.cf } \n\n esenzione:${ step.values.esenzione }  \n\n indirizzo: ${ step.values.citta } , ${ step.values.indirizzo }`;
 
 
             msg += '.';
