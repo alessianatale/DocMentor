@@ -1,6 +1,6 @@
 
 class Ricetta {
-    constructor(nomePaziente,dataNascita,citta,indirizzo,codiceFiscale,farmaci,nomeMedico,codiceFiscaleMedico,dataEmissione) {
+    constructor(nomePaziente,dataNascita,citta,indirizzo,codiceFiscale,farmaci,nomeMedico,codiceFiscaleMedico,dataEmissione,esenzione) {
         
         //dati paziente
         this.nomePaziente = nomePaziente;
@@ -8,6 +8,7 @@ class Ricetta {
         this.citta=citta;
         this.indirizzo = indirizzo;
         this.codiceFiscale=codiceFiscale;
+        this.esenzione = esenzione;
         //array farmaci
         this.farmaci=farmaci;
 

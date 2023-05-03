@@ -56,9 +56,9 @@ adapter.onTurnError = async (context, error) => {
 };
 
 var farmaci =[];
-farmaci.push(new Farmaco("zuzu",1,3,"messuna"));
-farmaci.push(new Farmaco("zuzu",1,3,"messuna"));
-generaPDF(new Ricetta("antonio","pasqualo","" ,"","",farmaci, "", "", ""));
+farmaci.push(new Farmaco("zuzu",1,3));
+farmaci.push(new Farmaco("zuzu",1,3));
+generaPDF(new Ricetta("saverio de stefano","03/07/1998","ariano" ,"via 4 nonvembre","dstsvrmnnj399f",farmaci, "grazia peluso", "plsgrzvghbhs399f", "01/05/2023","E200"));
 // Define a state store for your bot. See https://aka.ms/about-bot-state to learn more about using MemoryStorage.
 // A bot requires a state store to persist the dialog and user state between messages.
 

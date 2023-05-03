@@ -43,23 +43,23 @@ var html = '<!DOCTYPE html>\n' +
     '\t<table >\n' +
     '\t\t<tr>\n' +
     '\t\t\t<th>Nome paziente:</th>\n' +
-    '\t\t\t<td>Nome Cognome</td>\n' +
+    '\t\t\t<td>'+ricetta.nomePaziente+'</td>\n' +
     '\t\t\t<td>                   </td>\n' +
-    '\t\t\t<td style = " font-family: \'Libre Barcode 39\';font-size: 22px;"><p>DSTSVR98L03A399F</p></td>\n' +
+    '\t\t\t<td style = " font-family: \'Libre Barcode 39\';font-size: 22px;"><p>'+ricetta.codiceFiscale+'</p></td>\n' +
     '\t\t</tr>\n' +
     '        <tr>\n' +
     '\t\t\t<th>Esenzione: </th>\n' +
-    '\t\t\t<td>E210</td>\n' +
+    '\t\t\t<td>'+ricetta.esenzione+'</td>\n' +
     '\t\t</tr>\n' +
     '\t\t<tr>\n' +
     '\t\t\t<th>Data di nascita:</th>\n' +
-    '\t\t\t<td>01/01/1970</td>\n' +
+    '\t\t\t<td>'+ricetta.dataNascita+'</td>\n' +
     '\t\t</tr>\n' +
     '\t\t\n' +
     '\t\t\n' +
     '\t\t<tr>\n' +
     '\t\t\t<th>Indirizzo:</th>\n' +
-    '\t\t\t<td>Via Nome Via, Numero Civico</td>\n' +
+    '\t\t\t<td>'+ricetta.indirizzo+'</td>\n' +
     '\t\t</tr>\n' +
     '\t\t\n' +
     '\t</table>\n' +
@@ -78,17 +78,17 @@ var html = '<!DOCTYPE html>\n' +
     '\t\t</thead>\n' +
     '\t\t<tbody>\n' +
     '\t\t\t<tr>\n' +
-    '\t\t\t\t<td style="border: 1px solid black;">1</td>\n' +
-    '\t\t\t\t<td style="border: 1px solid black;">Nome del farmaco 1</td>\n' +
-    '\t\t\t\t<td style="border: 1px solid black;">xxx mg</td>\n' +
+    '\t\t\t\t<td style="border: 1px solid black;">'+ricetta.farmaci[0].nome+'  '+ricetta.farmaci[0].dosaggio+'</td>\n' +
+    '\t\t\t\t<td style="border: 1px solid black;">'+ricetta.farmaci[0].quantita+'</td>\n' +
+    '\t\t\t\t<td style="border: 1px solid black;">---</td>\n' +
     '\t\t\t\t\n' +
     '\t\t\t\t\n' +
     '\t\t\t</tr>\n' +
     '\t\t\t\n' +
     '\t\t\t<tr >\n' +
-    '\t\t\t\t<td style="border: 1px solid black;">2</td>\n' +
-    '\t\t\t\t<td style="border: 1px solid black;">Nome del farmaco 2</td>\n' +
-    '\t\t\t\t<td style="border: 1px solid black;">yyy mg</td>\n' +
+    '\t\t\t\t<td style="border: 1px solid black;">'+ricetta.farmaci[1].nome+'  '+ricetta.farmaci[1].dosaggio+'</td>\n' +
+    '\t\t\t\t<td style="border: 1px solid black;">'+ricetta.farmaci[1].quantita+'</td>\n' +
+    '\t\t\t\t<td style="border: 1px solid black;">---</td>\n' +
     '\t\t\t\t\n' +
     '\t\t\t\t\n' +
     '\t\t\t</tr>\n' +
@@ -100,8 +100,8 @@ var html = '<!DOCTYPE html>\n' +
     '</div>\n' +
     '<div  class="div4">\n' +
     '<p  align=" center"> \n' +
-    'TIPO RICETTA:Assist.SSN DATA:26/04/2023 CODICE FISCALE DEL MEDICO:GRSNMR54R66A399T<br>\n' +
-    'COGNOME E NOME DEL MEDICO:GRASSO ANNA MARIA<br>\n' +
+    'TIPO RICETTA:Assist.SSN DATA:  '+ricetta.dataEmissione+' CODICE FISCALE DEL MEDICO:'+ricetta.codiceFiscaleMedico+'<br>\n' +
+    'COGNOME E NOME DEL MEDICO: '+ricetta.nomeMedico+'<br>\n' +
     'Rilasciato ai sensi dell\'art.11, comma 16 del DL 31 mag 2010, n.78 e dell’art.1, comma 4 del DM 2 nov 2011 </p>\n' +
     ' </div>\n' +
     '\n' +
