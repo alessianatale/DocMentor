@@ -126,7 +126,7 @@ class main extends ComponentDialog {
 
     async utenteEmulatore(step) {
         var idutentecorrente = step.context.activity.from.id;
-        var newuser = { idutente: idutentecorrente, ruolo: "medico", nome: "Emulatore", citta: "fantasma", dataNascita: "03/07/00", codiceFiscale: "MMMMMMMM", pdf: "url", idmedico: "12345", farmaci: [], esenzioni: ["E20"], counter: 0};
+        var newuser = { idutente: idutentecorrente, ruolo: "medico", nome: "Emulatore", citta: "fantasma", dataNascita: "03/07/2000", codiceFiscale: "MMMMMMMM", pdf: "url", idmedico: "12345", farmaci: [], counter: 0};
         users.insertOne(newuser);
 
         // da aggiungere se mettiamo ruolo paziente
@@ -136,8 +136,10 @@ class main extends ComponentDialog {
         // slotorari.insertOne(slot);
 
         // da aggiungere se mettiamo ruolo medico
-        var paziente = {idutente: "1234567" , ruolo: "paziente", nome: "Viviana Veccia", dataNascita: "14/06/1968", citta: "Caserta", indirizzo: "Via ss 9", codiceFiscale: "VCCVN89H45SD", pdf: "", idmedico: idutentecorrente};
+        var paziente = {idutente: "1234567" , ruolo: "paziente", nome: "Viviana Veccia", dataNascita: "14/06/1968", citta: "Caserta", indirizzo: "Via ss 9", codiceFiscale: "VCCVN89H45SD", pdf: "", idmedico: idutentecorrente, esenzione: "E20"};
         users.insertOne(paziente);
+        var paziente2 = {idutente: "12345678" , ruolo: "paziente", nome: "Alessia", dataNascita: "14/06/1968", citta: "Caserta", indirizzo: "Via ss 9", codiceFiscale: "NTLVN89H45SD", pdf: "", idmedico: idutentecorrente, esenzione: "E20"};
+        users.insertOne(paziente2);
 
         async function getNextSequence(name) {
             var res = await users.findOneAndUpdate(
@@ -152,8 +154,12 @@ class main extends ComponentDialog {
 
         var newid = await getNextSequence(idutentecorrente);
         console.log(newid)
-        var richiestaricetta = {id: newid, idpaziente: "1234567", farmaci: [28511095, 42996013, 38835144], qta: ["1", "1", "1"], idmedico: idutentecorrente,foto:["https://storageaccount469404.blob.core.windows.net/images/barcode.png","https://storageaccount469404.blob.core.windows.net/images/logo.png"]}
+        var richiestaricetta = {id: newid, idpaziente: "1234567", farmaci: [28511095, 42996013, 38835144], qta: ["2", "1", "1"], idmedico: idutentecorrente,foto:["https://www.keblog.it/wp-content/uploads/2021/12/foto-piu-belle-2021-30.jpg","https://www.keblog.it/wp-content/uploads/2021/12/foto-piu-belle-2021-08.jpg"]}
         richiesteRicette.insertOne(richiestaricetta);
+        var newid2 = await getNextSequence(idutentecorrente);
+        console.log(newid2)
+        var richiestaricetta2 = {id: newid2, idpaziente: "12345678", farmaci: [28511095, 42996013], qta: ["2", "1"], idmedico: idutentecorrente}
+        richiesteRicette.insertOne(richiestaricetta2);
     }
 }
 

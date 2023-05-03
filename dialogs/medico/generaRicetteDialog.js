@@ -31,6 +31,7 @@ const STORAGE_ACCOUNT_NAME = process.env.STORAGE_ACCOUNT_NAME;
 let paziente;
 let idmedico;
 let medico;
+let qtaricette;
 
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
 const NAME_PROMPT = 'NAME_PROMPT';
@@ -59,9 +60,7 @@ class generaRicetteDialog extends ComponentDialog {
             this.choiceStep.bind(this),
             this.farmaciUsualiStep.bind(this),
             this.selezioneFarmaciStep.bind(this),
-            this.allegatoStep.bind(this),
-            this.fotoStep.bind(this),
-            this.confirmStep.bind(this)
+            this.allegatoStep.bind(this)
         ]));
 
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG2, [
@@ -74,7 +73,11 @@ class generaRicetteDialog extends ComponentDialog {
             this.nuoviFarmaci1Step.bind(this),
             this.nuoviFarmaci2Step.bind(this),
             this.nuoviFarmaci3Step.bind(this),
-            this.nuoviFarmaci4Step.bind(this)
+            this.nuoviFarmaci4Step.bind(this),
+            this.nuoviFarmaci5Step.bind(this),
+            this.nuoviFarmaci6Step.bind(this),
+            this.nuoviFarmaci7Step.bind(this),
+            this.nuoviFarmaci8Step.bind(this)
         ]));
 
         this.initialDialogId = WATERFALL_DIALOG;
@@ -102,8 +105,9 @@ class generaRicetteDialog extends ComponentDialog {
         idmedico = step.context.activity.from.id;
         medico = await users.findOne({idutente: step.context.activity.from.id});
         const query = await ((richiesteRicette.find({idmedico: idmedico})).toArray());
+        qtaricette = query.length;
         const ricette = []
-        for (let i=0; i<query.length; i++) {
+        for (let i=0; i<qtaricette; i++) {
             const paziente = await retPaziente(query[i]);
             const val = '['+ String(query[i].id) +'] nome: '+ paziente.nome +'\n cod.fiscale: '+ paziente.codiceFiscale;
             //console.log(val);
@@ -130,142 +134,56 @@ class generaRicetteDialog extends ComponentDialog {
             richiestaRicetta.indexOf("]")
         );   
         const query = await richiesteRicette.findOne({id: Number(idRicetta), idmedico: idmedico});
+        paziente = await users.findOne({idutente: query.idpaziente});
+        step.values.query = query;
         // console.log(query.foto[0]);
         //console.log( query);
 
-        if(query.farmaci != undefined) {
-            // ha inserito farmaci
-            // waterfall dove clicca i farmaci richiesti
+        if(query.farmaci != undefined && query.foto == undefined) {
+            // ha inserito solo farmaci
             return await step.beginDialog(WATERFALL_DIALOG2, {farmaci: query});
         }
         if(query.foto != undefined) {
             // ha inserito foto
-            // waterfall dove inserisce i farmaci
-            return await step.next();
+            //await step.context.sendActivity("");
+            if (query.farmaci != undefined) {
+                // ha inserito anche farmaci
+                step.values.waterfarmaci = true;
+            }
+            // facciamo visualizzare le foto
+            const reply = { type: ActivityTypes.Message };
+
+            for (let y = 0; y < query.foto.length; y++){
+                reply.attachments = [this.getInternetAttachment(query.foto[y])];
+                await step.context.sendActivity(reply);
+            }
+            return await step.beginDialog(WATERFALL_DIALOG3);
         }
         return await step.next();
-        // var message="";
-        // for (let y = 0; y < query.farmaci.length; y++) {
-        //     message +="• "+ String(y) + ': ' + query.farmaci[y] + '\n\n';
-        // }
-       
-        // const reply = { type: ActivityTypes.Message };
-
-        // for (let y = 0; y < query.foto.length; y++){
-        // reply.attachments = [this.getInternetAttachment(query.foto[y])];
-        // await step.context.sendActivity(reply);        
-        // }      
-        // await step.context.sendActivity(message);
-
-
-
-
-        // if(step.result.value === "Inserire anche altri") {
-        //     paziente = await users.findOne({idutente: step.context.activity.from.id});
-        //     var farmaci = paziente.farmaci;
-        //     var message = "Ecco la lista dei tuoi farmaci usuali:\n\n";
-        //     for (let y = 0; y < farmaci.length; y++)
-        //         message += String(y) + ': ' + farmaci[y] + '\n\n';
-
-        //     await step.context.sendActivity(message);
-
-        //     return await step.prompt(CONFIRM_PROMPT, {prompt: 'Vuoi richiedere la ricetta per uno o più di questi farmaci?'});
-        // } else if (step.result.value === "Inserire solo foto") {
-        //     step.values.skippare = true;
-        //     return await step.next();
-        // }
     }
 
     async selezioneFarmaciStep(step) {
-        console.log("sono ritornato nel main")
-        // if (step.values.skippare == true) {
-        //     //await step.context.sendActivity("Ho skippato, sei in selezioneFarmaciStep");
-        //     return await step.next();
-        // } else {
-        //     if (step.result) {
-        //         // far scegliere dalla lista
-        //         return await step.beginDialog(WATERFALL_DIALOG2);
-        //     } else {
-        //         // far scrivere i farmaci
-        //         return await step.beginDialog(WATERFALL_DIALOG3);
-        //     }
-        // }
-        return await step.prompt(CONFIRM_PROMPT, { prompt: 'Vuoi allegare una foto di farmaci prescritti dal tuo medico?' });
+        console.log("sono ritornato nel main - nuovo step")
+        if (step.values.waterfarmaci == true) {
+            const query = step.values.query;
+            await step.context.sendActivity("Ecco i farmaci richiesti da " + paziente.nome);
+            
+            return await step.beginDialog(WATERFALL_DIALOG2, {farmaci: query});
+        }
+        return await step.next();
     }
 
     async allegatoStep(step) {
-        //await step.context.sendActivity("Ho skippato, sei in allegatoStep");
-        if(step.values.skippare != true) {
-            step.values.farmaciInseriti = step.result;
-            console.log(step.values.farmaciInseriti.array + ' ' + step.values.farmaciInseriti.qta);
-        }
-
-        return await step.prompt(CONFIRM_PROMPT, { prompt: 'Vuoi allegare una foto di farmaci prescritti dal tuo medico?' });
-    }
-    async fotoStep(step) {
-        if (step.result) {
-            // allegare foto
-            var promptOptions = {
-                prompt: 'Carica le foto (o digita qualsiasi messaggio per skippare).',
-                retryPrompt: 'La foto deve essere in formato jpeg/png'
-            };
-
-            return await step.prompt(ATTACHMENT_PROMPT, promptOptions);
-        } else {
-            // nessuna foto allegata
-            const richiesta = {idpaziente: step.context.activity.from.id, farmaci: step.values.farmaciInseriti.array, qta: step.values.farmaciInseriti.qta}
-            richiesteRicette.insertOne(richiesta);
-
+        // elimino la richiesta appena vista
+        const query = step.values.query;
+        var q = {id: query.id, idmedico: idmedico};
+        await richiesteRicette.deleteOne(q);
+        qtaricette -= 1;
+        // rinizio il dialog main se ci sono altre richieste di ricette
+        if (qtaricette > 0)
+            return await step.beginDialog(this.id);
+        else 
             return await step.endDialog();
-        }
-
-    }
-
-    async confirmStep(step) {
-        step.values.picture = step.result;
-        //await step.context.sendActivity({ attachments: step.values.picture[0]})
-        //await step.context.sendActivity(MessageFactory.attachment(step.values["picture"], 'This is your profile picture.'));
-
-        //salvo img nel db
-        if (!AZURE_STORAGE_CONNECTION_STRING) {
-            throw Error('Azure Storage Connection string not found');
-        }
-        const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
-        const containerClient = blobServiceClient.getContainerClient("images");
-
-        const arrayFoto = [];
-        for (let i = 0; i < step.values.picture.length; i++) {
-            const blobPath = step.values.picture[i].contentUrl;
-            //console.log(blobPath);
-
-            const filename = uuidv1() + ".png";
-            //console.log("uuid: " + filename);
-            const blockBlobClient = containerClient.getBlockBlobClient(filename);
-
-            //let fileStream = fs.createReadStream(blobPath);
-            http.get(blobPath, (stream) => {
-                const blobOptions = {
-                    blobHTTPHeaders: {
-                        blobContentType: 'image/png'
-                    }
-                };
-                blockBlobClient.uploadStream(stream, undefined, undefined, blobOptions);
-            });
-
-            var foto = 'https://' + STORAGE_ACCOUNT_NAME + '.blob.core.windows.net/images/' + filename;
-            arrayFoto.push(foto);
-        }
-        console.log(arrayFoto);
-        let richiesta;
-        if (step.values.skippare == true) {
-            //ha inserito solo foto
-            richiesta = {idpaziente: step.context.activity.from.id, foto: arrayFoto}
-        } else {
-            richiesta = {idpaziente: step.context.activity.from.id, farmaci: step.values.farmaciInseriti.array, qta: step.values.farmaciInseriti.qta, foto: arrayFoto}
-        }
-        richiesteRicette.insertOne(richiesta);
-
-        return await step.endDialog();
     }
 
 
@@ -277,7 +195,7 @@ class generaRicetteDialog extends ComponentDialog {
         const farmacirimanenti = step.options["farmacirimanenti"];
         if (farmacirimanenti != undefined) {
             step.values.farmaci = farmacirimanenti
-            console.log("da option: " + step.values.farmaci.array);
+            //console.log("da option: " + step.values.farmaci.array);
         } else {
             step.values.farmaci = new Support();
             step.values.farmaci.array = richiesta.farmaci;
@@ -290,7 +208,7 @@ class generaRicetteDialog extends ComponentDialog {
             step.values.farmacicompleti.push(farm);
             listafarmaci.push(String("[" + farm.AIC + "] " + farm.Farmaco + "\n Ditta: " + farm.Ditta + "\n " + farm["Confezione di riferimento"] + "\n Quantità: " + step.values.farmaci.qta[y]));
         }
-
+        console.log("Paziente: "+paziente.nome)
         return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Seleziona un farmaco da inserire nella ricetta: ',
             choices: ChoiceFactory.toChoices(listafarmaci),
@@ -319,7 +237,7 @@ class generaRicetteDialog extends ComponentDialog {
 
         // la ricetta ha il max. numero di quantità (2) oppure non ci sono altri farmaci richiesti con qta = 1
         if(qtaFarmacoSelezionato > 1 || (step.values.farmaci.qta.includes("1") === false)) {
-            console.log ("sto nell if > 1")
+            //console.log ("sto nell if > 1")
             var farmacoRicetta = new Farmaco(farm.Farmaco, farm["Confezione di riferimento"], qtaFarmacoSelezionato, "--")
             var ricetta = new Ricetta();
             await step.context.sendActivity("Ho generato ricetta...");
@@ -334,7 +252,7 @@ class generaRicetteDialog extends ComponentDialog {
             }
         } else {
             // skippo avanti per farne mettere un altro eliminando quelli che hanno qt = 2
-            console.log("sto nell else")
+            //console.log("sto nell else")
             // salvo il primo farmaco inserito
             step.values.farm1 = farm;
             
@@ -365,7 +283,6 @@ class generaRicetteDialog extends ComponentDialog {
     }
 
     async lista3Step(step) {
-        console.log("sto in lista3")
         console.log(step.result.value)
         const farmacoselezionato = step.result.value;
         var idFarmacoSelezionato = farmacoselezionato.substring(
@@ -387,22 +304,12 @@ class generaRicetteDialog extends ComponentDialog {
         // controllo se ci sono altri farmaci richiesti rinizio il dialog passando i farmaci richiesti dal paziente senza quello appena inserito nella ricetta
         if (step.values.farmaci.array.length != 0) {
             const farmacirimanenti = step.values.farmaci;
-            console.log("ultimo: " + farmacirimanenti)
+            //console.log("ultimo: " + farmacirimanenti)
             return await step.replaceDialog(WATERFALL_DIALOG2, {farmacirimanenti: farmacirimanenti});
         } else {
-            console.log("sto nell end dialog")
             return await step.endDialog();
         }
     }
-
-    // async lista4Step(step) {
-    //     const farmaci = step.values.farmaci;
-    //     //console.log("ho preso il farmaco: "+ farmaci.array);
-    //     if (step.result) {
-    //         return await step.beginDialog(WATERFALL_DIALOG2, {farmaci: farmaci});
-    //     } else
-    //         return await step.endDialog(farmaci);
-    // }
 
 
 
@@ -410,72 +317,116 @@ class generaRicetteDialog extends ComponentDialog {
 
     // waterfall 3
     async nuoviFarmaci1Step(step) {
-        const res = step.options["farmaci"];
-        if (res != undefined) {
-            step.values.farmaci = res
-            //console.log("da option: " + res.array);
-        } else {
-            step.values.farmaci = new Support();
-        }
+        step.values.farmaci = new Support();
         return await step.prompt(NAME_PROMPT, 'Inserisci un nuovo farmaco che vuoi richiedere');
     }
 
     async nuoviFarmaci2Step(step) {
-        if(!step.values.farmaci.array.includes(step.result)) {
-            step.values.farmaci.array.push(step.result);
-        }
-        else
-            await step.context.sendActivity(`Attenzione, questo farmaco è già stato inserito`);
+        const farmaciscelti = await farmaci.find({ 'Farmaco' : { '$regex' : step.result, '$options' : 'i' } }).toArray();
+        const listafarmaci = farmaciscelti.map(function(i) { return "[" + i.AIC + "] " + i.Farmaco + "\n Ditta: " + i.Ditta + "\n " + i["Confezione di riferimento"] });
 
-        const quantita = ["1", "2", "3", "4", "5", "6"];
+        if(farmaciscelti.length < 1){
+            await step.context.sendActivity("Farmaco non trovato!");
+            return await step.replaceDialog(WATERFALL_DIALOG3);
+        }
         return await step.prompt(CHOICE_PROMPT, {
-            prompt: 'Seleziona la quantità: ',
-            choices: ChoiceFactory.toChoices(quantita)
+            prompt: 'Seleziona il farmaco: ',
+            choices: ChoiceFactory.toChoices(listafarmaci),
+            style: ListStyle.heroCard
         });
     }
 
     async nuoviFarmaci3Step(step) {
-        step.values.farmaci.qta.push(step.result.value);
-        var message = "Hai richiesto i seguenti farmaci:\n\n";
-        for (let y = 0; y < step.values.farmaci.array.length; y++)
-            message += '• ' + step.values.farmaci.array[y] + '; qtà: ' + step.values.farmaci.qta[y] + '\n\n';
-
-        await step.context.sendActivity(message);
-        return await step.prompt(CONFIRM_PROMPT, { prompt: 'Vuoi richiedere un altro farmaco?' });
+        const farmacoselezionato = step.result.value;
+        var aic = farmacoselezionato.substring(
+            farmacoselezionato.indexOf("[") + 1, 
+            farmacoselezionato.indexOf("]")
+        );
+        
+            step.values.farmaci.array.push(aic);
+            const quantita = ["1", "2"];
+            return await step.prompt(CHOICE_PROMPT, {
+                prompt: 'Seleziona la quantità: ',
+                choices: ChoiceFactory.toChoices(quantita),
+                style: ListStyle.heroCard
+            });
     }
 
     async nuoviFarmaci4Step(step) {
-        const farmaci = step.values.farmaci;
-        //console.log("ho preso il farmaco: "+ farmaci.array);
-        if (step.result) {
-            return await step.beginDialog(WATERFALL_DIALOG3, {farmaci: farmaci});
-        } else
-            return await step.endDialog(farmaci);
+        step.values.farmaci.qta.push(step.result.value);
+        // controllo se qta = 2 genero ricetta e chiedo se vuoi reinserire un altro
+        if(step.result.value == "2") {
+            // genero ricetta - DA FARE
+            await step.context.sendActivity("Ho generato ricetta...");
+            step.values.restart = true;
+            return await step.prompt(CONFIRM_PROMPT, { prompt: 'Vuoi generare una nuova ricetta?' });
+        } else {
+            // altrimenti chiedo se vuoi inserire un altro farmaco
+            step.values.anotherfarmaco = true;
+            return await step.prompt(CONFIRM_PROMPT, { prompt: 'Vuoi inserire un altro farmaco nella ricetta?' });
+        }
     }
 
-
-
-    async choiceValidator(promptContext) {
-        if (promptContext.recognized.succeeded) {
-            // var attachments = promptContext.recognized.value;
-            // var validImages = [];
-
-            // attachments.forEach(attachment => {
-            //     if (attachment.contentType === 'image/jpeg' || attachment.contentType === 'image/png') {
-            //         validImages.push(attachment);
-            //     }
-            // });
-
-            // promptContext.recognized.value = validImages;
-
-            // // If none of the attachments are valid images, the retry prompt should be sent.
-            // return !!validImages.length;
-        } else {
-            //await promptContext.context.sendActivity('No attachments received. Proceeding without a profile picture...');
-
-            // We can return true from a validator function even if Recognized.Succeeded is false.
-            return await step.endDialog();;
+    async nuoviFarmaci5Step(step) {
+        if (step.values.restart == true) {
+            if (step.result)
+                return await step.replaceDialog(WATERFALL_DIALOG3);
+            else
+                return await step.endDialog();
+        } else if (step.values.anotherfarmaco == true) {
+            if (step.result) {
+                // faccio inserire il secondo farmaco
+                return await step.prompt(NAME_PROMPT, 'Inserisci un secondo farmaco da aggiungere alla ricetta \n\nNota: il farmaco che selezionerai avrà quantità = 1');
+            } else {
+                // genero ricetta con un solo farmaco - DA FARE
+                await step.context.sendActivity("Ho generato ricetta...");
+                step.values.restart = true;
+                return await step.prompt(CONFIRM_PROMPT, { prompt: 'Vuoi generare una nuova ricetta?' });
+            }
         }
+    }
+
+    async nuoviFarmaci6Step(step) {
+        if (step.values.restart == true) {
+            if (step.result)
+                return await step.replaceDialog(WATERFALL_DIALOG3);
+            else
+                return await step.endDialog();
+        } else {
+            const farmaciscelti = await farmaci.find({ 'Farmaco' : { '$regex' : step.result, '$options' : 'i' } }).toArray();
+            const listafarmaci = farmaciscelti.map(function(i) { return "[" + i.AIC + "] " + i.Farmaco + "\n Ditta: " + i.Ditta + "\n " + i["Confezione di riferimento"] });
+
+            if(farmaciscelti.length < 1){
+                await step.context.sendActivity("Farmaco non trovato!");
+                return await step.replaceDialog(WATERFALL_DIALOG3);
+            }
+            return await step.prompt(CHOICE_PROMPT, {
+                prompt: 'Seleziona il farmaco: ',
+                choices: ChoiceFactory.toChoices(listafarmaci),
+                style: ListStyle.heroCard
+            });
+        }
+    }
+
+    async nuoviFarmaci7Step(step) {
+        const farmacoselezionato = step.result.value;
+        var aic = farmacoselezionato.substring(
+            farmacoselezionato.indexOf("[") + 1, 
+            farmacoselezionato.indexOf("]")
+        );
+        
+        step.values.farmaci.array.push(aic);
+        // genero ricetta - DA FARE
+        await step.context.sendActivity("Ho generato ricetta...");
+
+        return await step.prompt(CONFIRM_PROMPT, { prompt: 'Vuoi generare una nuova ricetta?' });
+    }
+
+    async nuoviFarmaci8Step(step) {
+        if (step.result) {
+            return await step.beginDialog(WATERFALL_DIALOG3);
+        } else
+            return await step.endDialog();
     }
 
 }
