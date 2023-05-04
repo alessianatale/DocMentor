@@ -136,9 +136,9 @@ class main extends ComponentDialog {
         // slotorari.insertOne(slot);
 
         // da aggiungere se mettiamo ruolo medico
-        var paziente = {idutente: "1234567" , ruolo: "paziente", nome: "Viviana Veccia", dataNascita: "14/06/1968", citta: "Caserta", indirizzo: "Via ss 9", codiceFiscale: "VCCVN89H45SD", pdf: "", idmedico: idutentecorrente, esenzione: "E20"};
+        var paziente = {idutente: "1234567" , ruolo: "paziente", nome: "Viviana Veccia", dataNascita: "14/06/1968", citta: "Caserta", indirizzo: "Via ss 9", codiceFiscale: "VCCVN89H45SD", pdf: [], farmaci: [], idmedico: idutentecorrente, esenzione: "E20"};
         users.insertOne(paziente);
-        var paziente2 = {idutente: "12345678" , ruolo: "paziente", nome: "Alessia", dataNascita: "14/06/1968", citta: "Caserta", indirizzo: "Via ss 9", codiceFiscale: "NTLVN89H45SD", pdf: "", idmedico: idutentecorrente, esenzione: "E20"};
+        var paziente2 = {idutente: "12345678" , ruolo: "paziente", nome: "Alessia", dataNascita: "14/06/1968", citta: "Caserta", indirizzo: "Via ss 9", codiceFiscale: "NTLVN89H45SD", pdf: [], farmaci: [], idmedico: idutentecorrente, esenzione: "E20"};
         users.insertOne(paziente2);
 
         async function getNextSequence(name) {
