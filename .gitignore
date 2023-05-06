@@ -8,3 +8,4 @@ CloudProject.zip
 web.config
 package-lock.json
 *.tf
+env.json

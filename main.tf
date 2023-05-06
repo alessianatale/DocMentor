@@ -1,4 +1,3 @@
-# We strongly recommend using the required_providers block to set the
 # Azure Provider source and version being used
 terraform {
   required_providers {
@@ -6,10 +5,14 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "3.48.0"
     }
+    azapi = {
+      source = "Azure/azapi"
+    }
   }
 }
 
-# Configure the Microsoft Azure Provider
+provider "azapi" {
+}
 provider "azurerm" {
   features {
     resource_group {
@@ -19,7 +22,6 @@ provider "azurerm" {
   }
 }
 
-# Create a resource group
 resource "azurerm_resource_group" "cloudrg" {
   name     = "cloudrg"
   location = "West Europe"
@@ -32,7 +34,7 @@ resource "azurerm_user_assigned_identity" "cloudidentity" {
   resource_group_name = azurerm_resource_group.cloudrg.name
 }
 
-# App Service deployment
+# App Service
 resource "azurerm_resource_group_template_deployment" "cloudasdeployment" {
   name                = "cloudasdeployment"
   resource_group_name = azurerm_resource_group.cloudrg.name
@@ -73,11 +75,18 @@ resource "azurerm_resource_group_template_deployment" "cloudasdeployment" {
     }
   })
 
-  template_content = file("C:\\Users\\Alessia\\Desktop\\DocMentorBot\\CloudProject\\deploymentTemplates\\deployUseExistResourceGroup\\template-BotApp-with-rg.json")
+  template_content = file(".\\deploymentTemplates\\deployUseExistResourceGroup\\template-BotApp-with-rg.json")
   depends_on = [azurerm_user_assigned_identity.cloudidentity]
 }
 
-# Azure Bot deployment
+output "MicrosoftAppId" {
+  value = azurerm_user_assigned_identity.cloudidentity.client_id
+}
+output "MicrosoftAppTenantId" {
+  value = azurerm_user_assigned_identity.cloudidentity.tenant_id
+}
+
+# Azure Bot 
 resource "azurerm_resource_group_template_deployment" "cloudbotdeployment" {
   name                = "cloudbotdeployment"
   resource_group_name = azurerm_resource_group.cloudrg.name
@@ -112,7 +121,7 @@ resource "azurerm_resource_group_template_deployment" "cloudbotdeployment" {
     }
   })
 
-  template_content = file("C:\\Users\\Alessia\\Desktop\\DocMentorBot\\CloudProject\\deploymentTemplates\\deployUseExistResourceGroup\\template-AzureBot-with-rg.json")
+  template_content = file(".\\deploymentTemplates\\deployUseExistResourceGroup\\template-AzureBot-with-rg.json")
   depends_on = [azurerm_resource_group_template_deployment.cloudasdeployment]
 }
 
@@ -121,6 +130,8 @@ resource "random_integer" "ri" {
   max = 99999
 }
 
+
+# CosmoDB per MongoDB
 resource "azurerm_cosmosdb_account" "cosmodbaccount" {
   name                = "cosmodbaccount-${random_integer.ri.result}"
   location            = azurerm_resource_group.cloudrg.location
@@ -133,45 +144,42 @@ resource "azurerm_cosmosdb_account" "cosmodbaccount" {
   capabilities {
     name = "EnableAggregationPipeline"
   }
-
   capabilities {
     name = "mongoEnableDocLevelTTL"
   }
-
   # capabilities {
   #   name = "MongoDBv3.4"
   # }
-
   capabilities {
     name = "EnableMongo"
   }
-
   consistency_policy {
     consistency_level       = "BoundedStaleness"
     max_interval_in_seconds = 300
     max_staleness_prefix    = 100000
   }
-
   # geo_location {
   #   location          = "West Europe"
   #   failover_priority = 1
   # }
-
-
   geo_location {
     location          = "north Europe"
     failover_priority = 0
   }
-
   mongo_server_version = "4.0"
   enable_free_tier = true
-  depends_on = [azurerm_resource_group_template_deployment.cloudbotdeployment]
+  //depends_on = [azurerm_resource_group_template_deployment.cloudbotdeployment]
 }
 
 data "azurerm_cosmosdb_account" "cosmodbaccount" {
   name                = "cosmodbaccount-${random_integer.ri.result}"
   resource_group_name = azurerm_resource_group.cloudrg.name
   depends_on = [azurerm_cosmosdb_account.cosmodbaccount]
+}
+
+output "COSMOS_CONNECTION_STRING" {
+  value       = azurerm_cosmosdb_account.cosmodbaccount.connection_strings
+  sensitive = true
 }
 
 resource "azurerm_cosmosdb_mongo_database" "mongodatabase" {
@@ -253,6 +261,7 @@ resource "azurerm_cosmosdb_mongo_collection" "richiestericettecollection" {
   }
 }
 
+
 resource "null_resource" "npm_env" {
   provisioner "local-exec" {
     command = "az bot update --resource-group cloudrg --name DocMentorBot2 --endpoint https://cloudas.azurewebsites.net/api/messages"
@@ -283,7 +292,8 @@ resource "null_resource" "npm_env" {
     command = " func azure functionapp publish functionapp24157 --nozip"
   }
 
-  depends_on = [null_resource.npm_env]
+  terraform output > file.txt
+  terraform output -json > env.json
 }*/
 
 
