@@ -2,7 +2,7 @@
 
 var pdf = require("pdf-creator-node");
 
-       function generaPDF(ricetta) {
+async function generaPDF(ricetta, filename) {
 
 
 
@@ -80,7 +80,7 @@ var html = '<!DOCTYPE html>\n' +
     '\t\t\t<tr>\n' +
     '\t\t\t\t<td style="border: 1px solid black;">'+ricetta.farmaci[0].nome+'  '+ricetta.farmaci[0].dosaggio+'</td>\n' +
     '\t\t\t\t<td style="border: 1px solid black;">'+ricetta.farmaci[0].quantita+'</td>\n' +
-    '\t\t\t\t<td style="border: 1px solid black;">---</td>\n' +
+    '\t\t\t\t<td style="border: 1px solid black;">'+ricetta.farmaci[0].note+'</td>\n' +
     '\t\t\t\t\n' +
     '\t\t\t\t\n' +
     '\t\t\t</tr>\n' +
@@ -88,7 +88,7 @@ var html = '<!DOCTYPE html>\n' +
     '\t\t\t<tr >\n' +
     '\t\t\t\t<td style="border: 1px solid black;">'+ricetta.farmaci[1].nome+'  '+ricetta.farmaci[1].dosaggio+'</td>\n' +
     '\t\t\t\t<td style="border: 1px solid black;">'+ricetta.farmaci[1].quantita+'</td>\n' +
-    '\t\t\t\t<td style="border: 1px solid black;">---</td>\n' +
+    '\t\t\t\t<td style="border: 1px solid black;">'+ricetta.farmaci[1].note+'</td>\n' +
     '\t\t\t\t\n' +
     '\t\t\t\t\n' +
     '\t\t\t</tr>\n' +
@@ -119,8 +119,7 @@ var options = {
             first: "",
 
         }
-    }
-
+    },
 
 };
 
@@ -130,11 +129,12 @@ var document = {
     data: {
 
     },
-    path: "./ricetta.pdf",
+    path: "./filepdf/"+filename,
     type: "",
 };
 
-pdf
+
+return pdf
     .create(document, options)
     .then((res) => {
         console.log(res);
@@ -144,7 +144,7 @@ pdf
     });
 
 
-        }
+}
 
 
 //pdfGenerator.generaPDF();

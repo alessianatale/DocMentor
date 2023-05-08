@@ -147,6 +147,7 @@ class main extends ComponentDialog {
         slotorari.insertOne(slot);
 
         // da aggiungere se mettiamo ruolo medico
+
         // var paziente = {idutente: "1234567" , ruolo: "paziente", nome: "Viviana Veccia", dataNascita: "14/06/1968", citta: "Caserta", indirizzo: "Via ss 9", codiceFiscale: "VCCVN89H45SD", pdf: "", idmedico: idutentecorrente, esenzione: "E20"};
         // users.insertOne(paziente);
         // var paziente2 = {idutente: "12345678" , ruolo: "paziente", nome: "Alessia", dataNascita: "14/06/1968", citta: "Caserta", indirizzo: "Via ss 9", codiceFiscale: "NTLVN89H45SD", pdf: "", idmedico: idutentecorrente, esenzione: "E20"};
@@ -171,6 +172,7 @@ class main extends ComponentDialog {
         // console.log(newid2)
         // var richiestaricetta2 = {id: newid2, idpaziente: "12345678", farmaci: [28511095, 42996013], qta: ["2", "1"], idmedico: idutentecorrente}
         // richiesteRicette.insertOne(richiestaricetta2);
+
     }
 }
 
