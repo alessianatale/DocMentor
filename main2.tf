@@ -17,10 +17,16 @@ output "STORAGE_ACCOUNT_NAME" {
 }
  
 
-resource "azurerm_storage_container" "storagecontainer" {
+resource "azurerm_storage_container" "storagecontainerimages" {
   name                  = "images"
   storage_account_name  = azurerm_storage_account.storageaccount.name
-  container_access_type = "private"
+  container_access_type = "container"
+}
+
+resource "azurerm_storage_container" "storagecontainerpdf" {
+  name                  = "pdf"
+  storage_account_name  = azurerm_storage_account.storageaccount.name
+  container_access_type = "container"
 }
 
 resource "azurerm_service_plan" "serviceplan" {
@@ -166,6 +172,7 @@ resource "azapi_resource" "createApiConnectionABC" {
 
 // Logic App
 resource "azapi_resource" "logicapp_demo1" {
+    depends_on = [azapi_resource.createApiConnectionABC]
     type                = "Microsoft.Logic/workflows@2019-05-01"
     name                = "Demo-LogicApp-1"
     location            = azurerm_resource_group.cloudrg.location
@@ -200,9 +207,9 @@ resource "azapi_resource" "logicapp_demo1" {
     })
 }
 
-resource "azurerm_logic_app_trigger_http_request" "httptriggerRichiestaRicetta" {
-  //depends_on = [azurerm_logic_app_workflow.logicapp]
-  name         = "httptriggerRichiestaRicetta"
+resource "azurerm_logic_app_trigger_http_request" "httptriggerRicetta" {
+  depends_on = [azapi_resource.logicapp_demo1]
+  name         = "httptriggerRicetta"
   logic_app_id = azapi_resource.logicapp_demo1.id
   method = "POST"
   schema = <<SCHEMA
@@ -211,19 +218,22 @@ resource "azurerm_logic_app_trigger_http_request" "httptriggerRichiestaRicetta" 
     "properties": {
       "Id": {
          "type": "integer"
+        },
+      "Message": {
+         "type": "string"
         }
     }
 }
 SCHEMA
 }
 
-output "CallbackUrlRichiestaRicetta" {
-    value = azurerm_logic_app_trigger_http_request.httptriggerRichiestaRicetta.callback_url
+output "CallbackUrl" {
+    value = azurerm_logic_app_trigger_http_request.httptriggerRicetta.callback_url
 }
 
-resource "azurerm_logic_app_action_custom" "actionRichiestaRicetta" {
-  depends_on = [azurerm_logic_app_trigger_http_request.httptriggerRichiestaRicetta]
-  name         = "actionRichiestaRicetta"
+resource "azurerm_logic_app_action_custom" "actionRicetta" {
+  depends_on = [azurerm_logic_app_trigger_http_request.httptriggerRicetta]
+  name         = "actionRicetta"
   logic_app_id = azapi_resource.logicapp_demo1.id
   body = <<BODY
 {
@@ -236,7 +246,7 @@ resource "azurerm_logic_app_action_custom" "actionRichiestaRicetta" {
         "method": "post",
         "body": {
             "chat_id": "@{triggerBody()?['Id']}",
-            "text": "Hai una nuova richiesta di ricetta!"
+            "text": "@{triggerBody()?['Message']}"
         },
         "path": "/bot@{encodeURIComponent('${var.telegramtoken}')}/sendMessage"
   },
