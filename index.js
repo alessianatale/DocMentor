@@ -57,20 +57,6 @@ adapter.onTurnError = async (context, error) => {
     // Clear out state
     await conversationState.delete(context);
 };
-
-// var farmaci =[];
-// farmaci.push(new Farmaco("zuzu",1,3));
-// farmaci.push(new Farmaco("zuzu",1,3));
-// generaPDF(new Ricetta("saverio de stefano","03/07/1998","ariano" ,"via 4 nonvembre","dstsvrmnnj399f",farmaci, "grazia peluso", "plsgrzvghbhs399f", "01/05/2023","E200"));
-// Send a POST request
-
-// axios
-//   .post("https://prod-90.westeurope.logic.azure.com:443/workflows/0aad7b728738441b932696f1d5740b38/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=TeIj5fgJ1LeNw5JxP7Loo3sTQCZxV-hmxhUbAQ0-2NI", {
-//     Id: 110822319,
-//   })
-//   .then((response) => displayOutput(response))
-//   .catch((err) => console.log(err));
-// Define a state store for your bot. See https://aka.ms/about-bot-state to learn more about using MemoryStorage.
 // A bot requires a state store to persist the dialog and user state between messages.
 
 // For local development, in-memory storage is used.

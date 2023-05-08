@@ -11,7 +11,9 @@ const {
 const {  CardFactory } = require('botbuilder');
 const { PRENOTA_VISITA_DIALOG, prenotaVisitaDialog } = require('./prenotaVisitaDialog.js');
 const { RICHIESTA_RICETTA_DIALOG, richiestaRicettaDialog } = require('./richiestaRicettaDialog.js');
-
+//Mongo Configuration
+const config = require('../../config');
+const { users } = config;
 
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
 const NAME_PROMPT = 'NAME_PROMPT';
@@ -67,11 +69,11 @@ class pazienteDialog extends ComponentDialog {
 
         // prenotare una viista, richiedere una ricetta, infotmazioni del medico, aprire healtbot, le mie ricette
 
-         return await step.prompt(NAME_PROMPT, 'Ora ti bastrà dialogare con il bot e scegliere l\'operazione desiderata tra queste presenti:\n\n • Prenotare una visita\n\n• Richiedere una ricetta\n\n•  Ottenere informazioni sul tuo medico\n\n • Visualizzare le tue prescrizioni\n\n•  Aprire l\'Healtbot ');
+         return await step.prompt(NAME_PROMPT, 'Ora ti bastrà dialogare con il bot e scegliere l\'operazione desiderata tra queste presenti:\n\n • Prenotare una visita\n\n• Richiedere una ricetta\n\n• Ottenere informazioni sul tuo medico\n\n • Visualizzare le tue prescrizioni\n\n• Aprire l\'Healtbot ');
     }
 
     async redirectDialogStep(step) {
-        var resultchoice = step.result.value;
+        
 
        
         
@@ -85,16 +87,16 @@ class pazienteDialog extends ComponentDialog {
                 return await step.beginDialog(PRENOTA_VISITA_DIALOG);
             }
             case 'None': {
-                await context.sendActivity('Mi dispiace ma non ho capito, Riprova.');
+                await step.context.sendActivity('Mi dispiace ma non ho capito, Riprova.');
                 return await step.replaceDialog(this.id);
             }
             case 'healthBot': {
-                await step.context.sendActivity({ attachments: [this.createSignInCard()] });
-                break;
+                 await step.context.sendActivity({ attachments: [this.createSignInCard()] });
+                 return await step.replaceDialog(this.id);
             }
             case 'info medico': {
-                console.log("infomedico");
-                break;
+                await step.context.sendActivity({ attachments: [await this.createInfodocCard(step)] });
+                return await step.replaceDialog(this.id);
             }
 
         }
@@ -108,10 +110,45 @@ class pazienteDialog extends ComponentDialog {
         return await step.replaceDialog(this.id);
     }
 
+    async createInfodocCard(step) {
+        var idutentecorrente = step.context.activity.from.id;
+        var query = { idutente: idutentecorrente };
+        const paziente = await users.findOne(query);
+
+        var querymed = { idutente: paziente.idmedico };
+        const medico = await users.findOne(querymed);
+        
+
+        return CardFactory.receiptCard({
+            title: medico.nome,
+            facts: [
+                {
+                    key: 'Città',
+                    value: medico.citta
+                },
+                {
+                    key: 'Indirizzo',
+                    value: medico.indirizzo
+                }
+                ,
+                {
+                    key: 'Codice Fiscale',
+                    value: medico.codiceFiscale
+                }
+                ,
+                {
+                    key: 'Data di nascita',
+                    value: medico.dataNascita
+                }
+            ]
+           
+        });
+    }
+
     createSignInCard() {
         return CardFactory.signinCard(
             'Clicca qui per aprire Healtbot',
-            'https://www.youtube.com/watch?v=CqAq2WFcy_Q&ab_channel=ValoremReply',
+            'http://t.me/DocHealtBot',
             
         );
     }
