@@ -13,6 +13,10 @@ const {
     ListStyle,
     AttachmentPrompt,
 } = require('botbuilder-dialogs');
+
+//http request config
+const superagent = require('superagent');
+
 //Mongo Configuration
 const config = require('../../config');
 const { users, richiesteRicette, farmaci } = config;
@@ -531,6 +535,14 @@ async function updateFarmaciUsuali(aic) {
         });
     }
 }
+async function sendRequest(data) {
+    try {
+       const res = await superagent.post(process.env.CallbackUrl).send(data);
+       console.log(res);
+     } catch (err) {
+       console.error(err);
+     }
+   }
 
 async function creaRicetta(paziente, medico, farmaci) {
     var timeStamp = moment();
@@ -576,6 +588,17 @@ async function savepdfblob(filename) {
     ).then(function(data) {
         return data.value;
     });
+
+
+    
+      //richiesta http vesro logicapp
+    const data = {
+        Id:paziente.idutente,
+        Message: "La tua prescrizione è pronta!, Vai nella sezione \'le mie prescrizioni\' per visionarla."
+    }
+
+    await sendRequest(data)
+
 }
 
 module.exports.generaRicetteDialog = generaRicetteDialog;

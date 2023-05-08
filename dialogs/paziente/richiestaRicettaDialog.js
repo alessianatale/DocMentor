@@ -1,4 +1,5 @@
 const { MessageFactory } = require('botbuilder');
+require('dotenv').config();
 const {
     ChoiceFactory,
     ChoicePrompt,
@@ -13,6 +14,9 @@ const {
     ListStyle,
     AttachmentPrompt
 } = require('botbuilder-dialogs');
+//http request config
+const superagent = require('superagent');
+
 //Mongo Configuration
 const config = require('../../config');
 const { users, richiesteRicette, farmaci } = config;
@@ -20,7 +24,7 @@ const { Support } = require('../support');
 const { BlobServiceClient } = require('@azure/storage-blob');
 const { v1: uuidv1 } = require("uuid");
 const fs = require('fs');
-const https = require('https');
+const https = require('http');
 
 const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
 const STORAGE_ACCOUNT_NAME = process.env.STORAGE_ACCOUNT_NAME;
@@ -182,6 +186,14 @@ class richiestaRicettaDialog extends ComponentDialog {
 
                 const richiesta = {id: newid, idpaziente: paziente.idutente, farmaci: step.values.farmaciInseriti.array, qta: step.values.farmaciInseriti.qta, idmedico: paziente.idmedico}
                 richiesteRicette.insertOne(richiesta);
+
+                //richiesta http vesro logicapp
+                const data = {
+                    Id:paziente.idmedico,
+                    Message:"Hai una nuova richiesta di ricetta!, per visionarla vai nella sezione richiesta ricette."
+                  }
+                await sendRequest(data)
+
                 await step.context.sendActivity(`Richiesta inviata con successo!`);
 
                 return await step.endDialog();
@@ -241,6 +253,14 @@ class richiestaRicettaDialog extends ComponentDialog {
             richiesta = {id: newid, idpaziente: paziente.idutente, farmaci: step.values.farmaciInseriti.array, qta: step.values.farmaciInseriti.qta, foto: arrayFoto, idmedico: paziente.idmedico}
         }
         richiesteRicette.insertOne(richiesta);
+
+        //richiesta http vesro logicapp
+        const data = {
+            Id:paziente.idmedico,
+            Message:"Hai una nuova richiesta di ricetta!, per visionarla vai nella sezione richiesta ricette."
+          }
+        await sendRequest(data)
+
         await step.context.sendActivity(`Richiesta inviata con successo!`);
 
         return await step.endDialog();
@@ -405,6 +425,19 @@ class richiestaRicettaDialog extends ComponentDialog {
 
 }
 
+
+  
+  async function sendRequest(data) {
+    
+   try {
+      const res = await superagent.post(process.env.CallbackUrl).send(data);
+      console.log(res);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+  
+ 
 async function getNextSequence(name) {
     var res = await users.findOneAndUpdate(
         { idutente: name },
