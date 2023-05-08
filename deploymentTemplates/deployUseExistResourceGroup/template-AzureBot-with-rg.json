@@ -104,6 +104,7 @@
       },
       "properties": {
         "displayName": "[parameters('azureBotId')]",
+        "isStreamingSupported": true,
         "iconUrl": "https://docs.botframework.com/static/devportal/client/images/bot-framework-default.png",
         "endpoint": "[variables('botEndpoint')]",
         "msaAppId": "[parameters('appId')]",
