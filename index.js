@@ -3,6 +3,7 @@
 
 // Import required packages
 const path = require('path');
+// const axios = require('axios');
 
 // Read botFilePath and botFileSecret from .env file
 const ENV_FILE = path.join(__dirname, '.env');
@@ -15,13 +16,15 @@ const restify = require('restify');
 
 // Import required bot services.
 // See https://aka.ms/bot-services to learn more about the different parts of a bot.
-const {
+const { 
     CloudAdapter,
     MemoryStorage,
     ConversationState,
     UserState,
     ConfigurationBotFrameworkAuthentication
 } = require('botbuilder');
+
+const { DocMentorBotRecognizer } = require('./recognizer/DocMentorBotRecognizer.js');
 
 const { WelcomeBot } = require('./bots/welcomeBot');
 const { main } = require('./dialogs/main');
@@ -54,12 +57,8 @@ adapter.onTurnError = async (context, error) => {
     // Clear out state
     await conversationState.delete(context);
 };
-
-var farmaci =[];
-farmaci.push(new Farmaco("zuzu",1,3));
-farmaci.push(new Farmaco("zuzu",1,3));
-//generaPDF(new Ricetta("saverio de stefano","03/07/1998","ariano" ,"via 4 nonvembre","dstsvrmnnj399f",farmaci, "grazia peluso", "plsgrzvghbhs399f", "01/05/2023","E200"));
 // Define a state store for your bot. See https://aka.ms/about-bot-state to learn more about using MemoryStorage.
+
 // A bot requires a state store to persist the dialog and user state between messages.
 
 // For local development, in-memory storage is used.
@@ -69,9 +68,16 @@ const memoryStorage = new MemoryStorage();
 const conversationState = new ConversationState(memoryStorage);
 const userState = new UserState(memoryStorage);
 
+// If configured, pass in the DocMentorBotRecognizer.  (Defining it externally allows it to be mocked for tests)
+const { CluAPIKey, CluAPIHostName, CluProjectName, CluDeploymentName } = process.env;
+const cluConfig = { endpointKey: CluAPIKey, endpoint: `https://${ CluAPIHostName }`, projectName: CluProjectName, deploymentName: CluDeploymentName };
+
+const cluRecognizer = new DocMentorBotRecognizer(cluConfig);
+
 // Create the main dialog.
-const dialog = new main(userState);
+const dialog = new main(cluRecognizer,userState);
 const bot = new WelcomeBot(conversationState, userState, dialog);
+
 
 
 // Create HTTP server

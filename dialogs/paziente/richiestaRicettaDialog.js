@@ -20,7 +20,7 @@ const { Support } = require('../support');
 const { BlobServiceClient } = require('@azure/storage-blob');
 const { v1: uuidv1 } = require("uuid");
 const fs = require('fs');
-const http = require('http');
+const https = require('https');
 
 const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
 const STORAGE_ACCOUNT_NAME = process.env.STORAGE_ACCOUNT_NAME;
@@ -218,7 +218,7 @@ class richiestaRicettaDialog extends ComponentDialog {
                 const blockBlobClient = containerClient.getBlockBlobClient(filename);
 
                 //let fileStream = fs.createReadStream(blobPath);
-                http.get(blobPath, (stream) => {
+                https.get(blobPath, (stream) => {
                     const blobOptions = {
                         blobHTTPHeaders: {
                             blobContentType: 'image/png'

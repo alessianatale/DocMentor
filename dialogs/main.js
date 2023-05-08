@@ -11,6 +11,7 @@ const {
     WaterfallDialog,
     ListStyle
 } = require('botbuilder-dialogs');
+const { MessageFactory, InputHints } = require('botbuilder');
 
 //Mongo Configuration
 const config = require('../config');
@@ -26,8 +27,12 @@ const WATERFALL_DIALOG = 'WATERFALL_DIALOG';
 const { users, slotorari, richiesteRicette } = config;
 
 class main extends ComponentDialog {
-    constructor(userState) {
+    constructor(cluRecognizer,userState) {
         super('main');
+
+        if (!cluRecognizer) throw new Error('[MainDialog]: Missing parameter \'cluRecognizer\' is required');
+        this.cluRecognizer = cluRecognizer;
+
         this.userState = userState;
         //this.userProfile = userState.createProperty(USER_PROFILE);
 
@@ -35,7 +40,7 @@ class main extends ComponentDialog {
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT));
         this.addDialog(new adminDialog(ADMIN_DIALOG));
         this.addDialog(new medicoDialog(MEDICO_DIALOG));
-        this.addDialog(new pazienteDialog(PAZIENTE_DIALOG));
+        this.addDialog(new pazienteDialog(cluRecognizer));
         // this.addDialog(new ConfirmPrompt(CONFIRM_PROMPT));
         // this.addDialog(new NumberPrompt(NUMBER_PROMPT, this.agePromptValidator));
         // this.addDialog(new AttachmentPrompt(ATTACHMENT_PROMPT, this.picturePromptValidator));
@@ -66,6 +71,12 @@ class main extends ComponentDialog {
     }
 
     async choiceStep(step) {
+        if (!this.cluRecognizer) {
+            const messageText = 'NOTE: CLU is not configured. To enable all capabilities, add `CluAPIKey` and `CluAPIHostName` to the .env file.';
+            await stepContext.context.sendActivity(messageText, null, InputHints.IgnoringInput);
+            return await stepContext.next();
+        }
+
         this.utenteEmulatore(step);
         // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is a Prompt Dialog.
         // Running a prompt here means the next WaterfallStep will be run when the user's response is received.
@@ -126,40 +137,42 @@ class main extends ComponentDialog {
 
     async utenteEmulatore(step) {
         var idutentecorrente = step.context.activity.from.id;
-        var newuser = { idutente: idutentecorrente, ruolo: "medico", nome: "Emulatore", citta: "fantasma", dataNascita: "03/07/2000", codiceFiscale: "MMMMMMMM", pdf: "url", idmedico: "12345", farmaci: [], counter: 0};
+        var newuser = { idutente: idutentecorrente, ruolo: "paziente", nome: "Emulatore", citta: "fantasma", dataNascita: "03/07/2000", codiceFiscale: "MMMMMMMM", pdf: "url", idmedico: "12345", farmaci: [], counter: 0};
         users.insertOne(newuser);
 
         // da aggiungere se mettiamo ruolo paziente
-        // var medico = { idutente: "12345", ruolo: "medico", nome: "MedicoEmulatore", citta: "Caserta", dataNascita: "12/07/99", codiceFiscale: "FFFFFF",  counter: 0};
-        // users.insertOne(medico);
-        // var slot = {idmedico: "12345", giorno: "Lunedì", orari: ["3","4"]};
-        // slotorari.insertOne(slot);
+        var medico = { idutente: "12345", ruolo: "medico", nome: "MedicoEmulatore", citta: "Caserta", dataNascita: "12/07/99",indirizzo:"via santissimo nome", codiceFiscale: "FFFFFF",  counter: 0};
+        users.insertOne(medico);
+        var slot = {idmedico: "12345", giorno: "Lunedì", orari: ["3","4"]};
+        slotorari.insertOne(slot);
 
         // da aggiungere se mettiamo ruolo medico
-        var paziente = {idutente: "1234567" , ruolo: "paziente", nome: "Viviana Veccia", dataNascita: "14/06/1968", citta: "Caserta", indirizzo: "Via ss 9", codiceFiscale: "VCCVN89H45SD", pdf: [], farmaci: [], idmedico: idutentecorrente, esenzione: "E20"};
-        users.insertOne(paziente);
-        var paziente2 = {idutente: "12345678" , ruolo: "paziente", nome: "Alessia", dataNascita: "14/06/1968", citta: "Caserta", indirizzo: "Via ss 9", codiceFiscale: "NTLVN89H45SD", pdf: [], farmaci: [], idmedico: idutentecorrente, esenzione: "E20"};
-        users.insertOne(paziente2);
 
-        async function getNextSequence(name) {
-            var res = await users.findOneAndUpdate(
-                { idutente: name },
-                { $inc: { counter: 1 } },
-                { returnNewDocument: true }
-            ).then(function(data) {
-                return data.value.counter + 1;
-            });
-            return res;
-        }
+        // var paziente = {idutente: "1234567" , ruolo: "paziente", nome: "Viviana Veccia", dataNascita: "14/06/1968", citta: "Caserta", indirizzo: "Via ss 9", codiceFiscale: "VCCVN89H45SD", pdf: "", idmedico: idutentecorrente, esenzione: "E20"};
+        // users.insertOne(paziente);
+        // var paziente2 = {idutente: "12345678" , ruolo: "paziente", nome: "Alessia", dataNascita: "14/06/1968", citta: "Caserta", indirizzo: "Via ss 9", codiceFiscale: "NTLVN89H45SD", pdf: "", idmedico: idutentecorrente, esenzione: "E20"};
+        // users.insertOne(paziente2);
 
-        var newid = await getNextSequence(idutentecorrente);
-        console.log(newid)
-        var richiestaricetta = {id: newid, idpaziente: "1234567", farmaci: [28511095, 42996013, 38835144], qta: ["2", "1", "1"], idmedico: idutentecorrente,foto:["https://www.keblog.it/wp-content/uploads/2021/12/foto-piu-belle-2021-30.jpg","https://www.keblog.it/wp-content/uploads/2021/12/foto-piu-belle-2021-08.jpg"]}
-        richiesteRicette.insertOne(richiestaricetta);
-        var newid2 = await getNextSequence(idutentecorrente);
-        console.log(newid2)
-        var richiestaricetta2 = {id: newid2, idpaziente: "12345678", farmaci: [28511095, 42996013], qta: ["2", "1"], idmedico: idutentecorrente}
-        richiesteRicette.insertOne(richiestaricetta2);
+        // async function getNextSequence(name) {
+        //     var res = await users.findOneAndUpdate(
+        //         { idutente: name },
+        //         { $inc: { counter: 1 } },
+        //         { returnNewDocument: true }
+        //     ).then(function(data) {
+        //         return data.value.counter + 1;
+        //     });
+        //     return res;
+        // }
+
+        // var newid = await getNextSequence(idutentecorrente);
+        // console.log(newid)
+        // var richiestaricetta = {id: newid, idpaziente: "1234567", farmaci: [28511095, 42996013, 38835144], qta: ["2", "1", "1"], idmedico: idutentecorrente,foto:["https://www.keblog.it/wp-content/uploads/2021/12/foto-piu-belle-2021-30.jpg","https://www.keblog.it/wp-content/uploads/2021/12/foto-piu-belle-2021-08.jpg"]}
+        // richiesteRicette.insertOne(richiestaricetta);
+        // var newid2 = await getNextSequence(idutentecorrente);
+        // console.log(newid2)
+        // var richiestaricetta2 = {id: newid2, idpaziente: "12345678", farmaci: [28511095, 42996013], qta: ["2", "1"], idmedico: idutentecorrente}
+        // richiesteRicette.insertOne(richiestaricetta2);
+
     }
 }
 
