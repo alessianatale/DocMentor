@@ -110,7 +110,7 @@ class prenotaVisitaDialog extends ComponentDialog {
             var orari = slotg.orari;
             orari.splice(index,1);
 
-            var prenotazione = {idpaziente: step.context.activity.from.id, giorno: step.values.giorno, orario: step.values.orario, idmedico: idmedico};
+            var prenotazione = {idpaziente: step.context.activity.from.id, giorno: step.values.giorno.toLowerCase(), orario: step.values.orario, idmedico: idmedico};
 
             const slotnew = await slotorari.findOne({idmedico: idmedico, giorno: step.values.giorno });
             await prenotazioni.insertOne(prenotazione);
