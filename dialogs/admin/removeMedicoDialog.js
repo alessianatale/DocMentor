@@ -9,7 +9,6 @@ const {
     WaterfallDialog
 } = require('botbuilder-dialogs');
 
-//Mongo Configuration
 const config = require('../../config');
 const { users } = config;
 

@@ -316,7 +316,6 @@ resource "null_resource" "npm_env" {
   inserire mongoimport.exe nella directory di mongodb
   inserire il path nelle variabili d'ambiente
   mongoimport -h cosmodbaccount-73543.mongo.cosmos.azure.com:10255 -d mongodatabase -c farmaci -u cosmodbaccount-73543 -p EcL1zA0d82UCUsDRs71cESOUHSbTnRfzkjgsbk4koVLL1g16sNtStieY7x9cszpLGTJWCQkX3MbiACDbOGepsg== --ssl --jsonArray --writeConcern="{w:0}" --file farmaci.json --quiet
-  
 }*/
 
 
