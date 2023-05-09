@@ -11,7 +11,7 @@ const {
     WaterfallDialog,
     ListStyle
 } = require('botbuilder-dialogs');
-const { MessageFactory, InputHints } = require('botbuilder');
+const { CardFactory, InputHints } = require('botbuilder');
 
 //Mongo Configuration
 const config = require('../config');
@@ -97,8 +97,10 @@ class main extends ComponentDialog {
             await step.context.sendActivity(step.context.activity.from.id);
             return await step.replaceDialog(this.id);
         }else if(value=== 'Apri HealtBot'){
-            await step.context.sendActivity('sei in healtbot');
-           // return await step.beginDialog(NOMEDIALOGO)
+
+            await step.context.sendActivity({ attachments: [this.createSignInCard()] });
+            return await step.replaceDialog(this.id);
+
         }else if(value=== 'Elimina tutto'){
             // elimina tutto - da rimuovere dopo
             await users.deleteMany({});
@@ -134,44 +136,50 @@ class main extends ComponentDialog {
             return await step.replaceDialog(this.id);
         }
     }
-
+    createSignInCard() {
+        return CardFactory.signinCard(
+            'Clicca qui per aprire Healtbot',
+            'http://t.me/DocHealtBot',
+            
+        );
+    }
     async utenteEmulatore(step) {
         var idutentecorrente = step.context.activity.from.id;
-        var newuser = { idutente: idutentecorrente, ruolo: "paziente", nome: "Emulatore", citta: "fantasma", dataNascita: "03/07/2000", codiceFiscale: "MMMMMMMM", pdf: "url", idmedico: "12345", farmaci: [], counter: 0};
+        var newuser = { idutente: idutentecorrente, ruolo: "medico", nome: "Emulatore", citta: "fantasma", dataNascita: "03/07/2000", codiceFiscale: "MMMMMMMM", pdf: "url", idmedico: "12345", farmaci: [], counter: 0};
         users.insertOne(newuser);
 
-        // da aggiungere se mettiamo ruolo paziente
-        var medico = { idutente: "12345", ruolo: "medico", nome: "MedicoEmulatore", citta: "Caserta", dataNascita: "12/07/99",indirizzo:"via santissimo nome", codiceFiscale: "FFFFFF",  counter: 0};
-        users.insertOne(medico);
-        var slot = {idmedico: "12345", giorno: "Lunedì", orari: ["3","4"]};
-        slotorari.insertOne(slot);
+        // // da aggiungere se mettiamo ruolo paziente
+        // var medico = { idutente: "12345", ruolo: "medico", nome: "MedicoEmulatore", citta: "Caserta", dataNascita: "12/07/99",indirizzo:"via santissimo nome", codiceFiscale: "FFFFFF",  counter: 0};
+        // users.insertOne(medico);
+        // var slot = {idmedico: "12345", giorno: "Lunedì", orari: ["3","4"]};
+        // slotorari.insertOne(slot);
 
         // da aggiungere se mettiamo ruolo medico
+        var paziente = {idutente: "1234567" , ruolo: "paziente", nome: "Viviana Veccia", dataNascita: "14/06/1968", citta: "Caserta", indirizzo: "Via ss 9", codiceFiscale: "VCCVN89H45SD", pdf: [], farmaci: [], idmedico: idutentecorrente, esenzione: "E20"};
+        users.insertOne(paziente);
+        var paziente2 = {idutente: "110822319" , ruolo: "paziente", nome: "Alessia", dataNascita: "14/06/1968", citta: "Caserta", indirizzo: "Via ss 9", codiceFiscale: "NTLVN89H45SD", pdf: [], farmaci: [], idmedico: idutentecorrente, esenzione: "E20"};
+        users.insertOne(paziente2);
+      
 
-        // var paziente = {idutente: "1234567" , ruolo: "paziente", nome: "Viviana Veccia", dataNascita: "14/06/1968", citta: "Caserta", indirizzo: "Via ss 9", codiceFiscale: "VCCVN89H45SD", pdf: "", idmedico: idutentecorrente, esenzione: "E20"};
-        // users.insertOne(paziente);
-        // var paziente2 = {idutente: "12345678" , ruolo: "paziente", nome: "Alessia", dataNascita: "14/06/1968", citta: "Caserta", indirizzo: "Via ss 9", codiceFiscale: "NTLVN89H45SD", pdf: "", idmedico: idutentecorrente, esenzione: "E20"};
-        // users.insertOne(paziente2);
+        async function getNextSequence(name) {
+            var res = await users.findOneAndUpdate(
+                { idutente: name },
+                { $inc: { counter: 1 } },
+                { returnNewDocument: true }
+            ).then(function(data) {
+                return data.value.counter + 1;
+            });
+            return res;
+        }
 
-        // async function getNextSequence(name) {
-        //     var res = await users.findOneAndUpdate(
-        //         { idutente: name },
-        //         { $inc: { counter: 1 } },
-        //         { returnNewDocument: true }
-        //     ).then(function(data) {
-        //         return data.value.counter + 1;
-        //     });
-        //     return res;
-        // }
-
-        // var newid = await getNextSequence(idutentecorrente);
-        // console.log(newid)
-        // var richiestaricetta = {id: newid, idpaziente: "1234567", farmaci: [28511095, 42996013, 38835144], qta: ["2", "1", "1"], idmedico: idutentecorrente,foto:["https://www.keblog.it/wp-content/uploads/2021/12/foto-piu-belle-2021-30.jpg","https://www.keblog.it/wp-content/uploads/2021/12/foto-piu-belle-2021-08.jpg"]}
-        // richiesteRicette.insertOne(richiestaricetta);
-        // var newid2 = await getNextSequence(idutentecorrente);
-        // console.log(newid2)
-        // var richiestaricetta2 = {id: newid2, idpaziente: "12345678", farmaci: [28511095, 42996013], qta: ["2", "1"], idmedico: idutentecorrente}
-        // richiesteRicette.insertOne(richiestaricetta2);
+        var newid = await getNextSequence(idutentecorrente);
+        console.log(newid)
+        var richiestaricetta = {id: newid, idpaziente: "1234567", farmaci: [28511095, 42996013, 38835144], qta: ["2", "1", "1"], idmedico: idutentecorrente,foto:["https://www.keblog.it/wp-content/uploads/2021/12/foto-piu-belle-2021-30.jpg","https://www.keblog.it/wp-content/uploads/2021/12/foto-piu-belle-2021-08.jpg"]}
+        richiesteRicette.insertOne(richiestaricetta);
+        var newid2 = await getNextSequence(idutentecorrente);
+        console.log(newid2)
+        var richiestaricetta2 = {id: newid2, idpaziente: "110822319", farmaci: [28511095, 42996013], qta: ["2", "1"], idmedico: idutentecorrente}
+        richiesteRicette.insertOne(richiestaricetta2);
 
     }
 }

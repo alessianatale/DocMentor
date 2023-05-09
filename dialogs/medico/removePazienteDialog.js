@@ -63,6 +63,8 @@ class removePazienteDialog extends ComponentDialog {
             await step.context.sendActivity(`Non sono presenti pazienti da eliminare`);
             return await step.endDialog();
         }
+        pazienti.push("Torna indietro");
+
         return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Seleziona il paziente che vuoi eliminare: ',
             choices: ChoiceFactory.toChoices(pazienti),
@@ -71,27 +73,31 @@ class removePazienteDialog extends ComponentDialog {
     }
 
     async eliminaPazienteStep(step) {
-        const paz = step.result.value;
-        var idpaziente = paz.substring(
-            paz.indexOf(":") + 2, 
-            paz.indexOf(",")
-        );  
-        console.log(idpaziente);
-        var idmedico = step.context.activity.from.id;
-        if(idpaziente != 0) {
-            var query = {idutente: idpaziente, idmedico: idmedico};
-            const paziente = await users.findOne(query);
-            if (paziente != undefined) {
-                await users.deleteOne(query);
-                await step.context.sendActivity(`Il paziente: ${paziente.nome} è stato eliminato`);
-                return await step.endDialog();
-            } else {
-                await step.context.sendActivity(`Paziente non trovato`);
-                return await step.replaceDialog(this.id);
-            }
-        } else {
+        if (step.result.value == "Torna indietro") {
             return await step.endDialog();
-        }
+        } else {
+            const paz = step.result.value;
+            var idpaziente = paz.substring(
+                paz.indexOf(":") + 2, 
+                paz.indexOf(",")
+            );  
+            console.log(idpaziente);
+            var idmedico = step.context.activity.from.id;
+            if(idpaziente != 0) {
+                var query = {idutente: idpaziente, idmedico: idmedico};
+                const paziente = await users.findOne(query);
+                if (paziente != undefined) {
+                    await users.deleteOne(query);
+                    await step.context.sendActivity(`Il paziente: ${paziente.nome} è stato eliminato`);
+                    return await step.endDialog();
+                } else {
+                    await step.context.sendActivity(`Paziente non trovato`);
+                    return await step.replaceDialog(this.id);
+                }
+            } else {
+                return await step.endDialog();
+            }
+    }
     }
 }
 
