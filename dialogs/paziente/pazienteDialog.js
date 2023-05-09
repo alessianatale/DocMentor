@@ -98,6 +98,10 @@ class pazienteDialog extends ComponentDialog {
                 await step.context.sendActivity({ attachments: [await this.createInfodocCard(step)] });
                 return await step.replaceDialog(this.id);
             }
+            case 'prescrizioni': {
+                await step.context.sendActivity("questa sezione non è completa");
+                return await step.replaceDialog(this.id);
+            }
 
         }
         

@@ -538,7 +538,7 @@ async function updateFarmaciUsuali(aic) {
 async function sendRequest(data) {
     try {
        const res = await superagent.post(process.env.CallbackUrl).send(data);
-       console.log(res);
+       
      } catch (err) {
        console.error(err);
      }
@@ -593,11 +593,12 @@ async function savepdfblob(filename) {
     
       //richiesta http vesro logicapp
     const data = {
-        Id:paziente.idutente,
+        Id:Number(paziente.idutente),
         Message: "La tua prescrizione è pronta!, Vai nella sezione \'le mie prescrizioni\' per visionarla."
     }
+    
 
-    await sendRequest(data)
+     await sendRequest(data)
 
 }
 
