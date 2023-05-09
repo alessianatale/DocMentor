@@ -5,7 +5,6 @@ resource "azurerm_storage_account" "storageaccount" {
   location                 = azurerm_resource_group.cloudrg.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
-  account_kind = "Storage"
 }
 
 output "AZURE_STORAGE_CONNECTION_STRING" {
@@ -28,6 +27,25 @@ resource "azurerm_storage_container" "storagecontainerpdf" {
   storage_account_name  = azurerm_storage_account.storageaccount.name
   container_access_type = "container"
 }
+
+// elimina i blob dopo 30 giorni
+resource "azurerm_storage_management_policy" "example" {
+  storage_account_id = azurerm_storage_account.storageaccount.id
+
+  rule {
+    name    = "deleteblob"
+    enabled = true
+    filters {
+      blob_types   = ["blockBlob"]
+    }
+    actions {
+      base_blob {
+        delete_after_days_since_last_access_time_greater_than = 30
+      }
+    }
+  }
+}
+
 
 resource "azurerm_service_plan" "serviceplan" {
   name                = "serviceplan${random_integer.ri.result}"
@@ -73,7 +91,7 @@ resource "azurerm_windows_function_app" "functionapp" {
 /*
 resource "null_resource" "finaldeploy" {
   provisioner "local-exec" {
-    command = "func azure functionapp publish functionapp24157 --nozip"
+    command = "func azure functionapp publish functionapp73543 --nozip"
   }
 }
 */

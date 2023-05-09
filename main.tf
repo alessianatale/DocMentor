@@ -147,21 +147,18 @@ resource "azurerm_cosmosdb_account" "cosmodbaccount" {
   capabilities {
     name = "mongoEnableDocLevelTTL"
   }
-  # capabilities {
-  #   name = "MongoDBv3.4"
-  # }
   capabilities {
     name = "EnableMongo"
   }
+  capabilities {
+    name = "DisableRateLimitingResponses"
+  }
+
   consistency_policy {
     consistency_level       = "BoundedStaleness"
     max_interval_in_seconds = 300
     max_staleness_prefix    = 100000
   }
-  # geo_location {
-  #   location          = "West Europe"
-  #   failover_priority = 1
-  # }
   geo_location {
     location          = "north Europe"
     failover_priority = 0
@@ -195,7 +192,7 @@ resource "azurerm_cosmosdb_mongo_collection" "userscollection" {
   account_name        = data.azurerm_cosmosdb_account.cosmodbaccount.name
   database_name       = azurerm_cosmosdb_mongo_database.mongodatabase.name
 
-  default_ttl_seconds = "777"
+  //default_ttl_seconds = "777"
   //shard_key           = "uniqueKey"
   throughput          = 400
 
@@ -213,7 +210,7 @@ resource "azurerm_cosmosdb_mongo_collection" "slotorariscollection" {
   account_name        = data.azurerm_cosmosdb_account.cosmodbaccount.name
   database_name       = azurerm_cosmosdb_mongo_database.mongodatabase.name
 
-  default_ttl_seconds = "777"
+  //default_ttl_seconds = "777"
   //shard_key           = "uniqueKey"
   throughput          = 400
 
@@ -231,7 +228,7 @@ resource "azurerm_cosmosdb_mongo_collection" "prenotazioniscollection" {
   account_name        = data.azurerm_cosmosdb_account.cosmodbaccount.name
   database_name       = azurerm_cosmosdb_mongo_database.mongodatabase.name
 
-  default_ttl_seconds = "777"
+  //default_ttl_seconds = "777"
   //shard_key           = "uniqueKey"
   throughput          = 400
 
@@ -249,7 +246,25 @@ resource "azurerm_cosmosdb_mongo_collection" "richiestericettecollection" {
   account_name        = data.azurerm_cosmosdb_account.cosmodbaccount.name
   database_name       = azurerm_cosmosdb_mongo_database.mongodatabase.name
 
-  default_ttl_seconds = "777"
+  //default_ttl_seconds = "777"
+  //shard_key           = "uniqueKey"
+  throughput          = 400
+
+  depends_on = [azurerm_cosmosdb_mongo_database.mongodatabase]
+
+  index {
+    keys   = ["_id"]
+    unique = true
+  }
+}
+
+resource "azurerm_cosmosdb_mongo_collection" "farmacicollection" {
+  name                = "farmaci"
+  resource_group_name = azurerm_resource_group.cloudrg.name
+  account_name        = data.azurerm_cosmosdb_account.cosmodbaccount.name
+  database_name       = azurerm_cosmosdb_mongo_database.mongodatabase.name
+
+  //default_ttl_seconds = "777"
   //shard_key           = "uniqueKey"
   throughput          = 400
 
@@ -267,8 +282,8 @@ resource "null_resource" "npm_env" {
     command = "az bot update --resource-group cloudrg --name DocMentorBot2 --endpoint https://cloudas.azurewebsites.net/api/messages"
   }
   provisioner "local-exec" {
-    command = "az bot telegram create --resource-group cloudrg --name DocMentorBot2 --access-token 6296149829:AAGL93aAdMIpTrLgtJJjDAT1ihi5riGtGMw --is-validated"
-    //command = "az bot telegram create --resource-group cloudrg --name DocMentorBot2 --access-token 6054944368:AAErutT3RsFs-uLAYb2YMZcw-u5vls5JEIE --is-validated"
+    //command = "az bot telegram create --resource-group cloudrg --name DocMentorBot2 --access-token 6296149829:AAGL93aAdMIpTrLgtJJjDAT1ihi5riGtGMw --is-validated"
+    command = "az bot telegram create --resource-group cloudrg --name DocMentorBot2 --access-token ${var.telegramtoken} --is-validated"
   }
   provisioner "local-exec" {
     command = "npm install"
@@ -294,6 +309,14 @@ resource "null_resource" "npm_env" {
 
   terraform output > file.txt
   terraform output -json > env.json
+
+  
+  installare mongodb community: https://www.mongodb.com/try/download/community
+  installare database tools: https://www.mongodb.com/try/download/database-tools
+  inserire mongoimport.exe nella directory di mongodb
+  inserire il path nelle variabili d'ambiente
+  mongoimport -h cosmodbaccount-73543.mongo.cosmos.azure.com:10255 -d mongodatabase -c farmaci -u cosmodbaccount-73543 -p EcL1zA0d82UCUsDRs71cESOUHSbTnRfzkjgsbk4koVLL1g16sNtStieY7x9cszpLGTJWCQkX3MbiACDbOGepsg== --ssl --jsonArray --writeConcern="{w:0}" --file farmaci.json --quiet
+  
 }*/
 
 

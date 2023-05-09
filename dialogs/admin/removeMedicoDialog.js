@@ -56,30 +56,40 @@ class removeMedicoDialog extends ComponentDialog {
     async showMediciStep(step) {
         const query = await ((users.find({ruolo: "medico"})).toArray());
         const medici = query.map(function(i) { return ('id: '+i.idutente +', nome: '+ i.nome +', città: '+ i.citta) });
-        var message = "Ecco la lista dei medici:\n\n";
-        for(let y=0; y < medici.length; y++)
-            message += '• ' + medici[y] + '\n\n';
+        
+        if(query.length < 1){
+            await step.context.sendActivity(`Non sono presenti medici da eliminare`);
+            return await step.endDialog();
+        }
+        medici.push("Torna indietro")
 
-        await step.context.sendActivity(message);
-        return await step.prompt(NUMBER_PROMPT, 'Inserisci l\'id del medico che vuoi eliminare oppure scrivi 0 se non vuoi eliminare nessun medico.');
-    }
+        return await step.prompt(CHOICE_PROMPT, {
+            prompt: 'Seleziona il medico che vuoi eliminare: ',
+            choices: ChoiceFactory.toChoices(medici),
+            style: ListStyle.heroCard
+        });
+
+        }
 
     async eliminaMedicoStep(step) {
-        var idmedico = String(step.result);
-        if(idmedico != 0) {
+        if (step.result.value == "Torna indietro") {
+            return await step.endDialog();
+        } else {
+            const med = step.result.value;
+            var idmedico = med.substring(
+                med.indexOf(":") + 2, 
+                med.indexOf(",")
+            );
             var query = {idutente: idmedico};
             const medico = await users.findOne(query);
             if (medico != undefined) {
                 await users.deleteOne(query);
                 await step.context.sendActivity(`Il medico: ${medico.nome} è stato eliminato`);
-                // WaterfallStep always finishes with the end of the Waterfall or with another dialog; here it is the end.
                 return await step.endDialog();
             } else {
-                await step.context.sendActivity(`Hai sbagliato ad inserire id, ricontrolla dalla lista.`);
+                await step.context.sendActivity(`Medico non trovato`);
                 return await step.replaceDialog(this.id);
             }
-        } else {
-            return await step.endDialog();
         }
     }
 }
