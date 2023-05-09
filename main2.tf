@@ -46,6 +46,7 @@ resource "azurerm_storage_management_policy" "example" {
   }
 }
 
+
 resource "azurerm_service_plan" "serviceplan" {
   name                = "serviceplan${random_integer.ri.result}"
   location            = azurerm_resource_group.cloudrg.location

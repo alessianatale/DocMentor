@@ -67,8 +67,7 @@ class removeMedicoDialog extends ComponentDialog {
             choices: ChoiceFactory.toChoices(medici),
             style: ListStyle.heroCard
         });
-
-        }
+    }
 
     async eliminaMedicoStep(step) {
         if (step.result.value == "Torna indietro") {

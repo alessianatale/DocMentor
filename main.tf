@@ -309,7 +309,6 @@ resource "null_resource" "npm_env" {
 
   terraform output > file.txt
   terraform output -json > env.json
-
   
   installare mongodb community: https://www.mongodb.com/try/download/community
   installare database tools: https://www.mongodb.com/try/download/database-tools
