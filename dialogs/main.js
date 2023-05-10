@@ -145,7 +145,7 @@ class main extends ComponentDialog {
     }
     async utenteEmulatore(step) {
         var idutentecorrente = step.context.activity.from.id;
-        var newuser = { idutente: idutentecorrente, ruolo: "paziente", nome: "Emulatore", citta: "fantasma", dataNascita: "03/07/2000", codiceFiscale: "MMMMMMMM", pdf: ["https://prova1345.blob.core.windows.net/proa/prescrizione.pdf","https://prova1345.blob.core.windows.net/proa/libretto-sanitario.pdf"], idmedico: "12345", farmaci: [], counter: 0};
+        var newuser = { idutente: idutentecorrente, ruolo: "paziente", nome: "Emulatore", citta: "fantasma", dataNascita: "03/07/2000", codiceFiscale: "MMMMMMMM", pdf: ["https://prova1345.blob.core.windows.net/proa/prescrizione.pdf","https://prova1345.blob.core.windows.net/proa/libretto-sanitario.pdf"], idmedico: "12345", farmaci: [28511095, 42996013, 38835144], counter: 0};
         users.insertOne(newuser);
 
         // da aggiungere se mettiamo ruolo paziente

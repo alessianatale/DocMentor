@@ -124,13 +124,15 @@ class richiestaRicettaDialog extends ComponentDialog {
                 return await step.beginDialog(WATERFALL_DIALOG3);
             }
             var message = "Ecco la lista dei tuoi farmaci usuali:\n\n";
+            await step.context.sendActivity(message);
             for (let y = 0; y < farmacipaziente.length; y++) {
                 var farm = await farmaci.findOne({AIC: farmacipaziente[y]});
-                farmaciusuali.push(String("[" + farm.AIC + "] " + farm.Farmaco + "\n Ditta: " + farm.Ditta + "\n " + farm["Confezione di riferimento"]));
-                message += '• ' + farm.Farmaco + ', ' + farm.Ditta + '\n\n  ' + farm["Confezione di riferimento"] + '\n\n';
-            }
-            await step.context.sendActivity(message);
+                farmaciusuali.push(String("[" + farm.AIC + "] " ));
+                var infofarma = "[" + farm.AIC + "] " + farm.Farmaco + '\n\nDitta: ' + farm.Ditta + '\n\n  ' + farm["Confezione di riferimento"] + '\n\n';
+                await step.context.sendActivity(infofarma);
 
+            }
+            
             console.log(farmaciusuali)
 
             return await step.prompt(CONFIRM_PROMPT, {prompt: 'Vuoi richiedere la ricetta per uno o più di questi farmaci?'});
@@ -282,7 +284,7 @@ class richiestaRicettaDialog extends ComponentDialog {
         return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Seleziona un farmaco: ',
             choices: ChoiceFactory.toChoices(farmaciusuali),
-            style: ListStyle.heroCard
+            style: ListStyle.suggestedAction
         });
     }
 
@@ -342,11 +344,12 @@ class richiestaRicettaDialog extends ComponentDialog {
     async nuoviFarmaci2Step(step) {
         const farmaciscelti = await farmaci.find({ 'Farmaco' : { '$regex' : step.result, '$options' : 'i' } }).toArray();
         const listafarmaci = farmaciscelti.map(function(i) { return "[" + i.AIC + "] " + i.Farmaco + "\n Ditta: " + i.Ditta + "\n " + i["Confezione di riferimento"] });
+        const listafarmaci2 = farmaciscelti.map(function(i) { return "[" + i.AIC + "] "});
 
         for (let y = 0; y < listafarmaci.length; y++) {
             await step.context.sendActivity(listafarmaci[y]);
         }
-        const listafarmaci2 = farmaciscelti.map(function(i) { return "[" + i.AIC + "] "});
+        
 
         
         
