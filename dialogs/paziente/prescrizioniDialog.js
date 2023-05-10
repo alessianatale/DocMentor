@@ -20,13 +20,7 @@ const superagent = require('superagent');
 //Mongo Configuration
 const config = require('../../config');
 const { users, richiesteRicette, farmaci } = config;
-const { Support } = require('../support');
-const { BlobServiceClient } = require('@azure/storage-blob');
-const { v1: uuidv1 } = require("uuid");
-const path = require('path');
-const fs = require('fs');
-const http = require('http');
-const moment = require('moment')
+
 
 
 

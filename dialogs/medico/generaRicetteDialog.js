@@ -135,8 +135,13 @@ class generaRicetteDialog extends ComponentDialog {
     }
 
     getInternetAttachment(url) {
+        const stringa = url;
+        const regex = /[^.]+$/; // espressione regolare per selezionare l'ultima parte della stringa dopo l'ultimo "."
+        const estensione = stringa.match(regex)[0]; // applica l'espressione regolare alla stringa e seleziona il primo risultato
+        
+
         return {
-            contentType: 'image/png',
+            contentType: 'image/'+estensione+'',
             contentUrl: url
         };
     }
