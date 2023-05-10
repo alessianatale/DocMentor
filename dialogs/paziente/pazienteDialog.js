@@ -11,8 +11,10 @@ const {
 const {  CardFactory } = require('botbuilder');
 const { PRENOTA_VISITA_DIALOG, prenotaVisitaDialog } = require('./prenotaVisitaDialog.js');
 const { RICHIESTA_RICETTA_DIALOG, richiestaRicettaDialog } = require('./richiestaRicettaDialog.js');
+const { PRESCRIZIONI_DIALOG, prescrizioniDialog } = require('./prescrizioniDialog.js');
 //Mongo Configuration
 const config = require('../../config');
+
 const { users } = config;
 
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
@@ -31,6 +33,7 @@ class pazienteDialog extends ComponentDialog {
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT));
         this.addDialog(new prenotaVisitaDialog(PRENOTA_VISITA_DIALOG));
         this.addDialog(new richiestaRicettaDialog(RICHIESTA_RICETTA_DIALOG));
+        this.addDialog(new prescrizioniDialog(PRESCRIZIONI_DIALOG));
 
         this.addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
             this.choiceStep.bind(this),
@@ -99,8 +102,7 @@ class pazienteDialog extends ComponentDialog {
                 return await step.replaceDialog(this.id);
             }
             case 'prescrizioni': {
-                await step.context.sendActivity("questa sezione non è completa");
-                return await step.replaceDialog(this.id);
+                return await step.beginDialog(PRESCRIZIONI_DIALOG);
             }
 
         }
