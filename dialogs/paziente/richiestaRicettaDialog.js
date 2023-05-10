@@ -343,6 +343,13 @@ class richiestaRicettaDialog extends ComponentDialog {
         const farmaciscelti = await farmaci.find({ 'Farmaco' : { '$regex' : step.result, '$options' : 'i' } }).toArray();
         const listafarmaci = farmaciscelti.map(function(i) { return "[" + i.AIC + "] " + i.Farmaco + "\n Ditta: " + i.Ditta + "\n " + i["Confezione di riferimento"] });
 
+        for (let y = 0; y < listafarmaci.length; y++) {
+            await step.context.sendActivity(listafarmaci[y]);
+        }
+        const listafarmaci2 = farmaciscelti.map(function(i) { return "[" + i.AIC + "] "});
+
+        
+        
         if(farmaciscelti.length < 1){
             await step.context.sendActivity("Farmaco non trovato!");
             const farmaci = step.values.farmaci;
@@ -350,13 +357,18 @@ class richiestaRicettaDialog extends ComponentDialog {
         }
         return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Seleziona il farmaco: ',
-            choices: ChoiceFactory.toChoices(listafarmaci),
-            style: ListStyle.heroCard
+            choices: ChoiceFactory.toChoices(listafarmaci2),
+            style: ListStyle.suggestedAction
         });
     }
 
     async nuoviFarmaci3Step(step) {
         const farmacoselezionato = step.result.value;
+        const encoder = new TextEncoder();
+        const bytes = encoder.encode(farmacoselezionato);
+        const lengthInBytes = bytes.length;
+        console.log("lunghezza"+lengthInBytes); // prints the length in bytes
+
         var aic = farmacoselezionato.substring(
             farmacoselezionato.indexOf("[") + 1,
             farmacoselezionato.indexOf("]")
