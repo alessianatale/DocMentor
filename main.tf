@@ -175,7 +175,7 @@ data "azurerm_cosmosdb_account" "cosmodbaccount" {
 }
 
 output "COSMOS_CONNECTION_STRING" {
-  value       = azurerm_cosmosdb_account.cosmodbaccount.connection_strings
+  value       = azurerm_cosmosdb_account.cosmodbaccount.connection_strings[0]
   sensitive = true
 }
 
@@ -292,9 +292,21 @@ resource "null_resource" "npm_env" {
   provisioner "local-exec" {
     command = "az bot prepare-deploy --lang Javascript"
   }
-
   depends_on = [azurerm_cosmosdb_mongo_collection.richiestericettecollection]
 }
+
+
+# installare mongodb community: https://www.mongodb.com/try/download/community
+# installare database tools: https://www.mongodb.com/try/download/database-tools
+# inserire mongoimport.exe nella directory di mongodb
+# inserire il path nelle variabili d'ambiente
+// speramm che la porta è sempre 10255
+resource "null_resource" "uploadfarmaci" {
+  provisioner "local-exec" {
+    command = "mongoimport -h ${azurerm_cosmosdb_account.cosmodbaccount.name}.mongo.cosmos.azure.com:10255 -d mongodatabase -c farmaci -u ${azurerm_cosmosdb_account.cosmodbaccount.name} -p ${nonsensitive(azurerm_cosmosdb_account.cosmodbaccount.primary_key)} --ssl --jsonArray --writeConcern=\"{w:0}\" --file ./utils/farmaci.json --quiet"
+  }
+}
+
 
 /*resource "null_resource" "finaldeploy" {
   provisioner "local-exec" {
@@ -310,10 +322,6 @@ resource "null_resource" "npm_env" {
   terraform output > file.txt
   terraform output -json > env.json
   
-  installare mongodb community: https://www.mongodb.com/try/download/community
-  installare database tools: https://www.mongodb.com/try/download/database-tools
-  inserire mongoimport.exe nella directory di mongodb
-  inserire il path nelle variabili d'ambiente
   mongoimport -h cosmodbaccount-73543.mongo.cosmos.azure.com:10255 -d mongodatabase -c farmaci -u cosmodbaccount-73543 -p EcL1zA0d82UCUsDRs71cESOUHSbTnRfzkjgsbk4koVLL1g16sNtStieY7x9cszpLGTJWCQkX3MbiACDbOGepsg== --ssl --jsonArray --writeConcern="{w:0}" --file farmaci.json --quiet
 }*/
 

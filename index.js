@@ -1,21 +1,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-
-// Import required packages
 const path = require('path');
-// const axios = require('axios');
+const os = require("os");
+const fs = require("fs");
 
-// Read botFilePath and botFileSecret from .env file
 const ENV_FILE = path.join(__dirname, '.env');
-const generaPDF = require('./pdfGenerator');
 require('dotenv').config({ path: ENV_FILE });
-const {Ricetta} = require('./dialogs/ricetta.js');
-const {Farmaco} = require('./dialogs/farmaco.js');
 
 const restify = require('restify');
 
-// Import required bot services.
-// See https://aka.ms/bot-services to learn more about the different parts of a bot.
 const { 
     CloudAdapter,
     MemoryStorage,
@@ -25,8 +18,41 @@ const {
 } = require('botbuilder');
 
 const { DocMentorBotRecognizer } = require('./recognizer/DocMentorBotRecognizer.js');
-
 const { WelcomeBot } = require('./bots/welcomeBot');
+
+
+// read .env file & convert to array
+const readEnvVars = () => fs.readFileSync(ENV_FILE, "utf-8").split(os.EOL);
+
+const setEnvValue = (key, value) => {
+    const envVars = readEnvVars();
+    const targetLine = envVars.find((line) => line.split("=")[0] === key);
+    if (targetLine !== undefined) {
+      // update existing line
+      const targetLineIndex = envVars.indexOf(targetLine);
+      // replace the key/value with the new value
+      envVars.splice(targetLineIndex, 1, `${key}="${value}"`);
+    } else {
+      // create new key value
+      envVars.push(`${key}="${value}"`);
+    }
+    // write everything back to the file system
+    fs.writeFileSync(ENV_FILE, envVars.join(os.EOL));
+  };
+
+// salvo gli output di terraform nel .env
+varfile = "./terraform.tfstate"
+if(fs.existsSync(varfile)) {
+  console.log("File found");
+  var outputtf = fs.readFileSync(varfile, "utf-8")
+  var obj = JSON.parse(outputtf);
+  Object.entries(obj.outputs).forEach((entry) => {
+    const [key, value] = entry;
+    //console.log(`${key}: ${value.value}`);
+    setEnvValue(key,value.value)
+  });
+}
+
 const { main } = require('./dialogs/main');
 
 const botFrameworkAuthentication = new ConfigurationBotFrameworkAuthentication(process.env);
@@ -96,3 +122,5 @@ server.post('/api/messages', async (req, res) => {
     // Route received a request to adapter for processing
     await adapter.process(req, res, (context) => bot.run(context));
 });
+
+

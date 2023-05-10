@@ -20,7 +20,7 @@ const superagent = require('superagent');
 //Mongo Configuration
 const config = require('../../config');
 const { users, richiesteRicette, farmaci } = config;
-const { Support } = require('../support');
+const { Support } = require('../classes/support');
 const { BlobServiceClient } = require('@azure/storage-blob');
 const { v1: uuidv1 } = require("uuid");
 const fs = require('fs');
@@ -116,7 +116,7 @@ class richiestaRicettaDialog extends ComponentDialog {
     async farmaciUsualiStep(step) {
         if(step.result.value === "Inserire farmaci e foto") {
             // lista di farmaci usuali
-           
+
             var farmacipaziente = paziente.farmaci;
             if(farmacipaziente.length<1){
                 step.values.nofarm = true;
@@ -202,7 +202,7 @@ class richiestaRicettaDialog extends ComponentDialog {
 
                 return await step.endDialog();
             }
-            
+
         }
 
     }
@@ -289,7 +289,7 @@ class richiestaRicettaDialog extends ComponentDialog {
     async lista2Step(step) {
         const farmacoselezionato = step.result.value;
         var aic = farmacoselezionato.substring(
-            farmacoselezionato.indexOf("[") + 1, 
+            farmacoselezionato.indexOf("[") + 1,
             farmacoselezionato.indexOf("]")
         );
         // controllo se non ha già scelto questo farmaco
@@ -358,7 +358,7 @@ class richiestaRicettaDialog extends ComponentDialog {
     async nuoviFarmaci3Step(step) {
         const farmacoselezionato = step.result.value;
         var aic = farmacoselezionato.substring(
-            farmacoselezionato.indexOf("[") + 1, 
+            farmacoselezionato.indexOf("[") + 1,
             farmacoselezionato.indexOf("]")
         );
         // controllo se non ha già scelto questo farmaco
@@ -426,9 +426,9 @@ class richiestaRicettaDialog extends ComponentDialog {
 }
 
 
-  
+
   async function sendRequest(data) {
-    
+
    try {
       const res = await superagent.post(process.env.CallbackUrl).send(data);
       console.log(res);
@@ -436,8 +436,8 @@ class richiestaRicettaDialog extends ComponentDialog {
       console.error(err);
     }
   }
-  
- 
+
+
 async function getNextSequence(name) {
     var res = await users.findOneAndUpdate(
         { idutente: name },

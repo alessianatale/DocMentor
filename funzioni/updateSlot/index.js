@@ -38,5 +38,4 @@ module.exports = async function(context) {
         console.log(`non sono presenti prenotazioni per ${giorno} `);
     }
 
-    context.log('Ciao sono Alexxia!', timeStamp);
 };

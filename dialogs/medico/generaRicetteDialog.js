@@ -20,16 +20,16 @@ const superagent = require('superagent');
 //Mongo Configuration
 const config = require('../../config');
 const { users, richiesteRicette, farmaci } = config;
-const { Support } = require('../support');
+const { Support } = require('../classes/support');
 const { BlobServiceClient } = require('@azure/storage-blob');
 const { v1: uuidv1 } = require("uuid");
 const path = require('path');
 const fs = require('fs');
 const http = require('http');
 const moment = require('moment')
-const { Farmaco } = require('../farmaco');
-const { Ricetta } = require('../ricetta');
-const generaPDF = require('../../pdfGenerator');
+const { Farmaco } = require('../classes/farmaco');
+const { Ricetta } = require('../classes/ricetta');
+const generaPDF = require('../pdfGenerator');
 
 const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
 const STORAGE_ACCOUNT_NAME = process.env.STORAGE_ACCOUNT_NAME;
@@ -125,7 +125,7 @@ class generaRicetteDialog extends ComponentDialog {
                 ricette.push(val);
             }
             ricette.push("Torna indietro")
-            
+
             return await step.prompt(CHOICE_PROMPT, {
                 prompt: 'Ecco le richieste delle ricette mediche: ',
                 choices: ChoiceFactory.toChoices(ricette),
@@ -133,7 +133,7 @@ class generaRicetteDialog extends ComponentDialog {
             });
         }
     }
-    
+
     getInternetAttachment(url) {
         return {
             contentType: 'image/png',
@@ -147,9 +147,9 @@ class generaRicetteDialog extends ComponentDialog {
         } else {
             const richiestaRicetta = step.result.value;
             var idRicetta = richiestaRicetta.substring(
-                richiestaRicetta.indexOf("[") + 1, 
+                richiestaRicetta.indexOf("[") + 1,
                 richiestaRicetta.indexOf("]")
-            );   
+            );
             const query = await richiesteRicette.findOne({id: Number(idRicetta), idmedico: idmedico});
             paziente = await users.findOne({idutente: query.idpaziente});
             step.values.query = query;
@@ -182,7 +182,7 @@ class generaRicetteDialog extends ComponentDialog {
         if (step.values.waterfarmaci == true) {
             const query = step.values.query;
             await step.context.sendActivity("Ecco i farmaci richiesti da " + paziente.nome);
-            
+
             return await step.beginDialog(WATERFALL_DIALOG2, {farmaci: query});
         }
         return await step.next();
@@ -197,7 +197,7 @@ class generaRicetteDialog extends ComponentDialog {
         // rinizio il dialog main se ci sono altre richieste di ricette
         if (qtaricette > 0)
             return await step.beginDialog(this.id);
-        else 
+        else
             return await step.endDialog();
     }
 
@@ -239,7 +239,7 @@ class generaRicetteDialog extends ComponentDialog {
         } else {
             const farmacoselezionato = step.result.value;
             var idFarmacoSelezionato = farmacoselezionato.substring(
-                farmacoselezionato.indexOf("[") + 1, 
+                farmacoselezionato.indexOf("[") + 1,
                 farmacoselezionato.indexOf("]")
             );
             var qtaFarmacoSelezionato = farmacoselezionato.substring(
@@ -263,7 +263,7 @@ class generaRicetteDialog extends ComponentDialog {
                 await generaPDF(ricetta, filename)
                 await updateFarmaciUsuali(farm.AIC)
                 await savepdfblob(filename)
-                
+
                 await step.context.sendActivity("Ho generato ricetta...");
                 // salvo pdf sul blob e nel paziente - DA FARE
 
@@ -278,7 +278,7 @@ class generaRicetteDialog extends ComponentDialog {
                 // skippo avanti per farne mettere un altro eliminando quelli che hanno qt = 2
                 // salvo il primo farmaco inserito
                 step.values.farm1 = farm;
-                
+
                 // cerco aic dei farmaci con qta = 1
                 var indexes = this.getAllIndexes(step.values.farmaci.qta, "1");
                 var listafarmaci = [];
@@ -288,7 +288,7 @@ class generaRicetteDialog extends ComponentDialog {
                     listafarmaci.push(String("[" + farm.AIC + "] " + farm.Farmaco + "\n Ditta: " + farm.Ditta + "\n " + farm["Confezione di riferimento"] + "\n Quantità: " + step.values.farmaci.qta[indexes[y]]));
                 }
                 listafarmaci.push("Nessun altro")
-                
+
                 //console.log(step.values.farmacicompleti)
                 return await step.prompt(CHOICE_PROMPT, {
                     prompt: 'Seleziona un secondo farmaco da poter aggiungere alla ricetta: ',
@@ -324,11 +324,11 @@ class generaRicetteDialog extends ComponentDialog {
             // genero ricetta con 2 farmaci con qta = 1
             const farmacoselezionato = step.result.value;
             var idFarmacoSelezionato = farmacoselezionato.substring(
-                farmacoselezionato.indexOf("[") + 1, 
+                farmacoselezionato.indexOf("[") + 1,
                 farmacoselezionato.indexOf("]")
             );
             const farm2 = step.values.farmacicompleti.find(f => f.AIC == idFarmacoSelezionato);
-            
+
             var farmacoRicetta1 = new Farmaco(farm1.Farmaco, farm1["Confezione di riferimento"], "1", "--");
             var farmacoRicetta2 = new Farmaco(farm2.Farmaco, farm2["Confezione di riferimento"], "1", "--");
             var farmaci = [farmacoRicetta1, farmacoRicetta2]
@@ -340,7 +340,7 @@ class generaRicetteDialog extends ComponentDialog {
             await savepdfblob(filename)
             await step.context.sendActivity("Ho generato ricetta...");
             // salvo pdf sul blob e nel paziente - DA FARE
-            
+
 
             // elimino il secondo farmaco dall array
             var index = step.values.farmaci.array.findIndex((el) => el == idFarmacoSelezionato);
@@ -391,10 +391,10 @@ class generaRicetteDialog extends ComponentDialog {
     async nuoviFarmaci3Step(step) {
         const farmacoselezionato = step.result.value;
         var aic = farmacoselezionato.substring(
-            farmacoselezionato.indexOf("[") + 1, 
+            farmacoselezionato.indexOf("[") + 1,
             farmacoselezionato.indexOf("]")
         );
-        
+
             step.values.farmaci.array.push(aic);
             const quantita = ["1", "2"];
             return await step.prompt(CHOICE_PROMPT, {
@@ -406,7 +406,7 @@ class generaRicetteDialog extends ComponentDialog {
 
     async nuoviFarmaci4Step(step) {
         step.values.farmaci.qta.push(step.result.value);
-        
+
         // controllo se qta = 2 genero ricetta e chiedo se vuoi reinserire un altro
         if(step.result.value == "2") {
             const farm1 = await farmaci.findOne({AIC: Number(step.values.farmaci.array[0])});
@@ -482,10 +482,10 @@ class generaRicetteDialog extends ComponentDialog {
     async nuoviFarmaci7Step(step) {
         const farmacoselezionato = step.result.value;
         var aic = farmacoselezionato.substring(
-            farmacoselezionato.indexOf("[") + 1, 
+            farmacoselezionato.indexOf("[") + 1,
             farmacoselezionato.indexOf("]")
         );
-        
+
         step.values.farmaci.array.push(aic);
         // genero ricetta con 2 farmaci con qta = 1
         const farm1 = await farmaci.findOne({AIC: Number(step.values.farmaci.array[0])});
@@ -499,9 +499,9 @@ class generaRicetteDialog extends ComponentDialog {
         await updateFarmaciUsuali(Number(step.values.farmaci.array[0]))
         await updateFarmaciUsuali(Number(step.values.farmaci.array[1]))
         await savepdfblob(filename)
-        
+
         await step.context.sendActivity("Ho generato ricetta...");
-        
+
 
         return await step.prompt(CONFIRM_PROMPT, { prompt: 'Vuoi generare una nuova ricetta?' });
     }
@@ -538,7 +538,7 @@ async function updateFarmaciUsuali(aic) {
 async function sendRequest(data) {
     try {
        const res = await superagent.post(process.env.CallbackUrl).send(data);
-       
+
      } catch (err) {
        console.error(err);
      }
@@ -571,7 +571,7 @@ async function savepdfblob(filename) {
     await blockBlobClient.uploadFile(filePath, blobOptions);
 
     var pdf = 'https://' + STORAGE_ACCOUNT_NAME + '.blob.core.windows.net/pdf/' + filename;
-    
+
     // elimino il pdf in locale
     await fs.unlink(filePath, (err) => {
         if (err) {
@@ -590,13 +590,13 @@ async function savepdfblob(filename) {
     });
 
 
-    
+
       //richiesta http vesro logicapp
     const data = {
         Id:Number(paziente.idutente),
         Message: "La tua prescrizione è pronta!, Vai nella sezione \'le mie prescrizioni\' per visionarla."
     }
-    
+
 
      await sendRequest(data)
 

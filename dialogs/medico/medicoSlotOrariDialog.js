@@ -14,7 +14,7 @@ const {
 //Mongo Configuration
 const config = require('../../config');
 const { users, slotorari } = config;
-const { Support } = require('../support');
+const { Support } = require('../classes/support');
 
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
 const NAME_PROMPT = 'NAME_PROMPT';
