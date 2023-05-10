@@ -149,7 +149,7 @@ class main extends ComponentDialog {
         users.insertOne(newuser);
 
         // da aggiungere se mettiamo ruolo paziente
-        var medico = { idutente: "12345", ruolo: "medico", nome: "MedicoEmulatore", citta: "Caserta", dataNascita: "12/07/99",indirizzo:"via santissimo nome", codiceFiscale: "FFFFFF",  counter: 0};
+        var medico = { idutente: "12345", ruolo: "medico", nome: "MedicoEmulatore", citta: "Caserta", dataNascita: "12/07/99",indirizzo:"via santissimo nome di maria, 34", codiceFiscale: "FFFFFF",  counter: 0};
         users.insertOne(medico);
         var slot = {idmedico: "12345", giorno: "Lunedì", orari: ["3","4"]};
         slotorari.insertOne(slot);

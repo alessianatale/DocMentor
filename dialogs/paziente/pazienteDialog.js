@@ -98,7 +98,16 @@ class pazienteDialog extends ComponentDialog {
                  return await step.replaceDialog(this.id);
             }
             case 'info medico': {
-                await step.context.sendActivity({ attachments: [await this.createInfodocCard(step)] });
+                var idutentecorrente = step.context.activity.from.id;
+                var query = { idutente: idutentecorrente };
+                const paziente = await users.findOne(query);
+
+                var querymed = { idutente: paziente.idmedico };
+                const medico = await users.findOne(querymed);
+                
+                var info = `Nome: ${medico.nome} \n\nCittà: ${medico.citta} \n\nIndirizzo: ${medico.indirizzo} \n\nCodice Fiscale: ${medico.codiceFiscale} \n\nData di nascita: ${medico.dataNascita}  `;
+                await step.context.sendActivity(info);
+                await step.context.sendActivity({ attachments: [this.createGooglemapsCard("https://www.google.com/maps/dir/?api=1&destination="+medico.citta+" "+medico.indirizzo)] });
                 return await step.replaceDialog(this.id);
             }
             case 'prescrizioni': {
@@ -116,45 +125,19 @@ class pazienteDialog extends ComponentDialog {
         return await step.replaceDialog(this.id);
     }
 
-    async createInfodocCard(step) {
-        var idutentecorrente = step.context.activity.from.id;
-        var query = { idutente: idutentecorrente };
-        const paziente = await users.findOne(query);
-
-        var querymed = { idutente: paziente.idmedico };
-        const medico = await users.findOne(querymed);
-        
-
-        return CardFactory.receiptCard({
-            title: medico.nome,
-            facts: [
-                {
-                    key: 'Città',
-                    value: medico.citta
-                },
-                {
-                    key: 'Indirizzo',
-                    value: medico.indirizzo
-                }
-                ,
-                {
-                    key: 'Codice Fiscale',
-                    value: medico.codiceFiscale
-                }
-                ,
-                {
-                    key: 'Data di nascita',
-                    value: medico.dataNascita
-                }
-            ]
-           
-        });
-    }
+   
 
     createSignInCard() {
         return CardFactory.signinCard(
             'Clicca qui per aprire Healtbot',
             'http://t.me/DocHealtBot',
+            
+        );
+    }
+    createGooglemapsCard(url) {
+        return CardFactory.signinCard(
+            'Avvia navigazione verso lo studio',
+            url,
             
         );
     }
