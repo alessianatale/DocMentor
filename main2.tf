@@ -5,6 +5,9 @@ resource "azurerm_storage_account" "storageaccount" {
   location                 = azurerm_resource_group.cloudrg.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
+  blob_properties {
+    last_access_time_enabled = true
+  }
 }
 
 output "AZURE_STORAGE_CONNECTION_STRING" {
