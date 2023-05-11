@@ -302,7 +302,7 @@ class richiestaRicettaDialog extends ComponentDialog {
             return await step.replaceDialog(WATERFALL_DIALOG2, {farmaci: farmaci});
         } // altrimenti inserisco l'id del farmaco nell'array
         else {
-            step.values.farmaci.array.push(aic);
+            step.values.farmaci.array.push(Number(aic));
             const quantita = ["1", "2"];
             return await step.prompt(CHOICE_PROMPT, {
                 prompt: 'Seleziona la quantità: \n\n Nota: se vuoi richiederne più di 2 fai un\'altra richiesta',
@@ -383,7 +383,7 @@ class richiestaRicettaDialog extends ComponentDialog {
         } // altrimenti inserisco l'id del farmaco nell'array
         else {
             //const farm = await farmaci.findOne({AIC: Number(aic)});
-            step.values.farmaci.array.push(aic);
+            step.values.farmaci.array.push(Number(aic));
             const quantita = ["1", "2"];
             return await step.prompt(CHOICE_PROMPT, {
                 prompt: 'Seleziona la quantità: \n\n Nota: se vuoi richiederne più di 2 fai un\'altra richiesta',
@@ -445,7 +445,7 @@ class richiestaRicettaDialog extends ComponentDialog {
 
    try {
       const res = await superagent.post(process.env.CallbackUrl).send(data);
-      console.log(res);
+    
     } catch (err) {
       console.error(err);
     }
