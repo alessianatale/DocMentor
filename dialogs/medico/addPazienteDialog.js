@@ -112,7 +112,7 @@ class addPazienteDialog extends ComponentDialog {
         if (step.result) {
             // Get the current profile object from user state.
 
-            var newuser = {idutente: String(step.values.id) , ruolo: "paziente", nome: step.values.nome, dataNascita: step.values.dataNascita, citta: step.values.citta, indirizzo: step.values.indirizzo, codiceFiscale: step.values.cf, farmaci: [], pdf: "", idmedico: step.context.activity.from.id, esenzione: step.values.esenzione};
+            var newuser = {idutente: String(step.values.id) , ruolo: "paziente", nome: step.values.nome, dataNascita: step.values.dataNascita, citta: step.values.citta, indirizzo: step.values.indirizzo, codiceFiscale: step.values.cf, farmaci: [], pdf: [], idmedico: step.context.activity.from.id, esenzione: step.values.esenzione};
             users.insertOne(newuser);
 
             let msg = `è stato aggiunto il seguente paziente: \n\n ${ step.values.nome } \n\n id: ${ step.values.id } \n\n data nascita: ${ step.values.dataNascita }` +
