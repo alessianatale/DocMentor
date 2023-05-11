@@ -24,14 +24,14 @@ const { Support } = require('../classes/support');
 const { BlobServiceClient } = require('@azure/storage-blob');
 const { v1: uuidv1 } = require("uuid");
 const fs = require('fs');
-const https = require('http');
+const https = require('https');
 
 const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING;
 const STORAGE_ACCOUNT_NAME = process.env.STORAGE_ACCOUNT_NAME;
 
 let paziente;
 let idmedico;
-let farmaciusuali = [];
+let farmaciusuali;
 
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
 const NAME_PROMPT = 'NAME_PROMPT';
@@ -105,7 +105,7 @@ class richiestaRicettaDialog extends ComponentDialog {
 
     async choiceStep(step) {
         paziente = await users.findOne({idutente: step.context.activity.from.id});
-        await step.context.sendActivity(`Ciao ${paziente.nome}, per richiedere la ricetta medica di farmaci ti ricordiamo che puoi inserire farmaci sia manualmente, scegliendo da una lista di farmaci che solitamente richiedi o inserendo nuovi farmaci, sia inviando una o più foto di farmaci prescritti dal tuo medico!`);
+        await step.context.sendActivity(`Ciao ${paziente.nome}, per richiedere la ricetta medica di farmaci ti ricordiamo che puoi inserire farmaci sia manualmente, scegliendo da una lista di farmaci che solitamente richiedi o inserendo nuovi farmaci, sia inviando una o più foto di farmaci prescritti dal tuo medico`);
         return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Vuoi allegare solo una foto di farmaci prescritti dal medico o richiederne anche altri?',
             choices: ChoiceFactory.toChoices(['Inserire solo foto', 'Inserire farmaci e foto']),
@@ -123,12 +123,13 @@ class richiestaRicettaDialog extends ComponentDialog {
                 // far scrivere i farmaci
                 return await step.beginDialog(WATERFALL_DIALOG3);
             }
-            var message = "Ecco la lista dei tuoi farmaci usuali:\n\n";
+            var message = "Ecco la lista dei tuoi farmaci usuali";
             await step.context.sendActivity(message);
+            farmaciusuali=[];
             for (let y = 0; y < farmacipaziente.length; y++) {
                 var farm = await farmaci.findOne({AIC: farmacipaziente[y]});
                 farmaciusuali.push(String("[" + farm.AIC + "] " ));
-                var infofarma = "[" + farm.AIC + "] " + farm.Farmaco + '\n\nDitta: ' + farm.Ditta + '\n\n  ' + farm["Confezione di riferimento"] + '\n\n';
+                var infofarma = String( `\\[` + farm.AIC + `\\] ` + farm.Farmaco + `\n\nDitta: ` + farm.Ditta + `\n\n` + farm["Confezione di riferimento"])  ;
                 await step.context.sendActivity(infofarma);
 
             }
@@ -196,11 +197,11 @@ class richiestaRicettaDialog extends ComponentDialog {
                   }
                 await sendRequest(data)
 
-                await step.context.sendActivity(`Richiesta inviata con successo!`);
+                await step.context.sendActivity(`Richiesta inviata con successo`);
 
                 return await step.endDialog();
             } else {
-                await step.context.sendActivity(`Nessuna richiesta inviata!`);
+                await step.context.sendActivity(`Nessuna richiesta inviata`);
 
                 return await step.endDialog();
             }
@@ -263,7 +264,7 @@ class richiestaRicettaDialog extends ComponentDialog {
           }
         await sendRequest(data)
 
-        await step.context.sendActivity(`Richiesta inviata con successo!`);
+        await step.context.sendActivity(`Richiesta inviata con successo`);
 
         return await step.endDialog();
     }
@@ -304,7 +305,7 @@ class richiestaRicettaDialog extends ComponentDialog {
             step.values.farmaci.array.push(aic);
             const quantita = ["1", "2"];
             return await step.prompt(CHOICE_PROMPT, {
-                prompt: 'Seleziona la quantità: \n\n Nota: se vuoi richiederne più di 2 fai un\'altra richiesta!',
+                prompt: 'Seleziona la quantità: \n\n Nota: se vuoi richiederne più di 2 fai un\'altra richiesta',
                 choices: ChoiceFactory.toChoices(quantita),
                 style: ListStyle.heroCard
             });
@@ -343,7 +344,8 @@ class richiestaRicettaDialog extends ComponentDialog {
 
     async nuoviFarmaci2Step(step) {
         const farmaciscelti = await farmaci.find({ 'Farmaco' : { '$regex' : step.result, '$options' : 'i' } }).toArray();
-        const listafarmaci = farmaciscelti.map(function(i) { return "[" + i.AIC + "] " + i.Farmaco + "\n Ditta: " + i.Ditta + "\n " + i["Confezione di riferimento"] });
+        const listafarmaci = farmaciscelti.map(function(i) { return `\\[`+ i.AIC + `\\] ` + i.Farmaco + `\n\nDitta: ` + i.Ditta + `\n\n` + i["Confezione di riferimento"]  });
+                                                            
         const listafarmaci2 = farmaciscelti.map(function(i) { return "[" + i.AIC + "] "});
 
         for (let y = 0; y < listafarmaci.length; y++) {
@@ -354,7 +356,7 @@ class richiestaRicettaDialog extends ComponentDialog {
         
         
         if(farmaciscelti.length < 1){
-            await step.context.sendActivity("Farmaco non trovato!");
+            await step.context.sendActivity("Farmaco non trovato");
             const farmaci = step.values.farmaci;
             return await step.replaceDialog(WATERFALL_DIALOG3, {farmaci: farmaci});
         }
@@ -367,10 +369,7 @@ class richiestaRicettaDialog extends ComponentDialog {
 
     async nuoviFarmaci3Step(step) {
         const farmacoselezionato = step.result.value;
-        const encoder = new TextEncoder();
-        const bytes = encoder.encode(farmacoselezionato);
-        const lengthInBytes = bytes.length;
-        console.log("lunghezza"+lengthInBytes); // prints the length in bytes
+
 
         var aic = farmacoselezionato.substring(
             farmacoselezionato.indexOf("[") + 1,
@@ -387,7 +386,7 @@ class richiestaRicettaDialog extends ComponentDialog {
             step.values.farmaci.array.push(aic);
             const quantita = ["1", "2"];
             return await step.prompt(CHOICE_PROMPT, {
-                prompt: 'Seleziona la quantità: \n\n Nota: se vuoi richiederne più di 2 fai un\'altra richiesta!',
+                prompt: 'Seleziona la quantità: \n\n Nota: se vuoi richiederne più di 2 fai un\'altra richiesta',
                 choices: ChoiceFactory.toChoices(quantita),
                 style: ListStyle.heroCard
             });

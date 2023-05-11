@@ -116,7 +116,7 @@ class generaRicetteDialog extends ComponentDialog {
         qtaricette = query.length;
         const ricette = []
         if (qtaricette < 1) {
-            await step.context.sendActivity("Non ci sono richieste di ricette!");
+            await step.context.sendActivity("Non ci sono richieste di ricette");
             return await step.endDialog();
         } else {
             for (let i=0; i<qtaricette; i++) {
@@ -226,14 +226,17 @@ class generaRicetteDialog extends ComponentDialog {
         for (let y = 0; y < step.values.farmaci.array.length; y++) {
             var farm = await farmaci.findOne({AIC: step.values.farmaci.array[y]});
             step.values.farmacicompleti.push(farm);
-            listafarmaci.push(String("[" + farm.AIC + "] " + farm.Farmaco + "\n Ditta: " + farm.Ditta + "\n " + farm["Confezione di riferimento"] + "\n Quantità: " + step.values.farmaci.qta[y]));
+            listafarmaci.push(String("[" + farm.AIC + "] " ));
+            
+            var infofarma = String("\\[" + farm.AIC + "\\] " + farm.Farmaco + "\n Ditta: " + farm.Ditta + "\n " + farm["Confezione di riferimento"] + "\n Quantità: " + step.values.farmaci.qta[y]) ;
+            await step.context.sendActivity(infofarma);
         }
         listafarmaci.push("Nessuno")
         console.log("Paziente: "+paziente.nome)
         return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Seleziona un farmaco da inserire nella ricetta: \n\noppure seleziona Nessuno se non vuoi inserirne alcuno',
             choices: ChoiceFactory.toChoices(listafarmaci),
-            style: ListStyle.heroCard
+            style: ListStyle.suggestedAction
         });
     }
 
@@ -290,7 +293,13 @@ class generaRicetteDialog extends ComponentDialog {
                 for(let y=0; y<indexes.length; y++) {
                     var aic1 = step.values.farmaci.array[indexes[y]];
                     const farm = step.values.farmacicompleti.find(f => f.AIC == aic1);
-                    listafarmaci.push(String("[" + farm.AIC + "] " + farm.Farmaco + "\n Ditta: " + farm.Ditta + "\n " + farm["Confezione di riferimento"] + "\n Quantità: " + step.values.farmaci.qta[indexes[y]]));
+
+                    listafarmaci.push(String("[" + farm.AIC + "] " ));
+            
+                    var infofarma = String("\\[" + farm.AIC + "\\] " + farm.Farmaco + "\n Ditta: " + farm.Ditta + "\n " + farm["Confezione di riferimento"] + "\n Quantità: " + step.values.farmaci.qta[indexes[y]]);
+                    await step.context.sendActivity(infofarma);
+
+                    
                 }
                 listafarmaci.push("Nessun altro")
 
@@ -298,7 +307,7 @@ class generaRicetteDialog extends ComponentDialog {
                 return await step.prompt(CHOICE_PROMPT, {
                     prompt: 'Seleziona un secondo farmaco da poter aggiungere alla ricetta: ',
                     choices: ChoiceFactory.toChoices(listafarmaci),
-                    style: ListStyle.heroCard
+                    style: ListStyle.suggestedAction
                 });
             }
         }
@@ -377,16 +386,22 @@ class generaRicetteDialog extends ComponentDialog {
     async nuoviFarmaci2Step(step) {
         if (step.result != 0) {
             const farmaciscelti = await farmaci.find({ 'Farmaco' : { '$regex' : step.result, '$options' : 'i' } }).toArray();
-            const listafarmaci = farmaciscelti.map(function(i) { return "[" + i.AIC + "] " + i.Farmaco + "\n Ditta: " + i.Ditta + "\n " + i["Confezione di riferimento"] });
+            const listafarmaci = farmaciscelti.map(function(i) { return "\\[" + i.AIC + "\\] " + i.Farmaco + "\n Ditta: " + i.Ditta + "\n " + i["Confezione di riferimento"] });
+
+            const listafarmaci2 = farmaciscelti.map(function(i) { return "[" + i.AIC + "] "});
+
+            for (let y = 0; y < listafarmaci.length; y++) {
+                await step.context.sendActivity(listafarmaci[y]);
+            }
 
             if(farmaciscelti.length < 1){
-                await step.context.sendActivity("Farmaco non trovato!");
+                await step.context.sendActivity("Farmaco non trovato");
                 return await step.replaceDialog(WATERFALL_DIALOG3);
             }
             return await step.prompt(CHOICE_PROMPT, {
                 prompt: 'Seleziona il farmaco: ',
-                choices: ChoiceFactory.toChoices(listafarmaci),
-                style: ListStyle.heroCard
+                choices: ChoiceFactory.toChoices(listafarmaci2),
+                style: ListStyle.suggestedAction
             });
         } else {
             return await step.endDialog();
@@ -470,16 +485,22 @@ class generaRicetteDialog extends ComponentDialog {
                 return await step.endDialog();
         } else {
             const farmaciscelti = await farmaci.find({ 'Farmaco' : { '$regex' : step.result, '$options' : 'i' } }).toArray();
-            const listafarmaci = farmaciscelti.map(function(i) { return "[" + i.AIC + "] " + i.Farmaco + "\n Ditta: " + i.Ditta + "\n " + i["Confezione di riferimento"] });
+            const listafarmaci = farmaciscelti.map(function(i) { return "\\[" + i.AIC + "\\] " + i.Farmaco + "\n Ditta: " + i.Ditta + "\n " + i["Confezione di riferimento"] });
+
+            const listafarmaci2 = farmaciscelti.map(function(i) { return "[" + i.AIC + "] "});
+
+            for (let y = 0; y < listafarmaci.length; y++) {
+                await step.context.sendActivity(listafarmaci[y]);
+            }
 
             if(farmaciscelti.length < 1){
-                await step.context.sendActivity("Farmaco non trovato!");
+                await step.context.sendActivity("Farmaco non trovato");
                 return await step.replaceDialog(WATERFALL_DIALOG3);
             }
             return await step.prompt(CHOICE_PROMPT, {
                 prompt: 'Seleziona il farmaco: ',
-                choices: ChoiceFactory.toChoices(listafarmaci),
-                style: ListStyle.heroCard
+                choices: ChoiceFactory.toChoices(listafarmaci2),
+                style: ListStyle.suggestedAction
             });
         }
     }

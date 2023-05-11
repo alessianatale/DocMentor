@@ -96,7 +96,7 @@ const userState = new UserState(memoryStorage);
 
 // If configured, pass in the DocMentorBotRecognizer.  (Defining it externally allows it to be mocked for tests)
 const { CluAPIKey, CluAPIHostName, CluProjectName, CluDeploymentName } = process.env;
-const cluConfig = { endpointKey: CluAPIKey, endpoint: `https://${ CluAPIHostName }`, projectName: CluProjectName, deploymentName: CluDeploymentName };
+const cluConfig = { endpointKey: CluAPIKey, endpoint: CluAPIHostName, projectName: CluProjectName, deploymentName: CluDeploymentName };
 
 const cluRecognizer = new DocMentorBotRecognizer(cluConfig);
 
