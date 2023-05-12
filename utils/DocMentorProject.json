@@ -1,0 +1,423 @@
+{
+    "projectFileVersion": "2022-10-01-preview",
+    "stringIndexType": "Utf16CodeUnit",
+    "metadata": {
+        "projectKind": "Conversation",
+        "settings": {
+            "confidenceThreshold": 0
+        },
+        "projectName": "DocMentorProject",
+        "multilingual": false,
+        "description": "",
+        "language": "it"
+    },
+    "assets": {
+        "projectKind": "Conversation",
+        "intents": [
+            {
+                "category": "None"
+            },
+            {
+                "category": "Prenotare Visita"
+            },
+            {
+                "category": "Richiedi Ricetta"
+            },
+            {
+                "category": "info medico"
+            },
+            {
+                "category": "healthBot"
+            },
+            {
+                "category": "prescrizioni"
+            }
+        ],
+        "entities": [
+            {
+                "category": "vuota",
+                "compositionSetting": "combineComponents"
+            }
+        ],
+        "utterances": [
+            {
+                "text": "info medico",
+                "language": "it",
+                "intent": "info medico",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "accesso helatbot",
+                "language": "it",
+                "intent": "healthBot",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "open healtbot",
+                "language": "it",
+                "intent": "healthBot",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "aprire healtbot",
+                "language": "it",
+                "intent": "healthBot",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "apri healtbot",
+                "language": "it",
+                "intent": "healthBot",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Cosa Posso fare con HealtBot",
+                "language": "it",
+                "intent": "healthBot",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Come apro healtBot?",
+                "language": "it",
+                "intent": "healthBot",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "cos'è helatbot?",
+                "language": "it",
+                "intent": "healthBot",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Come posso raggiungere il mio medico di base?",
+                "language": "it",
+                "intent": "info medico",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "dove si trova il mio medico di base?",
+                "language": "it",
+                "intent": "info medico",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "chi è il mio medico di base?",
+                "language": "it",
+                "intent": "info medico",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Dove si trova il mio dottore",
+                "language": "it",
+                "intent": "info medico",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "chi è il mio dottore?",
+                "language": "it",
+                "intent": "info medico",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Come posso raggiungere il mio medico?",
+                "language": "it",
+                "intent": "info medico",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "chi è il mio medico?",
+                "language": "it",
+                "intent": "info medico",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "come si chiama il medico",
+                "language": "it",
+                "intent": "info medico",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "dove si trova il medico",
+                "language": "it",
+                "intent": "info medico",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "prescrizione medica",
+                "language": "it",
+                "intent": "prescrizioni",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "dove trovo le prescrizioni",
+                "language": "it",
+                "intent": "prescrizioni",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "come si accede alle prescrizioni",
+                "language": "it",
+                "intent": "prescrizioni",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "accedere alle prescrizioni",
+                "language": "it",
+                "intent": "prescrizioni",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "scarica prescrizioni",
+                "language": "it",
+                "intent": "prescrizioni",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "prescrizioni",
+                "language": "it",
+                "intent": "prescrizioni",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "le mie prescrizioni",
+                "language": "it",
+                "intent": "prescrizioni",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "vorrei vedere le mie prescrizioni",
+                "language": "it",
+                "intent": "prescrizioni",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Potreste per favore prescrivermi una ricetta ",
+                "language": "it",
+                "intent": "Richiedi Ricetta",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Ho bisogno di una ricetta  per la mia condizione medica, potete aiutarmi?",
+                "language": "it",
+                "intent": "Richiedi Ricetta",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Ho bisogno di una ricetta per il mio farmaco per il mio viaggio all'estero",
+                "language": "it",
+                "intent": "Richiedi Ricetta",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Vorrei chiedere una ricetta per il mio farmaco perché è difficile trovarlo in farmacia senza.",
+                "language": "it",
+                "intent": "Richiedi Ricetta",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Sto cercando di ottenere una ricetta, ma non so come fare.",
+                "language": "it",
+                "intent": "Richiedi Ricetta",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Potrebbe per favore prescrivermi una ricetta ",
+                "language": "it",
+                "intent": "Richiedi Ricetta",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Ho bisogno di una ricetta ",
+                "language": "it",
+                "intent": "Richiedi Ricetta",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Mi serve una ricetta ",
+                "language": "it",
+                "intent": "Richiedi Ricetta",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Ho finito le pillole del mio farmaco, potrebbe per favore prescrivermi una nuova ricetta?",
+                "language": "it",
+                "intent": "Richiedi Ricetta",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Vorrei richiedere una ricetta per il mio",
+                "language": "it",
+                "intent": "Richiedi Ricetta",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Vorrei prenotare una visita per un controllo annuale.",
+                "language": "it",
+                "intent": "Prenotare Visita",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Ho bisogno di una visita per la mia terapia riabilitativa, potete prenotarmela?",
+                "language": "it",
+                "intent": "Prenotare Visita",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Mi serve una visita",
+                "language": "it",
+                "intent": "Prenotare Visita",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Sto cercando di prenotare una visita",
+                "language": "it",
+                "intent": "Prenotare Visita",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Mi piacerebbe prenotare una visita per una seconda opinione",
+                "language": "it",
+                "intent": "Prenotare Visita",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Ho bisogno di una visita per la mia gravidanza, potete aiutarmi a fissarla?",
+                "language": "it",
+                "intent": "Prenotare Visita",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Potreste per favore prenotarmi una visita con il dottor",
+                "language": "it",
+                "intent": "Prenotare Visita",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Mi serve una ricetta",
+                "language": "it",
+                "intent": "Richiedi Ricetta",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "niente",
+                "language": "it",
+                "intent": "None",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Mi serve una visita ",
+                "language": "it",
+                "intent": "Prenotare Visita",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Sto cercando di prenotare una visita, ma non so come procedere",
+                "language": "it",
+                "intent": "Prenotare Visita",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Ho bisogno di una visita urgente, potete aiutarmi a fissarla?",
+                "language": "it",
+                "intent": "Prenotare Visita",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Vorrei prenotare una visita di controllo",
+                "language": "it",
+                "intent": "Prenotare Visita",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Mi piacerebbe prenotare una visita ",
+                "language": "it",
+                "intent": "Prenotare Visita",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Sto cercando di prenotare una visita ",
+                "language": "it",
+                "intent": "Prenotare Visita",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "C'è disponibilità per una visita",
+                "language": "it",
+                "intent": "Prenotare Visita",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Potrei prenotare una visita ",
+                "language": "it",
+                "intent": "Prenotare Visita",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Mi servirebbe fissare un appuntamento per una visita medica.",
+                "language": "it",
+                "intent": "Prenotare Visita",
+                "entities": [],
+                "dataset": "Train"
+            },
+            {
+                "text": "Vorrei prenotare una visita",
+                "language": "it",
+                "intent": "Prenotare Visita",
+                "entities": [],
+                "dataset": "Train"
+            }
+        ]
+    }
+}
