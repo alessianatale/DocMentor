@@ -1,4 +1,3 @@
-// per le function
 resource "azurerm_storage_account" "storageaccount" {
   name                     = "storageaccount${random_integer.ri.result}1"
   resource_group_name      = azurerm_resource_group.cloudrg.name
@@ -17,7 +16,6 @@ output "AZURE_STORAGE_CONNECTION_STRING" {
 output "STORAGE_ACCOUNT_NAME" {
   value       = azurerm_storage_account.storageaccount.name
 }
- 
 
 resource "azurerm_storage_container" "storagecontainerimages" {
   name                  = "images"
@@ -48,7 +46,6 @@ resource "azurerm_storage_management_policy" "example" {
     }
   }
 }
-
 
 resource "azurerm_service_plan" "serviceplan" {
   name                = "serviceplan${random_integer.ri.result}"
@@ -83,48 +80,20 @@ resource "azurerm_windows_function_app" "functionapp" {
 
   app_settings = {
     "AzureWebJobsFeatureFlags" = "EnableWorkerIndexing",
-    //AzureWebJobsDashboard = false,
-    //"WEBSITE_RUN_FROM_PACKAGE" = "",
     "FUNCTIONS_WORKER_RUNTIME" = "node",
     "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.application_insights.instrumentation_key
+    "MONGOURL" = azurerm_cosmosdb_account.cosmodbaccount.connection_strings[0]
   }
   depends_on = [azurerm_service_plan.serviceplan]
 }
 
 /*
-resource "null_resource" "finaldeploy" {
-  provisioner "local-exec" {
-    command = "func azure functionapp publish functionapp73543 --nozip"
-  }
-}
+  installare func
+  eliminare eventuale file "local.setting"
+  nella cartella funzioni:
+  npm install
+  func azure functionapp publish functionapp85484 --nozip --javascript
 */
-
-
-
-/*resource "azurerm_function_app_function" "timeTriggerFunction" {
-  name            = "timeTriggerFunction${random_integer.ri.result}"
-  function_app_id = azurerm_windows_function_app.functionapp.id
-  language        = "Javascript"
-
-  file {
-    name    = "func.zip"
-    content = file("./func.zip")
-  }
-
-  test_data = jsonencode({
-    "name" = "Azure"
-  })
-
-  config_json = jsonencode({
-    "schedule": "*//*30 * * * * *",
-    "name": "myTimer",
-    "type": "timerTrigger",
-    "direction": "in"
-  })
-
-  depends_on = [azurerm_windows_function_app.functionapp]
-}*/
-
 
 
 // CLU
@@ -140,12 +109,12 @@ resource "azurerm_cognitive_account" "cognitiveaccount" {
 }
 
 output "CluAPIHostName" {
-    value = azurerm_cognitive_account.cognitiveaccount.endpoint
+  value = azurerm_cognitive_account.cognitiveaccount.endpoint
 }
 
 output "CluAPIKey" {
-    value = azurerm_cognitive_account.cognitiveaccount.primary_access_key
-    sensitive = true
+  value = azurerm_cognitive_account.cognitiveaccount.primary_access_key
+  sensitive = true
 }
 // dopo questo creare il project sul portale
 
@@ -249,7 +218,7 @@ SCHEMA
 }
 
 output "CallbackUrl" {
-    value = azurerm_logic_app_trigger_http_request.httptriggerRicetta.callback_url
+  value = azurerm_logic_app_trigger_http_request.httptriggerRicetta.callback_url
 }
 
 resource "azurerm_logic_app_action_custom" "actionRicetta" {

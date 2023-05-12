@@ -144,15 +144,15 @@ class main extends ComponentDialog {
         );
     }
     async utenteEmulatore(step) {
-        var idutentecorrente = step.context.activity.from.id;
-        var newuser = { idutente: idutentecorrente, ruolo: "paziente", nome: "Emulatore", citta: "fantasma", dataNascita: "03/07/2000", codiceFiscale: "MMMMMMMM", pdf: ["https://prova1345.blob.core.windows.net/proa/prescrizione.pdf","https://prova1345.blob.core.windows.net/proa/libretto-sanitario.pdf"], idmedico: "12345", farmaci: [28511095, 42996013, 38835144], counter: 0};
-        users.insertOne(newuser);
+        // var idutentecorrente = step.context.activity.from.id;
+        // var newuser = { idutente: idutentecorrente, ruolo: "paziente", nome: "Emulatore", citta: "fantasma", dataNascita: "03/07/2000", codiceFiscale: "MMMMMMMM", pdf: ["https://prova1345.blob.core.windows.net/proa/prescrizione.pdf","https://prova1345.blob.core.windows.net/proa/libretto-sanitario.pdf"], idmedico: "12345", farmaci: [28511095, 42996013, 38835144], counter: 0};
+        // users.insertOne(newuser);
 
         // da aggiungere se mettiamo ruolo paziente
-        var medico = { idutente: "12345", ruolo: "medico", nome: "MedicoEmulatore", citta: "Caserta", dataNascita: "12/07/99",indirizzo:"via santissimo nome di maria, 34", codiceFiscale: "FFFFFF",  counter: 0};
-        users.insertOne(medico);
-        var slot = {idmedico: "12345", giorno: "Lunedì", orari: ["3","4"]};
-        slotorari.insertOne(slot);
+        // var medico = { idutente: "12345", ruolo: "medico", nome: "MedicoEmulatore", citta: "Caserta", dataNascita: "12/07/99",indirizzo:"via santissimo nome di maria, 34", codiceFiscale: "FFFFFF",  counter: 0};
+        // users.insertOne(medico);
+        // var slot = {idmedico: "12345", giorno: "Lunedì", orari: ["3","4"]};
+        // slotorari.insertOne(slot);
 
         // // da aggiungere se mettiamo ruolo medico
         // var paziente = {idutente: "1234567" , ruolo: "paziente", nome: "Viviana Veccia", dataNascita: "14/06/1968", citta: "Caserta", indirizzo: "Via ss 9", codiceFiscale: "VCCVN89H45SD", pdf: [], farmaci: [], idmedico: idutentecorrente, esenzione: "E20"};

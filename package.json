@@ -25,7 +25,7 @@
         "botbuilder-dialogs": "~4.17.0",
         "dotenv": "^8.2.0",
         "moment": "^2.29.1",
-        "mongodb": "^4.0",
+        "mongodb": "^3.6.9",
         "pdf-creator-node": "^2.3.5",
         "restify": "~8.6.0",
         "superagent": "^8.0.9",

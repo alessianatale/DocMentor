@@ -5,16 +5,14 @@ const os = require("os");
 const fs = require("fs");
 
 const ENV_FILE = path.join(__dirname, '.env');
-require('dotenv').config({ path: ENV_FILE });
-
 const restify = require('restify');
 
 const { 
-    CloudAdapter,
-    MemoryStorage,
-    ConversationState,
-    UserState,
-    ConfigurationBotFrameworkAuthentication
+  CloudAdapter,
+  MemoryStorage,
+  ConversationState,
+  UserState,
+  ConfigurationBotFrameworkAuthentication
 } = require('botbuilder');
 
 const { DocMentorBotRecognizer } = require('./recognizer/DocMentorBotRecognizer.js');
@@ -54,6 +52,8 @@ if(fs.existsSync(varfile)) {
 }
 
 const { main } = require('./dialogs/main');
+require('dotenv').config({ path: ENV_FILE });
+
 
 const botFrameworkAuthentication = new ConfigurationBotFrameworkAuthentication(process.env);
 
