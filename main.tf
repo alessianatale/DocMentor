@@ -76,7 +76,6 @@ resource "azurerm_resource_group_template_deployment" "cloudasdeployment" {
       value = azurerm_user_assigned_identity.cloudidentity.tenant_id
     }
   })
-
   template_content = file(".\\deploymentTemplates\\deployUseExistResourceGroup\\template-BotApp-with-rg.json")
   depends_on = [azurerm_user_assigned_identity.cloudidentity]
 }
@@ -122,7 +121,6 @@ resource "azurerm_resource_group_template_deployment" "cloudbotdeployment" {
       value = azurerm_user_assigned_identity.cloudidentity.tenant_id
     }
   })
-
   template_content = file(".\\deploymentTemplates\\deployUseExistResourceGroup\\template-AzureBot-with-rg.json")
   depends_on = [azurerm_resource_group_template_deployment.cloudasdeployment]
 }
@@ -132,7 +130,6 @@ resource "random_integer" "ri" {
   max = 99999
 }
 
-
 # CosmoDB per MongoDB
 resource "azurerm_cosmosdb_account" "cosmodbaccount" {
   name                = "cosmodbaccount-${random_integer.ri.result}"
@@ -140,8 +137,6 @@ resource "azurerm_cosmosdb_account" "cosmodbaccount" {
   resource_group_name = azurerm_resource_group.cloudrg.name
   offer_type          = "Standard"
   kind                = "MongoDB"
-
-  #enable_automatic_failover = true
 
   capabilities {
     name = "EnableAggregationPipeline"
@@ -167,7 +162,6 @@ resource "azurerm_cosmosdb_account" "cosmodbaccount" {
   }
   mongo_server_version = "4.0"
   enable_free_tier = true
-  //depends_on = [azurerm_resource_group_template_deployment.cloudbotdeployment]
 }
 
 data "azurerm_cosmosdb_account" "cosmodbaccount" {
@@ -194,8 +188,6 @@ resource "azurerm_cosmosdb_mongo_collection" "userscollection" {
   account_name        = data.azurerm_cosmosdb_account.cosmodbaccount.name
   database_name       = azurerm_cosmosdb_mongo_database.mongodatabase.name
 
-  //default_ttl_seconds = "777"
-  //shard_key           = "uniqueKey"
   throughput          = 400
 
   depends_on = [azurerm_cosmosdb_mongo_database.mongodatabase]
@@ -212,8 +204,6 @@ resource "azurerm_cosmosdb_mongo_collection" "slotorariscollection" {
   account_name        = data.azurerm_cosmosdb_account.cosmodbaccount.name
   database_name       = azurerm_cosmosdb_mongo_database.mongodatabase.name
 
-  //default_ttl_seconds = "777"
-  //shard_key           = "uniqueKey"
   throughput          = 400
 
   depends_on = [azurerm_cosmosdb_mongo_database.mongodatabase]
@@ -230,8 +220,6 @@ resource "azurerm_cosmosdb_mongo_collection" "prenotazioniscollection" {
   account_name        = data.azurerm_cosmosdb_account.cosmodbaccount.name
   database_name       = azurerm_cosmosdb_mongo_database.mongodatabase.name
 
-  //default_ttl_seconds = "777"
-  //shard_key           = "uniqueKey"
   throughput          = 400
 
   depends_on = [azurerm_cosmosdb_mongo_database.mongodatabase]
@@ -248,8 +236,6 @@ resource "azurerm_cosmosdb_mongo_collection" "richiestericettecollection" {
   account_name        = data.azurerm_cosmosdb_account.cosmodbaccount.name
   database_name       = azurerm_cosmosdb_mongo_database.mongodatabase.name
 
-  //default_ttl_seconds = "777"
-  //shard_key           = "uniqueKey"
   throughput          = 400
 
   depends_on = [azurerm_cosmosdb_mongo_database.mongodatabase]
@@ -266,8 +252,6 @@ resource "azurerm_cosmosdb_mongo_collection" "farmacicollection" {
   account_name        = data.azurerm_cosmosdb_account.cosmodbaccount.name
   database_name       = azurerm_cosmosdb_mongo_database.mongodatabase.name
 
-  //default_ttl_seconds = "777"
-  //shard_key           = "uniqueKey"
   throughput          = 400
 
   depends_on = [azurerm_cosmosdb_mongo_database.mongodatabase]
@@ -290,7 +274,6 @@ resource "null_resource" "npm_env" {
   provisioner "local-exec" {
     command = "npm install"
   }
-  # crea.env
   provisioner "local-exec" {
     command = "az bot prepare-deploy --lang Javascript"
   }
@@ -310,25 +293,7 @@ resource "null_resource" "uploadfarmaci" {
   depends_on = [azurerm_cosmosdb_mongo_collection.farmacicollection]
 }
 
-
-/*resource "null_resource" "finaldeploy" {
-  provisioner "local-exec" {
-    command = "powershell Compress-Archive -Path . -DestinationPath deploy.zip"
-  }
-  provisioner "local-exec" {
-    command = "az webapp deployment source config-zip --resource-group cloudrg --name cloudas --src CloudProject.zip"
-  }
-  provisioner "local-exec" {
-    command = " func azure functionapp publish functionapp24157 --nozip"
-  }
-
-  terraform output > file.txt
-  terraform output -json > env.json
-  
-  mongoimport -h cosmodbaccount-73543.mongo.cosmos.azure.com:10255 -d mongodatabase -c farmaci -u cosmodbaccount-73543 -p EcL1zA0d82UCUsDRs71cESOUHSbTnRfzkjgsbk4koVLL1g16sNtStieY7x9cszpLGTJWCQkX3MbiACDbOGepsg== --ssl --jsonArray --writeConcern="{w:0}" --file farmaci.json --quiet
-}*/
-
-
-
-
-
+/*
+  comando da eseguire alla fine:  
+  command = "az webapp deployment source config-zip --resource-group cloudrg --name cloudas --src CloudProject.zip"
+*/
