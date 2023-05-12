@@ -87,16 +87,17 @@ resource "azurerm_windows_function_app" "functionapp" {
     //"WEBSITE_RUN_FROM_PACKAGE" = "",
     "FUNCTIONS_WORKER_RUNTIME" = "node",
     "APPINSIGHTS_INSTRUMENTATIONKEY" = azurerm_application_insights.application_insights.instrumentation_key
+    "MONGOURL" = azurerm_cosmosdb_account.cosmodbaccount.connection_strings[0]
   }
   depends_on = [azurerm_service_plan.serviceplan]
 }
 
 /*
-resource "null_resource" "finaldeploy" {
-  provisioner "local-exec" {
-    command = "func azure functionapp publish functionapp73543 --nozip"
-  }
-}
+  installare func
+  eliminare eventuale file "local.setting"
+  nella cartella funzioni:
+  npm install
+  func azure functionapp publish functionapp85484 --nozip --javascript
 */
 
 

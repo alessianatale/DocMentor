@@ -18,7 +18,9 @@ provider "azurerm" {
     resource_group {
       prevent_deletion_if_contains_resources = false
     }
-
+    cognitive_account {
+      purge_soft_delete_on_destroy = true
+    }
   }
 }
 
@@ -292,7 +294,7 @@ resource "null_resource" "npm_env" {
   provisioner "local-exec" {
     command = "az bot prepare-deploy --lang Javascript"
   }
-  depends_on = [azurerm_cosmosdb_mongo_collection.richiestericettecollection]
+  depends_on = [azurerm_cosmosdb_mongo_collection.farmacicollection]
 }
 
 
@@ -305,6 +307,7 @@ resource "null_resource" "uploadfarmaci" {
   provisioner "local-exec" {
     command = "mongoimport -h ${azurerm_cosmosdb_account.cosmodbaccount.name}.mongo.cosmos.azure.com:10255 -d mongodatabase -c farmaci -u ${azurerm_cosmosdb_account.cosmodbaccount.name} -p ${nonsensitive(azurerm_cosmosdb_account.cosmodbaccount.primary_key)} --ssl --jsonArray --writeConcern=\"{w:0}\" --file ./utils/farmaci.json --quiet"
   }
+  depends_on = [azurerm_cosmosdb_mongo_collection.farmacicollection]
 }
 
 

@@ -84,7 +84,7 @@ class medicoSlotOrariDialog extends ComponentDialog {
         }
         return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Seleziona un giorno di visita: ',
-            choices: ChoiceFactory.toChoices(['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì']),
+            choices: ChoiceFactory.toChoices(['lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì']),
             style: ListStyle.heroCard
         });
     }
