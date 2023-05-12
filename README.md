@@ -1,43 +1,99 @@
-# Welcome Users
+# DocMentorBot
 
-Bot Framework v4 welcome users bot sample
+![](immagini\immagine1.png)
 
-This bot has been created using [Bot Framework](https://dev.botframework.com), is shows how to welcome users when they join the conversation.
+Lo scopo di questo bot è quello di fornire un'esperienza diversa e semplificata di quella che è la comunicazione tra medico e paziente, il bot permette di:
+ #### Lato paziente
+- Prenotare una visita
+- Richiedere un farmaco 
+- Visualizzare le prescrizioni dei farmaci richiesti
+- Chiedere informazioni a HealtBot
+- Verificare le informazioni del proprio Medico
+- Inviare foto di ricette specialistiche
+ ### Lato medico
+ - Aggiungere pazienti
+ - Eliminare pazienti
+ - Stabilire gli orari nei quali si effettuano visite
+ - Gestire le richieste di ricette
+ - Gestire le visite del giorno
+ - Creare prescrizioni ed inviarle al paziente 
+ - Possibile selezionare farmaci da una lista esaustiva 
 
-## Prerequisites
+ ### Lato admin
+ - Aggiunta e rimozione medici
 
-- [Node.js](https://nodejs.org) version 10.14 or higher
+
+
+
+## Prerequisiti
+
+- [Node.js](https://nodejs.org) versione 10.14 o superiore
 
     ```bash
-    # determine node version
+    # determina la versione di node
     node --version
     ```
-
-## To try this sample
-
-- Clone the repository
+- [Terraform](https://developer.hashicorp.com/terraform/downloads) questo progetto utilizza terraform per la gestione delle risorse la verisone consigliata è Terraform v1.3.9
 
     ```bash
-    git clone https://github.com/Microsoft/botbuilder-samples.git
+    # determina la versione di terraform
+    terraform version
     ```
+- [Azure account](https://azure.microsoft.com/free/?WT.mc_id=A261C142F)    
 
-- In a terminal, navigate to `samples/javascript_nodejs/03.welcome-users`
+- [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli) la versione consigliata è 2.39.0 o successive
+
+
+## Inizializzazione
+
+- Clonare la repository
 
     ```bash
-    cd samples/javascript_nodejs/03.welcome-users
+    git clone https://github.com/alessianatale/CloudProject.git
     ```
 
-- Install modules
+- Installare i moduli
 
     ```bash
     npm install
     ```
+- Effettuare il login su azure
 
-- Start the bot
+    ```bash
+    az login
+    ```
+- Inizializzare Terraform
+
+    ```bash
+    terraform init
+    ```
+- Avviare Terraform
+
+    ```bash
+    terraform apply
+    ```
+-  Grazie all'utilizzo di terraform la creazione e gestione delle risorse è resa estremamente efficente, inoltre dopo l'esecuzione del comando seguente le varie varibili necessarie al funzionamento del bot saranno automaticamente inserite nel file .env
+
 
     ```bash
     npm start
     ```
+
+## Deploy
+
+- Per pubblicare il bot eseguire il seguente comando solo dopo aver creato lo zip (CloudProject.zip) di tutti i file ad esclusione della cartella "funzioni"
+
+    ```bash
+        command = "az webapp deployment source config-zip --resource-group cloudrg --name cloudas --src CloudProject.zip
+    ```
+- La pubblicazione della Azure Function è di seguito illustrata, spostarsi nella cartella /funzioni
+   ```bash
+        cd funzioni
+    ```
+    ```bash
+        func azure functionapp publish <nome della FunctionApp> --nozip
+    ```
+    
 
 ## Testing the bot using Bot Framework Emulator
 
