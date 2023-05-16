@@ -1,6 +1,6 @@
 # DocMentorBot
 
-![](immagini\immagine1.png)
+![ ](immagini/immagine1.png)
 
 Lo scopo di questo bot è quello di fornire un'esperienza diversa e semplificata di quella che è la comunicazione tra medico e paziente, il bot permette di:
  #### Lato paziente
