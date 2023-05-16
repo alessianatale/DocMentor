@@ -10,7 +10,7 @@ Lo scopo di questo bot è quello di fornire un'esperienza diversa e semplificata
 - Chiedere informazioni a HealtBot
 - Verificare le informazioni del proprio Medico
 - Inviare foto di ricette specialistiche
- ### Lato medico
+ #### Lato medico
  - Aggiungere pazienti
  - Eliminare pazienti
  - Stabilire gli orari nei quali si effettuano visite
@@ -51,17 +51,16 @@ Lo scopo di questo bot è quello di fornire un'esperienza diversa e semplificata
     ```bash
     git clone https://github.com/alessianatale/CloudProject.git
     ```
-
-- Installare i moduli
-
-    ```bash
-    npm install
-    ```
 - Effettuare il login su azure
 
     ```bash
     az login
     ```
+- Inserire le proprie variabili nel file 'var.tf' ovvero:
+
+    - _subscription_: sottoscrizione di Azure
+    - _telegramtoken_: token del bot di Telegram
+
 - Inizializzare Terraform
 
     ```bash
@@ -74,7 +73,6 @@ Lo scopo di questo bot è quello di fornire un'esperienza diversa e semplificata
     ```
 -  Grazie all'utilizzo di terraform la creazione e gestione delle risorse è resa estremamente efficente, inoltre dopo l'esecuzione del comando seguente le varie varibili necessarie al funzionamento del bot saranno automaticamente inserite nel file .env
 
-
     ```bash
     npm start
     ```
@@ -84,7 +82,7 @@ Lo scopo di questo bot è quello di fornire un'esperienza diversa e semplificata
 - Per pubblicare il bot eseguire il seguente comando solo dopo aver creato lo zip (CloudProject.zip) di tutti i file ad esclusione della cartella "funzioni"
 
     ```bash
-        command = "az webapp deployment source config-zip --resource-group cloudrg --name cloudas --src CloudProject.zip
+        az webapp deployment source config-zip --resource-group cloudrg --name cloudas --src CloudProject.zip
     ```
 - La pubblicazione della Azure Function è di seguito illustrata, spostarsi nella cartella /funzioni
    ```bash
@@ -93,6 +91,14 @@ Lo scopo di questo bot è quello di fornire un'esperienza diversa e semplificata
     ```bash
         func azure functionapp publish <nome della FunctionApp> --nozip
     ```
+    
+- Collegare HealthBot a telegram nel portale dedicato:
+   
+   - recarsi sulla risorsa HealthBot su Azure
+   - cliccare sul link 'portale di gestione'
+   - cliccare _integration_ nella barra laterale a sinistra
+   - cliccare _channels_
+   - abilitare Telegram, inserire il token del bot (diverso da quello inserito all'interno di var.tf) e cliccare 'create'
     
 
 ## Testing the bot using Bot Framework Emulator
