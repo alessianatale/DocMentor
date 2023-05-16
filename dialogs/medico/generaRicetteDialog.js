@@ -226,7 +226,7 @@ class generaRicetteDialog extends ComponentDialog {
         for (let y = 0; y < step.values.farmaci.array.length; y++) {
             var farm = await farmaci.findOne({AIC: step.values.farmaci.array[y]});
             step.values.farmacicompleti.push(farm);
-            listafarmaci.push(String("[" + farm.AIC + "] " ));
+            listafarmaci.push(String("[" + farm.AIC + "] qta: " +step.values.farmaci.qta[y]));
             
             var infofarma = String("\\[" + farm.AIC + "\\] " + farm.Farmaco + "\n Ditta: " + farm.Ditta + "\n " + farm["Confezione di riferimento"] + "\n Quantità: " + step.values.farmaci.qta[y]) ;
             await step.context.sendActivity(infofarma);
@@ -350,7 +350,7 @@ class generaRicetteDialog extends ComponentDialog {
             const filename = uuidv1() + ".pdf";
             await generaPDF(ricetta, filename);
             await updateFarmaciUsuali(farm1.AIC)
-            await updateFarmaciUsuali(idFarmacoSelezionato)
+            await updateFarmaciUsuali(Number(idFarmacoSelezionato))
             await savepdfblob(filename)
             await step.context.sendActivity("Ho generato ricetta...");
             // salvo pdf sul blob e nel paziente - DA FARE

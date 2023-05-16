@@ -37,7 +37,7 @@ Lo scopo di questo bot è quello di fornire un'esperienza diversa e semplificata
 
     ```bash
     # determina la versione di terraform
-    terraform version
+    terraform version    
     ```
 - [Azure account](https://azure.microsoft.com/free/?WT.mc_id=A261C142F)    
 
@@ -46,7 +46,7 @@ Lo scopo di questo bot è quello di fornire un'esperienza diversa e semplificata
 
 ## Inizializzazione
 
-- Clonare la repository
+- Clonare la repository 
 
     ```bash
     git clone https://github.com/alessianatale/CloudProject.git
