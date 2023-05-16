@@ -101,9 +101,9 @@ Lo scopo di questo bot è quello di fornire un'esperienza diversa e semplificata
    - abilitare Telegram, inserire il token del bot (diverso da quello inserito all'interno di var.tf) e cliccare 'create'
     
 
-## Testing the bot using Bot Framework Emulator
+## Architettura
 
-[Bot Framework Emulator](https://github.com/microsoft/botframework-emulator) is a desktop application that allows bot developers to test and debug their bots on localhost or running remotely through a tunnel.
+![ ](immagini/diagramma.png)
 
 - Install the latest Bot Framework Emulator from [here](https://github.com/Microsoft/BotFramework-Emulator/releases)
 
