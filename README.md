@@ -2,14 +2,14 @@
 
 ![ ](immagini/immagine.png)
 
-## Summary
+## Indice
 
-[- Introduzione](#introduzione)
-[- Terraform](#terraform)
-[- Prerequisiti](#prerequisiti)
-[- Inizializzazione](#inizializzazione)
-[- Deploy](#deploy)
-[- Architettura](#architettura)
+- [Introduzione](#introduzione)
+- [Terraform](#terraform)
+- [Prerequisiti](#prerequisiti)
+- [Inizializzazione](#inizializzazione)
+- [Deploy](#deploy)
+- [Architettura](#architettura)
 
 ## Introduzione
 DocMentor è un bot telegram creato con lo scopo di semplificare il processo di comunicazione tra medico di base e paziente.
