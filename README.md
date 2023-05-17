@@ -1,7 +1,8 @@
 # DocMentorBot
-
-![ ](immagini/immagine.png)
-
+<p align="center">
+<img src="https://github.com/alessianatale/CloudProject/blob/main/immagini/immagine.png" width="400" height="400" />
+ </p>
+ 
 ## Indice
 
 - [Introduzione](#introduzione)
