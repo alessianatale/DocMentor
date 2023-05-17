@@ -87,14 +87,6 @@ resource "azurerm_windows_function_app" "functionapp" {
   depends_on = [azurerm_service_plan.serviceplan]
 }
 
-/*
-  installare func
-  eliminare eventuale file "local.setting"
-  nella cartella funzioni:
-  npm install
-  func azure functionapp publish functionapp85484 --nozip --javascript
-*/
-
 
 // CLU
 // se da errore nella creazione, creare prima una risorsa di questo tipo dall'Azure portal (dopo si può eliminare)

@@ -36,6 +36,11 @@ resource "azurerm_user_assigned_identity" "cloudidentity" {
   resource_group_name = azurerm_resource_group.cloudrg.name
 }
 
+resource "random_integer" "ri" {
+  min = 10000
+  max = 99999
+}
+
 # App Service
 resource "azurerm_resource_group_template_deployment" "cloudasdeployment" {
   name                = "cloudasdeployment"
@@ -43,7 +48,7 @@ resource "azurerm_resource_group_template_deployment" "cloudasdeployment" {
   deployment_mode     = "Incremental"
   parameters_content = jsonencode({
     "appServiceName" = {
-      value = "cloudas"
+      value = "cloudas${random_integer.ri.result}"
     }
     "newAppServicePlanName" = {
       value = "cloudappserviceplan"
@@ -94,7 +99,7 @@ resource "azurerm_resource_group_template_deployment" "cloudbotdeployment" {
   deployment_mode     = "Incremental"
   parameters_content = jsonencode({
     "azureBotId" = {
-      value = "DocMentorBot2"
+      value = "DocMentorBot"
     }
     "azureBotSku" = {
       value = "S1"
@@ -103,7 +108,7 @@ resource "azurerm_resource_group_template_deployment" "cloudbotdeployment" {
       value = "global"
     }
     "botEndpoint" = {
-      value = "https://cloudas.azurewebsites.net/api/messages"
+      value = "https://cloudas${random_integer.ri.result}.azurewebsites.net/api/messages"
     }
     "appType" = {
       value = "UserAssignedMSI"
@@ -125,10 +130,7 @@ resource "azurerm_resource_group_template_deployment" "cloudbotdeployment" {
   depends_on = [azurerm_resource_group_template_deployment.cloudasdeployment]
 }
 
-resource "random_integer" "ri" {
-  min = 10000
-  max = 99999
-}
+
 
 # CosmoDB per MongoDB
 resource "azurerm_cosmosdb_account" "cosmodbaccount" {
@@ -265,11 +267,10 @@ resource "azurerm_cosmosdb_mongo_collection" "farmacicollection" {
 
 resource "null_resource" "npm_env" {
   provisioner "local-exec" {
-    command = "az bot update --resource-group cloudrg --name DocMentorBot2 --endpoint https://cloudas.azurewebsites.net/api/messages"
+    command = "az bot update --resource-group cloudrg --name DocMentorBot --endpoint https://cloudas${random_integer.ri.result}.azurewebsites.net/api/messages"
   }
   provisioner "local-exec" {
-    //command = "az bot telegram create --resource-group cloudrg --name DocMentorBot2 --access-token 6296149829:AAGL93aAdMIpTrLgtJJjDAT1ihi5riGtGMw --is-validated"
-    command = "az bot telegram create --resource-group cloudrg --name DocMentorBot2 --access-token ${var.telegramtoken} --is-validated"
+    command = "az bot telegram create --resource-group cloudrg --name DocMentorBot --access-token ${var.telegramtoken} --is-validated"
   }
   provisioner "local-exec" {
     command = "npm install"
@@ -280,20 +281,9 @@ resource "null_resource" "npm_env" {
   depends_on = [azurerm_cosmosdb_mongo_collection.farmacicollection]
 }
 
-
-# installare mongodb community: https://www.mongodb.com/try/download/community
-# installare database tools: https://www.mongodb.com/try/download/database-tools
-# inserire mongoimport.exe nella directory di mongodb
-# inserire il path nelle variabili d'ambiente
-// speramm che la porta è sempre 10255
 resource "null_resource" "uploadfarmaci" {
   provisioner "local-exec" {
     command = "mongoimport -h ${azurerm_cosmosdb_account.cosmodbaccount.name}.mongo.cosmos.azure.com:10255 -d mongodatabase -c farmaci -u ${azurerm_cosmosdb_account.cosmodbaccount.name} -p ${nonsensitive(azurerm_cosmosdb_account.cosmodbaccount.primary_key)} --ssl --jsonArray --writeConcern=\"{w:0}\" --file ./utils/farmaci.json --quiet"
   }
   depends_on = [azurerm_cosmosdb_mongo_collection.farmacicollection]
 }
-
-/*
-  comando da eseguire alla fine:  
-  command = "az webapp deployment source config-zip --resource-group cloudrg --name cloudas --src CloudProject.zip"
-*/
