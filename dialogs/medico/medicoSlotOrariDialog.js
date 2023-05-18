@@ -84,14 +84,18 @@ class medicoSlotOrariDialog extends ComponentDialog {
         }
         return await step.prompt(CHOICE_PROMPT, {
             prompt: 'Seleziona un giorno di visita: ',
-            choices: ChoiceFactory.toChoices(['lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì']),
+            choices: ChoiceFactory.toChoices(['lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'Torna indietro']),
             style: ListStyle.heroCard
         });
     }
 
     async redirectOrariStep(step) {
-        step.values.giorno = step.result.value;
-        return await step.beginDialog(WATERFALL_DIALOG2);
+        if (step.result.value == "Torna indietro") {
+            return await step.endDialog();
+        } else {
+            step.values.giorno = step.result.value;
+            return await step.beginDialog(WATERFALL_DIALOG2);
+        }
     }
 
     async prendiOrariStep(step) {

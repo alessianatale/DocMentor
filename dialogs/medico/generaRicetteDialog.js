@@ -495,6 +495,17 @@ class generaRicetteDialog extends ComponentDialog {
 
             if(farmaciscelti.length < 1){
                 await step.context.sendActivity("Farmaco non trovato");
+                // genero ricetta con un solo farmaco
+                const farm1 = await farmaci.findOne({AIC: Number(step.values.farmaci.array[0])});
+                const qta1 = step.values.farmaci.qta[0];
+                var farmacoRicetta = new Farmaco(farm1.Farmaco, farm1["Confezione di riferimento"], qta1, "--");
+                var farmaciric = [farmacoRicetta, farmacoVuoto]
+                var ricetta = await creaRicetta(paziente, medico, farmaciric);
+                const filename = uuidv1() + ".pdf";
+                await generaPDF(ricetta, filename);
+                await updateFarmaciUsuali(Number(step.values.farmaci.array[0]))
+                await savepdfblob(filename)
+                await step.context.sendActivity("Ho generato ricetta...");
                 return await step.replaceDialog(WATERFALL_DIALOG3);
             }
             return await step.prompt(CHOICE_PROMPT, {

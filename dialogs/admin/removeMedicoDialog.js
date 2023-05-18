@@ -6,7 +6,8 @@ const {
     NumberPrompt,
     DialogTurnStatus,
     TextPrompt,
-    WaterfallDialog
+    WaterfallDialog,
+    ListStyle
 } = require('botbuilder-dialogs');
 
 const config = require('../../config');

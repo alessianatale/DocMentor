@@ -76,27 +76,41 @@ class prenotaVisitaDialog extends ComponentDialog {
         if(slots.length < 1){
             await step.context.sendActivity("Non ci sono slot disponibili per il tuo medico");
             return await step.endDialog();
-        }else
+        }else {
+            const pren = await prenotazioni.find({idpaziente: step.context.activity.from.id }).toArray();
+            if (pren.length != 0) {
+                const giornipren = pren.map(function(i) { return i.giorno + " ora: " + i.orario });
+                var message = "Ecco le tue prenotazioni:\n\n";
+                for (let y = 0; y < pren.length; y++)
+                    message += '• ' + giornipren[y] + '\n\n';
+
+                await step.context.sendActivity(message);
+            }
+            giorni.push("Torna indietro")
             return await step.prompt(CHOICE_PROMPT, {
                 prompt: 'Ecco i giorni disponibili per il tuo medico: ',
                 choices: ChoiceFactory.toChoices(giorni),
                 style: ListStyle.heroCard
             });
-
+        }
     }
 
     async orarioStep(step) {
-        step.values.giorno = step.result.value;
-        slotg = await slotorari.findOne({idmedico: idmedico, giorno: step.result.value });
+        if (step.result.value == "Torna indietro") {
+            return await step.endDialog();
+        } else {
+            step.values.giorno = step.result.value;
+            slotg = await slotorari.findOne({idmedico: idmedico, giorno: step.result.value });
 
-        if(slotg.orari.length < 1){
-            return await step.context.sendActivity(`Attenzione, sono terminati gli slot per questo giorno`);
-        }else {
-            return await step.prompt(CHOICE_PROMPT, {
-                prompt: 'Ecco gli orari disponibili per il tuo medico: ',
-                choices: ChoiceFactory.toChoices(slotg.orari),
-                style: ListStyle.heroCard
-            });
+            if(slotg.orari.length < 1){
+                return await step.context.sendActivity(`Attenzione, sono terminati gli slot per questo giorno`);
+            }else {
+                return await step.prompt(CHOICE_PROMPT, {
+                    prompt: 'Ecco gli orari disponibili per il tuo medico: ',
+                    choices: ChoiceFactory.toChoices(slotg.orari),
+                    style: ListStyle.heroCard
+                });
+            }
         }
     }
 

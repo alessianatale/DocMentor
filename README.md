@@ -111,11 +111,8 @@ L'utilizzo di Terraform con Azure presenta diversi vantaggi:
     ```bash
     terraform apply
     ```
--  Grazie all'utilizzo di terraform la creazione e gestione delle risorse è resa estremamente efficente, inoltre dopo l'esecuzione del comando seguente le varie varibili necessarie al funzionamento del bot saranno automaticamente inserite nel file .env
+-  Grazie all'utilizzo di terraform la creazione e gestione delle risorse è resa estremamente efficente, inoltre all'avvio dell'applicazione le varibili necessarie al funzionamento del bot saranno automaticamente inserite nel file .env
 
-    ```bash
-    npm start
-    ```
 
 ## Deploy
 - Per allenare il modello e fare il deploy seguire questa guida [Guida CLU](https://learn.microsoft.com/it-it/azure/cognitive-services/language-service/conversational-language-understanding/tutorials/bot-framework) il file json da importare è "utils/DocMentorProject.json". Inoltre quando si sceglie il nome da dare al deploy digitare "CLU" e coome Training Mode selezionare "_Advanced training_".
@@ -129,7 +126,7 @@ L'utilizzo di Terraform con Azure presenta diversi vantaggi:
         cd funzioni
     ```
     ```bash
-        func azure functionapp publish <nome Function App> --nozip
+        func azure functionapp publish <nome Function App> --nozip --javascript
     ```
     
 - Collegare HealthBot a telegram nel portale dedicato:
