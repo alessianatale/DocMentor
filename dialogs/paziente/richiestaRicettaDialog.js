@@ -193,7 +193,7 @@ class richiestaRicettaDialog extends ComponentDialog {
                 //richiesta http vesro logicapp
                 const data = {
                     Id:paziente.idmedico,
-                    Message:"Hai una nuova richiesta di ricetta!, per visionarla vai nella sezione richiesta ricette."
+                    Message:"Hai una nuova richiesta di ricetta, per visionarla vai nella sezione richiesta ricette."
                   }
                 await sendRequest(data)
 
@@ -260,7 +260,7 @@ class richiestaRicettaDialog extends ComponentDialog {
         //richiesta http vesro logicapp
         const data = {
             Id:paziente.idmedico,
-            Message:"Hai una nuova richiesta di ricetta!, per visionarla vai nella sezione richiesta ricette."
+            Message:"Hai una nuova richiesta di ricetta, per visionarla vai nella sezione richiesta ricette."
           }
         await sendRequest(data)
 

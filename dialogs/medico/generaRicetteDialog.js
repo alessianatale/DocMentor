@@ -615,17 +615,12 @@ async function savepdfblob(filename) {
         return data.value;
     });
 
-
-
-      //richiesta http vesro logicapp
+    //richiesta http vesro logicapp
     const data = {
         Id:Number(paziente.idutente),
-        Message: "La tua prescrizione è pronta!, Vai nella sezione \'le mie prescrizioni\' per visionarla."
+        Message: "La tua prescrizione è pronta, vai nella sezione \'le mie prescrizioni\' per visionarla."
     }
-
-
      await sendRequest(data)
-
 }
 
 module.exports.generaRicetteDialog = generaRicetteDialog;
