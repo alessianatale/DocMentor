@@ -1,15 +1,16 @@
 # DocMentorBot
+<p align="center">
+<img src="https://github.com/alessianatale/CloudProject/blob/main/immagini/immagine.png" width="400" height="400" />
+ </p>
+ 
+## Indice
 
-![ ](immagini/immagine.png)
-
-## Summary
-
-[- Introduzione](#introduzione)
-[- Terraform](#terraform)
-[- Prerequisiti](#prerequisiti)
-[- Inizializzazione](#inizializzazione)
-[- Deploy](#deploy)
-[- Architettura](#architettura)
+- [Introduzione](#introduzione)
+- [Terraform](#terraform)
+- [Prerequisiti](#prerequisiti)
+- [Inizializzazione](#inizializzazione)
+- [Deploy](#deploy)
+- [Architettura](#architettura)
 
 ## Introduzione
 DocMentor è un bot telegram creato con lo scopo di semplificare il processo di comunicazione tra medico di base e paziente.
@@ -117,7 +118,7 @@ L'utilizzo di Terraform con Azure presenta diversi vantaggi:
     ```
 
 ## Deploy
-
+- Per allenare il modello e fare il deploy seguire questa guida [Guida CLU](https://learn.microsoft.com/it-it/azure/cognitive-services/language-service/conversational-language-understanding/tutorials/bot-framework) il file json da importare è "utils/DocMentorProject.json" inoltre quando si sceglie il nome da dare al deploy digitare "CLU".
 - Per pubblicare il bot eseguire il seguente comando solo dopo aver creato lo zip (CloudProject.zip) di tutti i file ad esclusione della cartella "funzioni"
 
     ```bash
